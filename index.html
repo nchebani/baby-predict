@@ -7,12 +7,12 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        body { background: #07070a; color: #e2e8f0; font-family: 'Inter', sans-serif; margin: 0; overflow-x: hidden; }
+        body { background: #07070a; color: #e2e8f0; font-family: 'Inter', sans-serif; margin: 0; min-h: 100vh; }
         .glass { background: rgba(23, 23, 33, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.05); }
         .admin-only { display: none !important; }
         .is-admin .admin-only { display: flex !important; }
-        .tab-content { display: none; padding-bottom: 140px; height: 100vh; overflow-y: auto; }
-        .active { display: block; }
+        .tab-content { display: none; padding-bottom: 140px; }
+        .tab-content.active { display: block; }
         .page { position: fixed; inset: 0; z-index: 100; background: #07070a; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .hidden { display: none !important; }
         #push-alert { transform: translateY(-130%); transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 9999; }
@@ -223,10 +223,10 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp, setDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
 
-        // 🔔 COLLE TA CLÉ VAPID DE L'ÉTAPE 1 ENTRE LES GUILLEMETS ICI :
+        // 🔔 COLLE TA CLÉ VAPID DE CONSOLE FIREBASE ICI :
         const VAPID_KEY = "KyCv3GvPMoavPSSZllmgVr5lLHpf-sohTDLhAMvW20w"; 
 
         const firebaseConfig = {
@@ -248,59 +248,37 @@
         let isAdmin = false;
         let globalPredictions = [];
 
-        // --- GESTION ET ENREGISTREMENT DES NOTIFICATIONS PUSH ---
+        // --- CONFIGURATION NOTIFICATIONS PUSH ---
         async function setupPushNotifications() {
-            if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-                console.log("Les notifications push ne sont pas supportées sur ce navigateur.");
-                return;
-            }
+            if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
 
             try {
-                // Enregistrement explicite du Service Worker
                 const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-                console.log('Service Worker enregistré avec succès:', registration);
-
-                // Demande d'autorisation à l'utilisateur
                 const permission = await Notification.requestPermission();
+                
                 if (permission === 'granted') {
-                    // Récupération du Token unique du téléphone
                     const currentToken = await getToken(messaging, { 
                         vapidKey: VAPID_KEY,
                         serviceWorkerRegistration: registration 
                     });
 
                     if (currentToken) {
-                        // On enregistre ce jeton dans Firebase sous le nom de l'utilisateur
                         await setDoc(doc(db, "fcm_tokens", userName), {
-                            token: currentToken,
-                            user: userName,
-                            updatedAt: Date.now()
+                            token: currentToken, user: userName, updatedAt: Date.now()
                         });
-                        console.log("Token PUSH enregistré avec succès !");
                     }
-                } else {
-                    console.log("Permission de notification refusée.");
                 }
             } catch (error) {
-                console.error("Erreur lors de la configuration des notifications:", error);
+                console.error("Erreur push registration:", error);
             }
         }
 
-        // --- ENVOI DE LA NOTIFICATION A TOUT LE MONDE VIA HTTP (Simulé côté client) ---
         async function triggerPushNotification(title, body) {
-            // Note technique : Firebase exige normalement un serveur (Node.js) pour distribuer en masse.
-            // Pour contourner sans serveur, on stocke la demande dans une collection spéciale "trigger_notifications".
-            // Alternativement, on peut utiliser un service tiers ou simplement stocker l'événement.
-            // Pour l'instant, on va envoyer l'alerte locale et sauvegarder l'événement dans Firestore.
             try {
                 await addDoc(collection(db, "triggered_alerts"), {
-                    title: title,
-                    body: body,
-                    timestamp: serverTimestamp()
+                    title: title, body: body, timestamp: serverTimestamp()
                 });
-            } catch (e) {
-                console.error("Erreur log alerte:", e);
-            }
+            } catch (e) { console.error(e); }
         }
 
         // --- AUTH ---
@@ -330,7 +308,6 @@
                 await setDoc(doc(db, "presence", userName), { name: userName, lastSeen: Date.now() });
                 setInterval(async () => { if(userName) await setDoc(doc(db, "presence", userName), { name: userName, lastSeen: Date.now() }); }, 30000);
                 
-                // On active les notifications pour cet utilisateur dès qu'il se connecte
                 await setupPushNotifications();
                 setupUserVoteListener();
             }
@@ -359,7 +336,6 @@
                 user: userName, sexe: selectedGender, prenom: nameProno, poids: weightProno, taille: heightProno, date: dateProno, heure: timeProno, timestamp: serverTimestamp()
             });
 
-            // Déclenchement de l'alerte globale
             await triggerPushNotification(
                 "👶 Nouveau Pronostic !", 
                 `${userName} voit une ${selectedGender} nommée ${nameProno} (${weightProno}kg) !`
@@ -404,7 +380,7 @@
             });
         }
 
-        // --- TRAITEMENT FLUX ET STATS ---
+        // --- STATS ET AFFICHAGES ---
         onSnapshot(collection(db, "predictions"), snapshot => {
             let totalVotes = snapshot.size;
             let countGirl = 0; let countBoy = 0;
@@ -486,11 +462,11 @@
         window.deleteProno = async (id) => { 
             if(!isAdmin) return;
             if(confirm(`Voulez-vous supprimer définitivement le pronostic de "${id}" ?`)) {
-                await deleteDoc(doc(db, "predictions", id)); 
+                await deleteDoc(doc(doc(db, "predictions", id))); 
             }
         };
 
-        // --- FINAL VERDICT ---
+        // --- VERDICT DE NAISSANCE ---
         document.getElementById('btn-save-final').onclick = async () => {
             if(!isAdmin) return;
             const g = document.getElementById('final-gender').value;
@@ -545,7 +521,7 @@
             document.getElementById('winner-name').innerText = winner;
         }
 
-        // --- CHAT SYSTEM ---
+        // --- DISCUSSIONS / CHAT ---
         onSnapshot(query(collection(db, "chats"), orderBy("time", "asc")), snap => {
             const box = document.getElementById('chat-box'); box.innerHTML = "";
             snap.forEach(d => {
@@ -605,6 +581,7 @@
             document.getElementById('tab-' + id).classList.add('active');
             document.querySelectorAll('.nav-btn').forEach(l => l.classList.replace('text-purple-400', 'text-slate-500'));
             btn.classList.replace('text-slate-500', 'text-purple-400');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     </script>
 </body>
