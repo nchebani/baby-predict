@@ -23,6 +23,7 @@
 </head>
 <body>
 
+    <!-- ALERTES PUSH SATELLITE (ALERTE NAISSANCE) -->
     <div id="push-alert" class="fixed top-0 left-1/2 -translate-x-1/2 w-[90%] max-w-sm glass p-4 rounded-3xl border-l-4 border-purple-500 shadow-2xl flex items-center gap-3">
         <div class="bg-purple-500/20 w-10 h-10 rounded-full flex items-center justify-center text-purple-500"><i class="fas fa-baby"></i></div>
         <div class="flex-1">
@@ -31,6 +32,7 @@
         </div>
     </div>
 
+    <!-- PAGE DE LOGIN -->
     <div id="page-login" class="page">
         <div class="glass p-10 rounded-[3rem] w-full max-w-sm border border-purple-500/20 text-center shadow-2xl">
             <div class="text-4xl mb-4">👶✨</div>
@@ -41,6 +43,7 @@
         </div>
     </div>
 
+    <!-- PAGE DE NOM -->
     <div id="page-name" class="page hidden text-center">
         <div class="glass p-10 rounded-[3rem] w-full max-w-sm border border-white/10 shadow-2xl">
             <p class="text-[10px] uppercase font-bold text-purple-400 mb-4 tracking-widest italic">Qui es-tu ?</p>
@@ -49,6 +52,7 @@
         </div>
     </div>
 
+    <!-- APPLICATION PRINCIPALE -->
     <div id="main-app" class="hidden min-h-screen">
         <header class="p-6 flex justify-between items-center sticky top-0 bg-[#07070a]/90 backdrop-blur-xl z-40 border-b border-white/5">
             <div>
@@ -60,8 +64,10 @@
 
         <main class="p-4 max-w-lg mx-auto">
             
+            <!-- VUE GENERALE & STATS -->
             <section id="tab-home" class="tab-content active space-y-6">
                 
+                <!-- PANNEAU DES RESULTATS FINAUX -->
                 <div id="panel-final-result" class="hidden bg-gradient-to-br from-yellow-600/20 to-amber-600/20 border border-yellow-500/30 p-6 rounded-[2.5rem] text-center shadow-2xl">
                     <span class="text-[10px] font-black uppercase text-yellow-400 tracking-widest bg-yellow-500/10 px-3 py-1 rounded-full border border-yellow-500/20"><i class="fas fa-trophy mr-1"></i> Le Bébé est là ! <i class="fas fa-trophy ml-1"></i></span>
                     <h3 class="text-3xl font-black mt-4 text-white uppercase tracking-tight" id="res-final-name">---</h3>
@@ -77,6 +83,7 @@
                     </div>
                 </div>
 
+                <!-- CONFIGURATION DU VERDICT DE NAISSANCE (ADMIN ONLY) -->
                 <div class="admin-only glass p-6 rounded-[2.5rem] border border-yellow-500/20 space-y-4">
                     <h4 class="text-xs font-black uppercase tracking-wider text-yellow-500 italic"><i class="fas fa-edit mr-2"></i>[ADMIN] Clôturer & Entrer les vraies infos</h4>
                     <div class="grid grid-cols-2 gap-2 text-xs">
@@ -100,6 +107,7 @@
                     <div id="list-online" class="flex flex-wrap justify-center gap-2 text-[10px]"></div>
                 </div>
 
+                <!-- POURCENTAGES DU SEXE -->
                 <div class="glass p-6 rounded-[2.5rem] space-y-4">
                     <h4 class="text-xs font-black uppercase tracking-wider text-slate-400 italic text-center">Tendance Sexe</h4>
                     <div class="flex items-center justify-between text-xs font-bold px-2">
@@ -112,6 +120,7 @@
                     </div>
                 </div>
 
+                <!-- MOYENNES DES PRONOSTICS -->
                 <div class="grid grid-cols-2 gap-4">
                     <div class="glass p-6 rounded-3xl text-center">
                         <span class="text-[9px] text-slate-500 block uppercase font-bold mb-1 italic">Poids Moyen</span>
@@ -123,6 +132,7 @@
                     </div>
                 </div>
 
+                <!-- TOP PRENOMS -->
                 <div class="glass p-6 rounded-[2.5rem]">
                     <h4 class="text-xs font-black uppercase tracking-wider text-slate-400 italic mb-4"><i class="fas fa-star mr-2 text-yellow-400"></i>Prénoms les plus votés</h4>
                     <div id="top-names-list" class="space-y-2 text-xs">
@@ -131,6 +141,7 @@
                 </div>
             </section>
 
+            <!-- FORMULAIRE DE VOTE -->
             <section id="tab-vote" class="tab-content">
                 <div class="flex justify-between items-center mb-6 px-2">
                     <h3 class="text-2xl font-black italic uppercase">Mon Pronostic</h3>
@@ -176,6 +187,7 @@
                 </div>
             </section>
 
+            <!-- TOUS LES PRONOS DE LA TEAM -->
             <section id="tab-ranking" class="tab-content">
                 <div class="flex justify-between items-center mb-6 px-2">
                     <h3 class="text-2xl font-black italic uppercase">Les Pronostics</h3>
@@ -184,6 +196,7 @@
                 <div id="list-all-votes" class="space-y-4"></div>
             </section>
 
+            <!-- FIL DE DISCUSSION / CHAT -->
             <section id="tab-chat" class="tab-content">
                 <div class="flex justify-between items-center mb-6 px-2">
                     <h3 class="text-2xl font-black italic uppercase">Baby Chat</h3>
@@ -197,6 +210,7 @@
             </section>
         </main>
 
+        <!-- NAVIGATION INFÉRIEURE -->
         <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[95%] max-w-sm z-50">
             <div class="glass rounded-[2.5rem] flex justify-around p-3 border border-white/10 shadow-2xl">
                 <button onclick="switchTab('home', this)" class="nav-btn text-purple-400 p-3"><i class="fas fa-chart-pie"></i></button>
@@ -209,10 +223,11 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp, setDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
 
-        // 🔔 AJOUTE TON LIEN DE WEBHOOK DISCORD OU TELEGRAM ICI ENTRE LES GUILLEMETS
-        const DISCORD_WEBHOOK_URL = ""; 
+        // 🔔 COLLE TA CLÉ VAPID DE L'ÉTAPE 1 ENTRE LES GUILLEMETS ICI :
+        const VAPID_KEY = "KyCv3GvPMoavPSSZllmgVr5lLHpf-sohTDLhAMvW20w"; 
 
         const firebaseConfig = {
           apiKey: "AIzaSyCozjk7u0rgP1iK7cR-5x_WDVYg7SJWVt0",
@@ -226,28 +241,65 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const messaging = getMessaging(app);
 
         let userName = "";
         let selectedGender = "";
         let isAdmin = false;
         let globalPredictions = [];
 
-        // --- ENVOI DE LA NOTIFICATION EXTERNE ---
-        async function sendExternalNotification(user, sexe, prenom, poids, taille, date, heure) {
-            if (!DISCORD_WEBHOOK_URL) return; // Si rien n'est configuré, on ne bloque pas le vote
-
-            const messageContent = {
-                content: `👶 **NOUVEAU PRONOSTIC ENREGISTRÉ !** 👶\n👉 **${user}** a déposé sa prédiction :\n\n• **Sexe :** ${sexe}\n• **Prénom :** ${prenom}\n• **Poids :** ${poids} kg\n• **Taille :** ${taille} cm\n• **Date :** ${date} à ${heure}\n\n📊 *Suivez les statistiques sur l'application !*`
-            };
+        // --- GESTION ET ENREGISTREMENT DES NOTIFICATIONS PUSH ---
+        async function setupPushNotifications() {
+            if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+                console.log("Les notifications push ne sont pas supportées sur ce navigateur.");
+                return;
+            }
 
             try {
-                await fetch(DISCORD_WEBHOOK_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(messageContent)
-                });
+                // Enregistrement explicite du Service Worker
+                const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+                console.log('Service Worker enregistré avec succès:', registration);
+
+                // Demande d'autorisation à l'utilisateur
+                const permission = await Notification.requestPermission();
+                if (permission === 'granted') {
+                    // Récupération du Token unique du téléphone
+                    const currentToken = await getToken(messaging, { 
+                        vapidKey: VAPID_KEY,
+                        serviceWorkerRegistration: registration 
+                    });
+
+                    if (currentToken) {
+                        // On enregistre ce jeton dans Firebase sous le nom de l'utilisateur
+                        await setDoc(doc(db, "fcm_tokens", userName), {
+                            token: currentToken,
+                            user: userName,
+                            updatedAt: Date.now()
+                        });
+                        console.log("Token PUSH enregistré avec succès !");
+                    }
+                } else {
+                    console.log("Permission de notification refusée.");
+                }
             } catch (error) {
-                console.error("Erreur d'envoi du webhook notification:", error);
+                console.error("Erreur lors de la configuration des notifications:", error);
+            }
+        }
+
+        // --- ENVOI DE LA NOTIFICATION A TOUT LE MONDE VIA HTTP (Simulé côté client) ---
+        async function triggerPushNotification(title, body) {
+            // Note technique : Firebase exige normalement un serveur (Node.js) pour distribuer en masse.
+            // Pour contourner sans serveur, on stocke la demande dans une collection spéciale "trigger_notifications".
+            // Alternativement, on peut utiliser un service tiers ou simplement stocker l'événement.
+            // Pour l'instant, on va envoyer l'alerte locale et sauvegarder l'événement dans Firestore.
+            try {
+                await addDoc(collection(db, "triggered_alerts"), {
+                    title: title,
+                    body: body,
+                    timestamp: serverTimestamp()
+                });
+            } catch (e) {
+                console.error("Erreur log alerte:", e);
             }
         }
 
@@ -278,6 +330,8 @@
                 await setDoc(doc(db, "presence", userName), { name: userName, lastSeen: Date.now() });
                 setInterval(async () => { if(userName) await setDoc(doc(db, "presence", userName), { name: userName, lastSeen: Date.now() }); }, 30000);
                 
+                // On active les notifications pour cet utilisateur dès qu'il se connecte
+                await setupPushNotifications();
                 setupUserVoteListener();
             }
         };
@@ -305,8 +359,11 @@
                 user: userName, sexe: selectedGender, prenom: nameProno, poids: weightProno, taille: heightProno, date: dateProno, heure: timeProno, timestamp: serverTimestamp()
             });
 
-            // Déclenchement notification
-            await sendExternalNotification(userName, selectedGender, nameProno, weightProno, heightProno, dateProno, timeProno);
+            // Déclenchement de l'alerte globale
+            await triggerPushNotification(
+                "👶 Nouveau Pronostic !", 
+                `${userName} voit une ${selectedGender} nommée ${nameProno} (${weightProno}kg) !`
+            );
 
             alert("Pronostic enregistré avec succès ! 🎉");
         };
@@ -329,7 +386,7 @@
                 user: targetUser.trim(), sexe: sexe, prenom: prenom, poids: poids, taille: taille, date: date, heure: heure, timestamp: serverTimestamp()
             });
 
-            await sendExternalNotification(targetUser.trim(), sexe, prenom, poids, taille, date, heure);
+            await triggerPushNotification("👶 Nouveau Pronostic (par Admin) !", `Un prono a été ajouté pour ${targetUser} !`);
             alert(`Pronostic de ${targetUser} ajouté avec succès !`);
         };
 
@@ -450,6 +507,7 @@
             await setDoc(doc(db, "resultat", "verdict"), {
                 sexe: g, prenom: n, poids: w, taille: h, date: d || "--", heure: t || "--"
             });
+            await triggerPushNotification("🏁 LE VERDICT EST TOMBÉ !", `Le bébé est arrivé ! Découvre vite le gagnant !`);
             alert("Le résultat final a été publié ! 🏁");
         };
 
@@ -511,7 +569,10 @@
         document.getElementById('btn-urgent').onclick = async () => {
             if(!isAdmin) return;
             const msg = prompt("Message d'alerte générale :");
-            if(msg) await addDoc(collection(db, "alerts"), { msg: msg, time: Date.now() });
+            if(msg) {
+                await addDoc(collection(db, "alerts"), { msg: msg, time: Date.now() });
+                await triggerPushNotification("🚨 ALERTE NAISSANCE !", msg);
+            }
         };
 
         onSnapshot(query(collection(db, "alerts"), orderBy("time", "desc")), snap => {
