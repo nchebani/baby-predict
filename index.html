@@ -66,6 +66,41 @@
             
             <!-- VUE GENERALE & STATS -->
             <section id="tab-home" class="tab-content active space-y-6">
+                
+                <!-- PANNEAU DES RESULTATS FINAUX (SI SAISIS PAR L'ADMIN) -->
+                <div id="panel-final-result" class="hidden bg-gradient-to-br from-yellow-600/20 to-amber-600/20 border border-yellow-500/30 p-6 rounded-[2.5rem] text-center shadow-2xl">
+                    <span class="text-[10px] font-black uppercase text-yellow-400 tracking-widest bg-yellow-500/10 px-3 py-1 rounded-full border border-yellow-500/20"><i class="fas fa-trophy mr-1"></i> Le Bébé est là ! <i class="fas fa-trophy ml-1"></i></span>
+                    <h3 class="text-3xl font-black mt-4 text-white uppercase tracking-tight" id="res-final-name">---</h3>
+                    <p class="text-sm font-bold text-slate-300 mt-1" id="res-final-gender">---</p>
+                    <div class="grid grid-cols-2 gap-4 mt-4 text-xs bg-black/40 p-4 rounded-2xl">
+                        <p>👶 <b>Poids :</b> <span id="res-final-weight">0</span> kg</p>
+                        <p>📏 <b>Taille :</b> <span id="res-final-height">0</span> cm</p>
+                        <p class="col-span-2 border-t border-white/5 pt-2 mt-1">📅 <b>Né le :</b> <span id="res-final-date">--</span> à <span id="res-final-time">--</span></p>
+                    </div>
+                    <div class="mt-4 p-3 bg-purple-500/20 rounded-xl border border-purple-500/30">
+                        <p class="text-[10px] uppercase font-black text-purple-300">🏆 Meilleur Pronostic 🏆</p>
+                        <p class="font-black text-lg text-white mt-1" id="winner-name">Calcul en cours...</p>
+                    </div>
+                </div>
+
+                <!-- CONFIGURATION DU VERDICT DE NAISSANCE (ADMIN ONLY) -->
+                <div class="admin-only glass p-6 rounded-[2.5rem] border border-yellow-500/20 space-y-4">
+                    <h4 class="text-xs font-black uppercase tracking-wider text-yellow-500 italic"><i class="fas fa-edit mr-2"></i>[ADMIN] Clôturer & Entrer les vraies infos</h4>
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <select id="final-gender" class="bg-white/5 border border-white/10 p-2 rounded-xl text-white outline-none">
+                            <option value="" class="bg-[#07070a]">Sexe...</option>
+                            <option value="Fille" class="bg-[#07070a]">Fille</option>
+                            <option value="Garçon" class="bg-[#07070a]">Garçon</option>
+                        </select>
+                        <input type="text" id="final-name" class="bg-white/5 border border-white/10 p-2 rounded-xl text-white outline-none" placeholder="Vrai Prénom">
+                        <input type="number" step="0.001" id="final-weight" class="bg-white/5 border border-white/10 p-2 rounded-xl text-white outline-none" placeholder="Poids (kg)">
+                        <input type="number" step="0.5" id="final-height" class="bg-white/5 border border-white/10 p-2 rounded-xl text-white outline-none" placeholder="Taille (cm)">
+                        <input type="date" id="final-date" class="bg-white/5 border border-white/10 p-2 rounded-xl text-white outline-none">
+                        <input type="time" id="final-time" class="bg-white/5 border border-white/10 p-2 rounded-xl text-white outline-none">
+                    </div>
+                    <button id="btn-save-final" class="w-full bg-yellow-600 text-white font-black py-3 rounded-xl uppercase text-[10px] tracking-wider shadow-lg">Publier le résultat final</button>
+                </div>
+
                 <div class="glass p-8 rounded-[3rem] text-center shadow-2xl relative overflow-hidden">
                     <p class="text-[10px] uppercase font-black text-purple-400 tracking-widest mb-1">Bienvenue</p>
                     <h3 class="text-3xl font-black italic uppercase mb-4 tracking-tighter" id="display-name">---</h3>
@@ -113,7 +148,6 @@
                 </div>
 
                 <div class="glass p-6 rounded-[2.5rem] space-y-6">
-                    <!-- SEXE -->
                     <div>
                         <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Fille ou Garçon ?</label>
                         <div class="grid grid-cols-2 gap-3">
@@ -122,13 +156,11 @@
                         </div>
                     </div>
 
-                    <!-- PRENOM -->
                     <div>
                         <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Idée de Prénom</label>
                         <input type="text" id="vote-name" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-purple-500" placeholder="Ex: Lucas, Léa...">
                     </div>
 
-                    <!-- POIDS & TAILLE -->
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Poids (en kg)</label>
@@ -140,7 +172,6 @@
                         </div>
                     </div>
 
-                    <!-- DATE & HEURE DE NAISSANCE -->
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Date estimée</label>
@@ -158,7 +189,11 @@
 
             <!-- TOUS LES PRONOS DE LA TEAM -->
             <section id="tab-ranking" class="tab-content">
-                <h3 class="text-2xl font-black italic uppercase mb-6 px-2">Les Pronostics</h3>
+                <div class="flex justify-between items-center mb-6 px-2">
+                    <h3 class="text-2xl font-black italic uppercase">Les Pronostics</h3>
+                    <!-- BOUTON AJOUT MANUEL POUR L'ADMIN -->
+                    <button id="btn-manual-add" class="admin-only bg-purple-600/20 border border-purple-500 text-purple-400 text-[10px] font-black uppercase px-4 py-2 rounded-xl"><i class="fas fa-plus mr-1"></i> Ajouter pour un proche</button>
+                </div>
                 <div id="list-all-votes" class="space-y-4"></div>
             </section>
 
@@ -189,7 +224,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp, setDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
           apiKey: "AIzaSyCozjk7u0rgP1iK7cR-5x_WDVYg7SJWVt0",
@@ -207,11 +242,11 @@
         let userName = "";
         let selectedGender = "";
         let isAdmin = false;
+        let globalPredictions = [];
 
-        // --- AUTH CLOISONNÉE ET SÉCURISÉE ---
+        // --- AUTH CLOISONNÉE ---
         document.getElementById('btn-to-name').onclick = () => {
             const code = document.getElementById('input-pass').value.trim();
-            // MODIFICATION PAR CODES PARAMÉTRÉS
             if(code === "1993" || code === "2026") {
                 if(code === "1993") {
                     isAdmin = true;
@@ -273,6 +308,34 @@
             alert("Pronostic enregistré avec succès ! 🎉");
         };
 
+        // AJOUT MANUEL DE L'ADMIN POUR UN PROCHE
+        document.getElementById('btn-manual-add').onclick = async () => {
+            if(!isAdmin) return;
+            const targetUser = prompt("Entrez le Nom/Prénom du proche pour qui vous votez :");
+            if(!targetUser || targetUser.trim().length < 2) return alert("Nom invalide");
+
+            const sexe = confirm("Est-ce une Fille ? (Cliquez Annuler pour Garçon)") ? "Fille" : "Garçon";
+            const prenom = prompt("Idée de prénom :");
+            const poids = parseFloat(prompt("Poids estimé (ex: 3.420) :"));
+            const taille = parseFloat(prompt("Taille estimée (ex: 51) :"));
+            const date = prompt("Date estimée (AAAA-MM-JJ) :") || "--";
+            const heure = prompt("Heure estimée (HH:MM) :") || "--";
+
+            if(!prenom || isNaN(poids) || isNaN(taille)) return alert("Données incomplètes, ajout annulé.");
+
+            await setDoc(doc(db, "predictions", targetUser.trim()), {
+                user: targetUser.trim(),
+                sexe: sexe,
+                prenom: prenom,
+                poids: poids,
+                taille: taille,
+                date: date,
+                heure: heure,
+                timestamp: serverTimestamp()
+            });
+            alert(`Pronostic de ${targetUser} ajouté avec succès !`);
+        };
+
         function setupUserVoteListener() {
             onSnapshot(doc(db, "predictions", userName), (docSnap) => {
                 if(docSnap.exists()) {
@@ -287,24 +350,27 @@
             });
         }
 
-        // --- TRAITEMENT DES FLUX ---
+        // --- TRAITEMENT DES FLUX ET STATS ---
         onSnapshot(collection(db, "predictions"), snapshot => {
             let totalVotes = snapshot.size;
             let countGirl = 0; let countBoy = 0;
             let sumWeight = 0; let sumHeight = 0;
             let nameCounts = {};
+            globalPredictions = [];
 
             const listAll = document.getElementById('list-all-votes');
             listAll.innerHTML = "";
 
             if(totalVotes === 0) {
                 updateStatsVisuals(0, 0, 0, 0, []);
-                listAll.innerHTML = `<p class="text-slate-500 italic text-center py-8">Aucun pronostic pour le moment.</p>`;
+                listAll.innerHTML = `<p class="text-slate-500 italic text-center py-8">Aucun pronostic.</p>`;
                 return;
             }
 
             snapshot.forEach(d => {
                 const data = d.data();
+                globalPredictions.push(data);
+
                 if(data.sexe === 'Fille') countGirl++;
                 if(data.sexe === 'Garçon') countBoy++;
 
@@ -340,6 +406,7 @@
 
             let sortedNames = Object.entries(nameCounts).sort((a,b) => b[1] - a[1]).slice(0, 5);
             updateStatsVisuals(pctGirl, pctBoy, avgW, avgH, sortedNames);
+            checkAndCalculateWinner();
         });
 
         function updateStatsVisuals(pGirl, pBoy, avgW, avgH, topNames) {
@@ -363,13 +430,87 @@
             }
         }
 
-        // SUPPRESSION AVEC DOUBLE VÉRIFICATION DE SÉCURITÉ CÔTÉ CLIENT
         window.deleteProno = async (id) => { 
-            if(!isAdmin) return alert("Action non autorisée.");
-            if(confirm(`Voulez-vous vraiment détruire le pronostic de "${id}" ?`)) {
+            if(!isAdmin) return;
+            if(confirm(`Voulez-vous supprimer définitivement le pronostic de "${id}" ?`)) {
                 await deleteDoc(doc(db, "predictions", id)); 
             }
         };
+
+        // --- ENREGISTREMENT ET CALCUL DU VERDICT FINAL ---
+        document.getElementById('btn-save-final').onclick = async () => {
+            if(!isAdmin) return;
+            const g = document.getElementById('final-gender').value;
+            const n = document.getElementById('final-name').value.trim();
+            const w = parseFloat(document.getElementById('final-weight').value);
+            const h = parseFloat(document.getElementById('final-height').value);
+            const d = document.getElementById('final-date').value;
+            const t = document.getElementById('final-time').value;
+
+            if(!g || !n || isNaN(w) || isNaN(h)) {
+                return alert("Veuillez remplir au moins le Sexe, Prénom, Poids et Taille réels !");
+            }
+
+            await setDoc(doc(db, "resultat", "verdict"), {
+                sexe: g, prenom: n, poids: w, taille: h, date: d || "--", heure: t || "--"
+            });
+            alert("Le résultat final a été publié ! Félicitations ! 🎉");
+        };
+
+        // ECOUTER SI LE VERDICT EST EN LIGNE
+        let finalResultData = null;
+        onSnapshot(doc(db, "resultat", "verdict"), docSnap => {
+            if(docSnap.exists()) {
+                finalResultData = docSnap.get();
+                document.getElementById('panel-final-result').classList.remove('hidden');
+                document.getElementById('res-final-name').innerText = finalResultData.prenom;
+                document.getElementById('res-final-gender').innerText = `👶 C'est une ${finalResultData.sexe} !`;
+                document.getElementById('res-final-weight').innerText = finalResultData.poids;
+                document.getElementById('res-final-height').innerText = finalResultData.taille;
+                document.getElementById('res-final-date').innerText = finalResultData.date;
+                document.getElementById('res-final-time').innerText = finalResultData.heure;
+                
+                // Remplir la zone d'édition admin si vide
+                if(isAdmin) {
+                    document.getElementById('final-gender').value = finalResultData.sexe;
+                    document.getElementById('final-name').value = finalResultData.prenom;
+                    document.getElementById('final-weight').value = finalResultData.poids;
+                    document.getElementById('final-height').value = finalResultData.taille;
+                    document.getElementById('final-date').value = finalResultData.date !== "--" ? finalResultData.date : "";
+                    document.getElementById('final-time').value = finalResultData.heure !== "--" ? finalResultData.heure : "";
+                }
+                checkAndCalculateWinner();
+            }
+        });
+
+        function checkAndCalculateWinner() {
+            if(!finalResultData || globalPredictions.length === 0) return;
+
+            let bestScore = Infinity;
+            let winner = "Aucun gagnant déterminé";
+
+            globalPredictions.forEach(p => {
+                let score = 0;
+                // Critère 1 : Sexe (Pénalité lourde si faux)
+                if(p.sexe !== finalResultData.sexe) score += 100;
+                
+                // Critère 2 : Prénom (Bonus si exact)
+                if(p.prenom.trim().toLowerCase() === finalResultData.prenom.trim().toLowerCase()) score -= 20;
+
+                // Critère 3 : Écart Poids (en kg, ex: 0.200 kg = 20 pts)
+                score += Math.abs(p.poids - finalResultData.poids) * 100;
+
+                // Critère 4 : Écart Taille (en cm, ex: 2cm = 10 pts)
+                score += Math.abs(p.taille - finalResultData.taille) * 5;
+
+                if(score < bestScore) {
+                    bestScore = score;
+                    winner = `${p.user} (Prénom proposé : ${p.prenom})`;
+                }
+            });
+
+            document.getElementById('winner-name').innerText = winner;
+        }
 
         // --- CHAT SYSTEM ---
         onSnapshot(query(collection(db, "chats"), orderBy("time", "asc")), snap => {
@@ -394,7 +535,7 @@
 
         document.getElementById('btn-urgent').onclick = async () => {
             if(!isAdmin) return;
-            const msg = prompt("Quel message d'alerte générale voulez-vous diffuser ?");
+            const msg = prompt("Message d'alerte générale à envoyer :");
             if(msg) await addDoc(collection(db, "alerts"), { msg: msg, time: Date.now() });
         };
 
