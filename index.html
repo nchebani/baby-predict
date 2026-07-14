@@ -226,7 +226,6 @@
         import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp, setDoc, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
 
-        // 🔔 Configuration VAPID Clé Push
         const VAPID_KEY = "KyCv3GvPMoavPSSZllmgVr5lLHpf-sohTDLhAMvW20w"; 
 
         const firebaseConfig = {
@@ -452,7 +451,7 @@
             }
         };
 
-        // --- CORRECTION ET AFFICHAGE DU BOUTON SUPPRIMER DANS LE FLUX ---
+        // --- FLUX DE DONNÉES ET GESTIONNAIRE DES PRONOSTICS ---
         onSnapshot(collection(db, "predictions"), snapshot => {
             let totalVotes = snapshot.size;
             let countGirl = 0; let countBoy = 0;
@@ -484,7 +483,6 @@
 
                 const genderIcon = data.sexe === 'Fille' ? 'fa-venus text-pink-400' : 'fa-mars text-blue-400';
                 
-                // Correction de la cible ici : on passe directement data.user (qui sert de clé de document)
                 listAll.innerHTML += `
                     <div class="glass p-5 rounded-3xl border-l-4 ${data.sexe === 'Fille' ? 'border-pink-500' : 'border-blue-500'} flex flex-col gap-2 relative">
                         <div class="flex justify-between items-center">
@@ -535,7 +533,7 @@
             }
         }
 
-        // --- EXPORTATION DU MODULE DE SUPPRESSION GLOBAL AU PANNEAU WINDOW ---
+        // --- FONCTION GLOBALE DE SUPPRESSION (CORRIGÉE & EXPORTÉE) ---
         window.deleteProno = async (userId) => { 
             if(!isAdmin) return;
             if(confirm(`Voulez-vous supprimer définitivement le pronostic de "${userId}" ?`)) {
@@ -543,8 +541,8 @@
                     await deleteDoc(doc(db, "predictions", userId)); 
                     alert("Pronostic supprimé avec succès.");
                 } catch (error) {
-                    console.error("Erreur de suppression:", error);
-                    alert("Erreur lors de la suppression.");
+                    console.error("Erreur lors de la suppression :", error);
+                    alert("Impossible de supprimer le document.");
                 }
             }
         };
