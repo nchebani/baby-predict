@@ -221,6 +221,31 @@
         </nav>
     </div>
 
+    <!-- MODALE ADMIN : CHOIX DU SEXE ERGONOMIQUE -->
+    <div id="admin-modal-gender" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[9999] flex items-center justify-center p-4 hidden">
+        <div class="glass p-8 rounded-[2.5rem] w-full max-w-sm border border-white/10 text-center shadow-2xl space-y-6">
+            <div>
+                <span class="text-xs font-black uppercase text-purple-400 tracking-widest italic">Ajouter pour un proche</span>
+                <h3 class="text-xl font-bold text-white mt-1">Quel est le sexe estimé ?</h3>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <button id="admin-btn-girl" class="p-6 rounded-2xl glass border border-pink-500/30 hover:bg-pink-500/20 text-pink-400 font-black uppercase text-xs flex flex-col items-center gap-2 transition-all">
+                    <i class="fas fa-venus text-3xl"></i>
+                    Fille
+                </button>
+                <button id="admin-btn-boy" class="p-6 rounded-2xl glass border border-blue-500/30 hover:bg-blue-500/20 text-blue-400 font-black uppercase text-xs flex flex-col items-center gap-2 transition-all">
+                    <i class="fas fa-mars text-3xl"></i>
+                    Garçon
+                </button>
+            </div>
+
+            <button id="admin-btn-cancel" class="w-full bg-white/5 border border-white/10 text-slate-400 hover:text-white py-3 rounded-xl uppercase text-[10px] font-bold tracking-wider transition-all">
+                Annuler
+            </button>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp, setDoc, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -378,27 +403,43 @@
             alert("Pronostic enregistré avec succès ! 🎉");
         };
 
-        // --- AJOUT MANUEL PAR L'ADMIN ---
-        document.getElementById('btn-manual-add').onclick = async () => {
+        // --- AJOUT MANUEL PAR L'ADMIN (AVEC MODALE GRAPHIQUE) ---
+        document.getElementById('btn-manual-add').onclick = () => {
             if(!isAdmin) return;
+            
             const targetUser = prompt("Nom/Prénom du proche :");
             if(!targetUser || targetUser.trim().length < 2) return alert("Nom invalide");
 
-            const sexe = confirm("Est-ce une Fille ? (Annuler pour Garçon)") ? "Fille" : "Garçon";
-            const prenom = prompt("Idée de prénom :");
-            const poids = parseFloat(prompt("Poids estimé (kg) :"));
-            const taille = parseFloat(prompt("Taille estimée (cm) :"));
-            const date = prompt("Date estimée (AAAA-MM-JJ) :") || "--";
-            const heure = prompt("Heure estimée (HH:MM) :") || "--";
+            const modal = document.getElementById('admin-modal-gender');
+            const btnGirl = document.getElementById('admin-btn-girl');
+            const btnBoy = document.getElementById('admin-btn-boy');
+            const btnCancel = document.getElementById('admin-btn-cancel');
 
-            if(!prenom || isNaN(poids) || isNaN(taille)) return alert("Données incomplètes.");
+            // Afficher la modale graphique
+            modal.classList.remove('hidden');
 
-            await setDoc(doc(db, "predictions", targetUser.trim()), {
-                user: targetUser.trim(), sexe: sexe, prenom: prenom, poids: poids, taille: taille, date: date, heure: heure, timestamp: serverTimestamp()
-            });
+            const savePrediction = async (sexe) => {
+                modal.classList.add('hidden');
+                
+                const prenom = prompt("Idée de prénom :");
+                const poids = parseFloat(prompt("Poids estimé (kg) :"));
+                const taille = parseFloat(prompt("Taille estimée (cm) :"));
+                const date = prompt("Date estimée (AAAA-MM-JJ) :") || "--";
+                const heure = prompt("Heure estimée (HH:MM) :") || "--";
 
-            await triggerPushNotification("👶 Nouveau Pronostic (par Admin) !", `Un prono a été ajouté pour ${targetUser} !`);
-            alert(`Pronostic de ${targetUser} ajouté avec succès !`);
+                if(!prenom || isNaN(poids) || isNaN(taille)) return alert("Données incomplètes. Pronostic annulé.");
+
+                await setDoc(doc(db, "predictions", targetUser.trim()), {
+                    user: targetUser.trim(), sexe: sexe, prenom: prenom, poids: poids, taille: taille, date: date, heure: heure, timestamp: serverTimestamp()
+                });
+
+                await triggerPushNotification("👶 Nouveau Pronostic (par Admin) !", `Un prono a été ajouté pour ${targetUser} !`);
+                alert(`Pronostic de ${targetUser} ajouté avec succès !`);
+            };
+
+            btnGirl.onclick = () => savePrediction("Fille");
+            btnBoy.onclick = () => savePrediction("Garçon");
+            btnCancel.onclick = () => modal.classList.add('hidden');
         };
 
         // --- CHARGEMENT PRONOSTIC EXISTANT ---
@@ -533,7 +574,7 @@
             }
         }
 
-        // --- FONCTION GLOBALE DE SUPPRESSION (CORRIGÉE & EXPORTÉE) ---
+        // --- FONCTION GLOBALE DE SUPPRESSION ---
         window.deleteProno = async (userId) => { 
             if(!isAdmin) return;
             if(confirm(`Voulez-vous supprimer définitivement le pronostic de "${userId}" ?`)) {
@@ -625,9 +666,16 @@
             }
         };
 
-        // --- DECONNEXION / LOGOUT ---
-        document.getElementById('logout-btn').onclick = () => {
+        // --- DECONNEXION / LOGOUT (AVEC NETTOYAGE FIRESTORE) ---
+        document.getElementById('logout-btn').onclick = async () => {
             if(confirm("Voulez-vous vous déconnecter ?")) {
+                if(userName) {
+                    try {
+                        await deleteDoc(doc(db, "presence", userName));
+                    } catch (e) {
+                        console.error("Erreur lors de la suppression de la présence :", e);
+                    }
+                }
                 window.location.reload();
             }
         };
