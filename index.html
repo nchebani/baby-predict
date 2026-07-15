@@ -254,7 +254,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp, setDoc, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp, setDoc, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
 
         const VAPID_KEY = "KyCv3GvPMoavPSSZllmgVr5lLHpf-sohTDLhAMvW20w"; 
@@ -277,6 +277,72 @@
         let selectedGender = "";
         let isAdmin = false;
         let globalPredictions = [];
+
+        // --- LISTE DES 37 PRONOSTICS ÉCRITS À LA MAIN ---
+        const manualImports = [
+            // Page 1
+            { user: "Sandra P.", sexe: "Garçon", prenom: "Aloïs", taille: 51, poids: 3.300, passion: "Danse", date: "2026-08-10", heure: "--" },
+            { user: "Laura M.", sexe: "Fille", prenom: "Alice", taille: 51, poids: 3.450, passion: "Bouffe", date: "2026-07-23", heure: "--" },
+            { user: "Alison", sexe: "Garçon", prenom: "Louis", taille: 50.5, poids: 3.500, passion: "Musique", date: "2026-08-10", heure: "--" },
+            { user: "Charline", sexe: "Garçon", prenom: "Théo", taille: 51.2, poids: 3.505, passion: "Rire", date: "2026-08-09", heure: "--" },
+            { user: "Fanny", sexe: "Fille", prenom: "Lise", taille: 49.5, poids: 3.473, passion: "Aya", date: "2026-08-12", heure: "--" },
+            { user: "Emma", sexe: "Garçon", prenom: "Louison", taille: 50, poids: 3.550, passion: "Chat", date: "2026-08-07", heure: "--" },
+            { user: "Alicia", sexe: "Fille", prenom: "Enola", taille: 52, poids: 3.570, passion: "Apéros", date: "2026-08-08", heure: "--" },
+            { user: "Benjamin", sexe: "Garçon", prenom: "Nod junior", taille: 51.5, poids: 3.430, passion: "Salsa/Fifs", date: "2026-08-11", heure: "--" },
+            { user: "Sarah", sexe: "Fille", prenom: "Léo", taille: 51, poids: 3.260, passion: "Musique", date: "2026-08-02", heure: "--" },
+            
+            // Page 2
+            { user: "Christine", sexe: "Fille", prenom: "Vanille", taille: 50, poids: 3.000, passion: "Sport", date: "2026-08-28", heure: "--" },
+            { user: "Maxime G.", sexe: "Garçon", prenom: "Jean", taille: 49.4, poids: 3.120, passion: "Escrime", date: "2026-08-10", heure: "--" },
+            { user: "Céline", sexe: "Garçon", prenom: "Marius", taille: 48.7, poids: 2.900, passion: "Voyages", date: "2026-08-09", heure: "--" },
+            { user: "Dominique (PAPA)", sexe: "Garçon", prenom: "Amour", taille: 50.2, poids: 3.060, passion: "Golfy", date: "2026-08-08", heure: "--" },
+            { user: "Béatrice (MAMAN)", sexe: "Garçon", prenom: "Anouk / Sébastien", taille: 50.5, poids: 3.280, passion: "Musique", date: "2026-08-08", heure: "--" },
+            { user: "Anaïs", sexe: "Garçon", prenom: "Fleur", taille: 51.3, poids: 3.500, passion: "Musique", date: "2026-08-08", heure: "--" },
+            { user: "Jérôme", sexe: "Garçon", prenom: "Jean-Claude", taille: 50.1, poids: 3.200, passion: "Sport", date: "2026-08-07", heure: "--" },
+            { user: "Henri", sexe: "Fille", prenom: "Teahorui / Perai", taille: 48, poids: 3.100, passion: "Sport", date: "2026-08-11", heure: "--" },
+            { user: "Valou", sexe: "Garçon", prenom: "Théo", taille: 50, poids: 2.800, passion: "Sport", date: "2026-08-12", heure: "--" },
+            
+            // Page 3
+            { user: "Anna", sexe: "Fille", prenom: "Hélène", taille: 50, poids: 2.900, passion: "Danse", date: "2026-07-29", heure: "--" },
+            { user: "Sam", sexe: "Garçon", prenom: "Michael ou Killian", taille: 50, poids: 3.100, passion: "10 maths", date: "2026-08-01", heure: "--" }, // Nettoyage de la rature drôle (75kg / 1m85)
+            { user: "Iris", sexe: "Fille", prenom: "Céanne", taille: 51, poids: 3.050, passion: "Gym", date: "2026-08-01", heure: "--" },
+            { user: "Katou", sexe: "Fille", prenom: "Zalia", taille: 51, poids: 3.210, passion: "FIFA", date: "2026-07-27", heure: "--" },
+            { user: "Issiaga", sexe: "Garçon", prenom: "Thomas", taille: 48, poids: 4.500, passion: "Danse", date: "2026-08-07", heure: "--" },
+            { user: "Wilson", sexe: "Fille", prenom: "Natalia", taille: 52, poids: 3.000, passion: "Wing Tsun", date: "2026-08-10", heure: "--" },
+            { user: "Chamsia", sexe: "Garçon", prenom: "Lali", taille: 55, poids: 3.200, passion: "Danse", date: "2026-08-08", heure: "--" },
+            { user: "Mamour", sexe: "Garçon", prenom: "Honey", taille: 51, poids: 3.300, passion: "Kind", date: "2026-08-31", heure: "--" },
+            { user: "Zalid", sexe: "Fille", prenom: "Inaya", taille: 45, poids: 5.000, passion: "Chanter/L'ART", date: "2026-08-04", heure: "--" },
+            { user: "Rahama", sexe: "Fille", prenom: "Myan", taille: 52, poids: 4.500, passion: "Mystère 🔮", date: "2026-08-03", heure: "--" },
+            { user: "Rita", sexe: "Fille", prenom: "Aucun", taille: 50, poids: 3.700, passion: "Basket", date: "2026-07-29", heure: "--" },
+            { user: "Kévin", sexe: "Garçon", prenom: "Nelson", taille: 48, poids: 3.400, passion: "Basket", date: "2026-08-05", heure: "--" },
+            { user: "Tani", sexe: "Garçon", prenom: "William", taille: 47, poids: 2.900, passion: "Foot", date: "2026-07-30", heure: "--" },
+            { user: "Ami de l'enfant", sexe: "Garçon", prenom: "Miguel", taille: 50, poids: 3.000, passion: "Dessin", date: "2026-07-31", heure: "--" },
+            
+            // Page 4
+            { user: "Marlyse", sexe: "Fille", prenom: "Aucun", taille: 45, poids: 3.250, passion: "Danse", date: "2026-08-11", heure: "--" },
+            { user: "BADE", sexe: "Garçon", prenom: "KAïS", taille: 50, poids: 2.800, passion: "Football", date: "2026-08-05", heure: "--" },
+            { user: "Isaac", sexe: "Garçon", prenom: "Benjamin/Raphaël", taille: 52, poids: 3.700, passion: "Échecs", date: "2026-08-07", heure: "--" },
+            { user: "Loane", sexe: "Garçon", prenom: "Mathis", taille: 50, poids: 3.100, passion: "Football", date: "2026-08-08", heure: "--" }
+        ];
+
+        // --- INJECTION AUTOMATIQUE (DÉPÔT INITIAL EN BASE) ---
+        async function checkAndInjectPredictions() {
+            try {
+                const snap = await getDocs(collection(db, "predictions"));
+                if (snap.empty) {
+                    console.log("Base de données vide. Injection automatique des 37 pronostics...");
+                    for (const docData of manualImports) {
+                        await setDoc(doc(db, "predictions", docData.user), {
+                            ...docData,
+                            timestamp: serverTimestamp()
+                        });
+                    }
+                    console.log("Injection réussie !");
+                }
+            } catch (err) {
+                console.error("Erreur lors de l'injection des pronostics :", err);
+            }
+        }
 
         // --- NAVIGATION DES ONGLETS ---
         window.switchTab = (tabId, button) => {
@@ -350,6 +416,7 @@
                 await setDoc(doc(db, "presence", userName), { name: userName, lastSeen: Date.now() });
                 setInterval(async () => { if(userName) await setDoc(doc(db, "presence", userName), { name: userName, lastSeen: Date.now() }); }, 30000);
                 
+                await checkAndInjectPredictions(); // Déclenche l'injection si nécessaire
                 await setupPushNotifications();
                 setupUserVoteListener();
                 setupChatListener();
@@ -422,7 +489,6 @@
             const btnBoy = document.getElementById('admin-btn-boy');
             const btnCancel = document.getElementById('admin-btn-cancel');
 
-            // Afficher la modale graphique
             modal.classList.remove('hidden');
 
             const savePrediction = async (sexe) => {
@@ -522,26 +588,27 @@
                 const data = d.data();
                 globalPredictions.push(data);
 
-                if(data.sexe === 'Fille') countGirl++;
-                if(data.sexe === 'Garçon') countBoy++;
+                if(data.sexe === 'Fille' || data.sexe === 'F') countGirl++;
+                if(data.sexe === 'Garçon' || data.sexe === 'G' || data.sexe === 'M' || data.sexe === 'Masculin') countBoy++;
                 sumWeight += data.poids || 0;
                 sumHeight += data.taille || 0;
 
-                let p = data.prenom.trim().toLowerCase();
+                let p = data.prenom ? data.prenom.trim().toLowerCase() : "aucun";
                 p = p.charAt(0).toUpperCase() + p.slice(1);
                 nameCounts[p] = (nameCounts[p] || 0) + 1;
 
-                const genderIcon = data.sexe === 'Fille' ? 'fa-venus text-pink-400' : 'fa-mars text-blue-400';
+                const isFille = (data.sexe === 'Fille' || data.sexe === 'F');
+                const genderIcon = isFille ? 'fa-venus text-pink-400' : 'fa-mars text-blue-400';
                 const passion = data.passion || "Mystère 🔮";
                 
                 listAll.innerHTML += `
-                    <div class="glass p-5 rounded-3xl border-l-4 ${data.sexe === 'Fille' ? 'border-pink-500' : 'border-blue-500'} flex flex-col gap-2 relative">
+                    <div class="glass p-5 rounded-3xl border-l-4 ${isFille ? 'border-pink-500' : 'border-blue-500'} flex flex-col gap-2 relative">
                         <div class="flex justify-between items-center">
                             <span class="font-black text-xs uppercase tracking-wider text-purple-400">${data.user}</span>
                             <i class="fas ${genderIcon} text-base"></i>
                         </div>
                         <div class="grid grid-cols-2 gap-y-1 text-[11px] text-slate-300">
-                            <p><b>Prénom :</b> ${data.prenom}</p>
+                            <p><b>Prénom :</b> ${data.prenom || "--"}</p>
                             <p class="truncate"><b>Passion :</b> ${passion}</p>
                             <p><b>Poids :</b> ${data.poids} kg</p>
                             <p><b>Taille :</b> ${data.taille} cm</p>
@@ -554,8 +621,8 @@
                 `;
             });
 
-            let pctGirl = Math.round((countGirl / totalVotes) * 100);
-            let pctBoy = Math.round((countBoy / totalVotes) * 100);
+            let pctGirl = Math.round((countGirl / totalVotes) * 100) || 0;
+            let pctBoy = Math.round((countBoy / totalVotes) * 100) || 0;
             let avgW = (sumWeight / totalVotes).toFixed(3);
             let avgH = (sumHeight / totalVotes).toFixed(1);
 
@@ -643,8 +710,14 @@
 
             globalPredictions.forEach(p => {
                 let score = 0;
-                if(p.sexe !== finalResultData.sexe) score += 100;
-                if(p.prenom.trim().toLowerCase() === finalResultData.prenom.trim().toLowerCase()) {
+                
+                // Normalisation simplifiée du sexe
+                const pSexe = (p.sexe === 'Fille' || p.sexe === 'F') ? 'Fille' : 'Garçon';
+                const fSexe = (finalResultData.sexe === 'Fille' || finalResultData.sexe === 'F') ? 'Fille' : 'Garçon';
+                
+                if(pSexe !== fSexe) score += 100;
+                
+                if(p.prenom && p.prenom.trim().toLowerCase() === finalResultData.prenom.trim().toLowerCase()) {
                     score -= 50;
                 }
                 score += Math.abs(p.poids - finalResultData.poids) * 100;
