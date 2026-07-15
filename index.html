@@ -9,8 +9,12 @@
     <style>
         body { background: #07070a; color: #e2e8f0; font-family: 'Inter', sans-serif; margin: 0; min-height: 100vh; }
         .glass { background: rgba(23, 23, 33, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.05); }
+        
+        /* Gestion dynamique de l'affichage Admin */
         .admin-only { display: none !important; }
         .is-admin .admin-only { display: flex !important; }
+        button.admin-only.is-block { display: block !important; }
+        
         .tab-content { display: none; padding-bottom: 140px; }
         .tab-content.active { display: block; }
         .page { position: fixed; inset: 0; z-index: 100; background: #07070a; display: flex; align-items: center; justify-content: center; padding: 20px; }
@@ -32,14 +36,15 @@
         </div>
     </div>
 
-    <!-- PAGE DE LOGIN -->
+    <!-- PAGE DE LOGIN MULTI-ACCÈS -->
     <div id="page-login" class="page">
         <div class="glass p-10 rounded-[3rem] w-full max-w-sm border border-purple-500/20 text-center shadow-2xl">
             <div class="text-4xl mb-4">👶✨</div>
             <h1 class="text-3xl font-black italic text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-blue-400 mb-2">BABY PREDICT</h1>
             <p class="text-[10px] uppercase tracking-widest text-slate-500 mb-8 font-bold">Pronostics de Naissance</p>
-            <input type="tel" id="input-pass" class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-center text-2xl mb-5 text-white outline-none focus:border-purple-500 transition-all" placeholder="****">
+            <input type="tel" id="input-pass" class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-center text-2xl mb-5 text-white outline-none focus:border-purple-500 transition-all" placeholder="Code d'accès">
             <button id="btn-to-name" class="w-full bg-gradient-to-r from-pink-600 to-blue-600 text-white font-black py-5 rounded-2xl uppercase text-xs transition-all shadow-lg italic tracking-wider">Vérifier le code</button>
+            <p class="text-[9px] text-slate-500 mt-4 italic">Demandez le code d'accès (Admin ou Proche) aux parents.</p>
         </div>
     </div>
 
@@ -304,7 +309,7 @@
             
             // Page 3
             { user: "Anna", sexe: "Fille", prenom: "Hélène", taille: 50, poids: 2.900, passion: "Danse", date: "2026-07-29", heure: "--" },
-            { user: "Sam", sexe: "Garçon", prenom: "Michael ou Killian", taille: 50, poids: 3.100, passion: "10 maths", date: "2026-08-01", heure: "--" }, // Nettoyage de la rature drôle (75kg / 1m85)
+            { user: "Sam", sexe: "Garçon", prenom: "Michael ou Killian", taille: 50, poids: 3.100, passion: "10 maths", date: "2026-08-01", heure: "--" },
             { user: "Iris", sexe: "Fille", prenom: "Céanne", taille: 51, poids: 3.050, passion: "Gym", date: "2026-08-01", heure: "--" },
             { user: "Katou", sexe: "Fille", prenom: "Zalia", taille: 51, poids: 3.210, passion: "FIFA", date: "2026-07-27", heure: "--" },
             { user: "Issiaga", sexe: "Garçon", prenom: "Thomas", taille: 48, poids: 4.500, passion: "Danse", date: "2026-08-07", heure: "--" },
@@ -389,19 +394,24 @@
             } catch (e) { console.error(e); }
         }
 
-        // --- AUTH & LOGIN ---
+        // --- GESTION DE LA CONNEXION ---
         document.getElementById('btn-to-name').onclick = () => {
             const code = document.getElementById('input-pass').value.trim();
+            
+            // Code 1993 : Mode Admin | Code 2026 : Mode Proche / Invité
             if(code === "1993" || code === "2026") {
                 if(code === "1993") {
                     isAdmin = true;
                     document.body.classList.add('is-admin');
+                } else {
+                    isAdmin = false;
+                    document.body.classList.remove('is-admin');
                 }
                 document.getElementById('page-login').classList.add('hidden');
                 document.getElementById('page-name').classList.remove('hidden');
-                document.getElementById('role-tag').innerText = isAdmin ? "ADMIN" : "PARTICIPANT";
+                document.getElementById('role-tag').innerText = isAdmin ? "MODE ADMIN" : "MODE INVITÉ";
             } else { 
-                alert("Code d'accès invalide !"); 
+                alert("Code d'accès invalide ! Entrez '1993' pour l'Admin ou '2026' pour les invités."); 
             }
         };
 
@@ -416,11 +426,13 @@
                 await setDoc(doc(db, "presence", userName), { name: userName, lastSeen: Date.now() });
                 setInterval(async () => { if(userName) await setDoc(doc(db, "presence", userName), { name: userName, lastSeen: Date.now() }); }, 30000);
                 
-                await checkAndInjectPredictions(); // Déclenche l'injection si nécessaire
+                await checkAndInjectPredictions(); 
                 await setupPushNotifications();
                 setupUserVoteListener();
                 setupChatListener();
                 setupPresenceListener();
+            } else {
+                alert("Veuillez entrer un prénom ou pseudo d'au moins 2 lettres !");
             }
         };
 
@@ -601,11 +613,17 @@
                 const genderIcon = isFille ? 'fa-venus text-pink-400' : 'fa-mars text-blue-400';
                 const passion = data.passion || "Mystère 🔮";
                 
+                // Le bouton de suppression possède la classe 'admin-only' et s'affiche uniquement si l'admin est connecté
                 listAll.innerHTML += `
                     <div class="glass p-5 rounded-3xl border-l-4 ${isFille ? 'border-pink-500' : 'border-blue-500'} flex flex-col gap-2 relative">
                         <div class="flex justify-between items-center">
                             <span class="font-black text-xs uppercase tracking-wider text-purple-400">${data.user}</span>
-                            <i class="fas ${genderIcon} text-base"></i>
+                            <div class="flex items-center gap-2">
+                                <button onclick="deleteProno('${data.user}')" class="admin-only text-red-400 hover:text-red-500 p-1 mr-2 text-sm transition-all is-block">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                                <i class="fas ${genderIcon} text-base"></i>
+                            </div>
                         </div>
                         <div class="grid grid-cols-2 gap-y-1 text-[11px] text-slate-300">
                             <p><b>Prénom :</b> ${data.prenom || "--"}</p>
@@ -614,9 +632,6 @@
                             <p><b>Taille :</b> ${data.taille} cm</p>
                             <p class="col-span-2"><b>Le :</b> ${data.date} à ${data.heure}</p>
                         </div>
-                        <button onclick="deleteProno('${data.user}')" class="admin-only absolute top-4 right-4 text-red-400/60 text-xs p-2 hover:text-red-400 transition-all">
-                            <i class="fas fa-trash"></i>
-                        </button>
                     </div>
                 `;
             });
@@ -711,7 +726,7 @@
             globalPredictions.forEach(p => {
                 let score = 0;
                 
-                // Normalisation simplifiée du sexe
+                // Normalisation du sexe
                 const pSexe = (p.sexe === 'Fille' || p.sexe === 'F') ? 'Fille' : 'Garçon';
                 const fSexe = (finalResultData.sexe === 'Fille' || finalResultData.sexe === 'F') ? 'Fille' : 'Garçon';
                 
