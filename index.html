@@ -187,6 +187,21 @@
                 </div>
             </section>
 
+            <!-- SONDAGE DES PHOTOS (NOUVEAU) -->
+            <section id="tab-photos" class="tab-content space-y-6">
+                <div class="flex justify-between items-center mb-6 px-2">
+                    <h3 class="text-2xl font-black italic uppercase">Sondage Photos</h3>
+                    <button id="btn-add-photo" class="admin-only bg-purple-600/20 border border-purple-500 text-purple-400 text-[10px] font-black uppercase px-4 py-2 rounded-xl">
+                        <i class="fas fa-plus mr-1"></i> Ajouter une photo
+                    </button>
+                </div>
+
+                <!-- Galerie Photo Dynamique -->
+                <div id="photo-gallery" class="grid grid-cols-1 gap-6">
+                    <p class="text-slate-500 italic text-center py-8">Aucune photo pour le moment.</p>
+                </div>
+            </section>
+
             <!-- TOUS LES PRONOS DE LA TEAM -->
             <section id="tab-ranking" class="tab-content">
                 <div class="flex justify-between items-center mb-6 px-2">
@@ -215,6 +230,7 @@
             <div class="glass rounded-[2.5rem] flex justify-around p-3 border border-white/10 shadow-2xl">
                 <button onclick="switchTab('home', this)" class="nav-btn text-purple-400 p-3"><i class="fas fa-chart-pie"></i></button>
                 <button onclick="switchTab('vote', this)" class="nav-btn text-slate-500 p-3"><i class="fas fa-vote-yea"></i></button>
+                <button onclick="switchTab('photos', this)" class="nav-btn text-slate-500 p-3"><i class="fas fa-camera"></i></button>
                 <button onclick="switchTab('ranking', this)" class="nav-btn text-slate-500 p-3"><i class="fas fa-list-ol"></i></button>
                 <button onclick="switchTab('chat', this)" class="nav-btn text-slate-500 p-3"><i class="fas fa-comments"></i></button>
             </div>
@@ -248,7 +264,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp, setDoc, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp, setDoc, limit, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
 
         const VAPID_KEY = "KyCv3GvPMoavPSSZllmgVr5lLHpf-sohTDLhAMvW20w"; 
@@ -348,6 +364,7 @@
                 setupUserVoteListener();
                 setupChatListener();
                 setupPresenceListener();
+                setupPhotosListener();
             }
         };
 
@@ -456,6 +473,129 @@
                 }
             });
         }
+
+        // --- SONDAGE DES PHOTOS (LOGIQUE ET ECLATEMENT) ---
+        function setupPhotosListener() {
+            const q = query(collection(db, "photos"), orderBy("timestamp", "desc"));
+            onSnapshot(q, snapshot => {
+                const gallery = document.getElementById('photo-gallery');
+                gallery.innerHTML = "";
+
+                if(snapshot.empty) {
+                    gallery.innerHTML = `<p class="text-slate-500 italic text-center py-8">Aucune photo pour le moment.</p>`;
+                    return;
+                }
+
+                let totalAllVotes = 0;
+                let photoList = [];
+
+                snapshot.forEach(docSnap => {
+                    const data = docSnap.data();
+                    const voters = data.votes || [];
+                    totalAllVotes += voters.length;
+                    photoList.push({ id: docSnap.id, ...data });
+                });
+
+                photoList.forEach(photo => {
+                    const voters = photo.votes || [];
+                    const hasVoted = voters.includes(userName);
+                    const votePct = totalAllVotes > 0 ? Math.round((voters.length / totalAllVotes) * 100) : 0;
+
+                    gallery.innerHTML += `
+                        <div class="glass rounded-[2.5rem] overflow-hidden border border-white/5 relative">
+                            <img src="${photo.url}" alt="${photo.title}" class="w-full h-56 object-cover bg-slate-900">
+                            
+                            <div class="p-6 space-y-4">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h4 class="font-black text-lg text-white">${photo.title}</h4>
+                                        <p class="text-xs text-slate-400 mt-1">${photo.description || ""}</p>
+                                    </div>
+                                    <button onclick="deletePhoto('${photo.id}')" class="admin-only text-red-400 p-2 text-xs hover:text-red-500 transition-all">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+
+                                <div class="space-y-2">
+                                    <div class="flex justify-between text-xs font-bold">
+                                        <span class="text-purple-400"><i class="fas fa-heart mr-1"></i> ${voters.length} vote(s)</span>
+                                        <span class="text-slate-400">${votePct}%</span>
+                                    </div>
+                                    <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden">
+                                        <div class="bg-gradient-to-r from-purple-500 to-indigo-500 h-full transition-all duration-500" style="width: ${votePct}%"></div>
+                                    </div>
+                                </div>
+
+                                <button onclick="voteForPhoto('${photo.id}')" class="w-full py-3 rounded-xl uppercase text-[10px] font-black tracking-wider transition-all flex items-center justify-center gap-2 ${hasVoted ? 'bg-purple-600 text-white' : 'bg-white/5 border border-white/10 text-purple-400 hover:bg-white/10'}">
+                                    <i class="fas fa-heart"></i> ${hasVoted ? 'Voté !' : 'Voter pour cette photo'}
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        // Action de Vote pour une Photo
+        window.voteForPhoto = async (photoId) => {
+            if (!userName) return;
+
+            // Retirer le vote précédent de cet utilisateur sur toutes les autres photos (un seul vote par personne)
+            const photosSnapshot = await getDoc(doc(db, "photos", photoId));
+            if (!photosSnapshot.exists()) return;
+
+            onSnapshot(collection(db, "photos"), async (snapshot) => {
+                snapshot.forEach(async (docSnap) => {
+                    const data = docSnap.data();
+                    let voters = data.votes || [];
+                    if (voters.includes(userName) && docSnap.id !== photoId) {
+                        voters = voters.filter(v => v !== userName);
+                        await updateDoc(doc(db, "photos", docSnap.id), { votes: voters });
+                    }
+                });
+            }, { onlyOnce: true });
+
+            // Ajouter le vote sur la photo actuelle
+            const pRef = doc(db, "photos", photoId);
+            const pSnap = await getDoc(pRef);
+            if (pSnap.exists()) {
+                let currentVotes = pSnap.data().votes || [];
+                if (!currentVotes.includes(userName)) {
+                    currentVotes.push(userName);
+                } else {
+                    currentVotes = currentVotes.filter(v => v !== userName); // toggle vote off
+                }
+                await updateDoc(pRef, { votes: currentVotes });
+            }
+        };
+
+        // Ajout d'une photo par l'Admin
+        document.getElementById('btn-add-photo').onclick = async () => {
+            if(!isAdmin) return;
+            const url = prompt("Adresse URL de la photo (Ex: https://images.com/photo.jpg) :");
+            if(!url) return;
+            const title = prompt("Titre de la photo :") || "Photo";
+            const description = prompt("Description rapide (Optionnelle) :") || "";
+
+            await addDoc(collection(db, "photos"), {
+                url: url,
+                title: title,
+                description: description,
+                votes: [],
+                timestamp: serverTimestamp()
+            });
+
+            alert("Photo ajoutée avec succès ! 📸");
+        };
+
+        // Suppression d'une photo par l'Admin
+        window.deletePhoto = async (photoId) => {
+            if(!isAdmin) return;
+            if(confirm("Supprimer définitivement cette photo ?")) {
+                await deleteDoc(doc(db, "photos", photoId));
+                alert("Photo supprimée.");
+            }
+        };
 
         // --- CHAT EN TEMPS REEL ---
         function setupChatListener() {
