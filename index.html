@@ -156,9 +156,15 @@
                         </div>
                     </div>
 
-                    <div>
-                        <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Idée de Prénom</label>
-                        <input type="text" id="vote-name" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-purple-500" placeholder="Ex: Lucas, Léa...">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Idée de Prénom</label>
+                            <input type="text" id="vote-name" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-purple-500 text-sm" placeholder="Ex: Lucas, Léa...">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Sa future passion 🎨⚽</label>
+                            <input type="text" id="vote-passion" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-purple-500 text-sm" placeholder="Ex: Dessin, Foot, Musique...">
+                        </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
@@ -382,6 +388,7 @@
         // --- SOUMETTRE UN PRONOSTIC ---
         document.getElementById('btn-submit-vote').onclick = async () => {
             const nameProno = document.getElementById('vote-name').value.trim();
+            const passionProno = document.getElementById('vote-passion').value.trim() || "Mystère 🔮";
             const weightProno = parseFloat(document.getElementById('vote-weight').value);
             const heightProno = parseFloat(document.getElementById('vote-height').value);
             const dateProno = document.getElementById('vote-date').value || "--";
@@ -392,7 +399,7 @@
             }
 
             await setDoc(doc(db, "predictions", userName), {
-                user: userName, sexe: selectedGender, prenom: nameProno, poids: weightProno, taille: heightProno, date: dateProno, heure: timeProno, timestamp: serverTimestamp()
+                user: userName, sexe: selectedGender, prenom: nameProno, passion: passionProno, poids: weightProno, taille: heightProno, date: dateProno, heure: timeProno, timestamp: serverTimestamp()
             });
 
             await triggerPushNotification(
@@ -422,6 +429,7 @@
                 modal.classList.add('hidden');
                 
                 const prenom = prompt("Idée de prénom :");
+                const passion = prompt("Future passion estimée :") || "Mystère 🔮";
                 const poids = parseFloat(prompt("Poids estimé (kg) :"));
                 const taille = parseFloat(prompt("Taille estimée (cm) :"));
                 const date = prompt("Date estimée (AAAA-MM-JJ) :") || "--";
@@ -430,7 +438,7 @@
                 if(!prenom || isNaN(poids) || isNaN(taille)) return alert("Données incomplètes. Pronostic annulé.");
 
                 await setDoc(doc(db, "predictions", targetUser.trim()), {
-                    user: targetUser.trim(), sexe: sexe, prenom: prenom, poids: poids, taille: taille, date: date, heure: heure, timestamp: serverTimestamp()
+                    user: targetUser.trim(), sexe: sexe, prenom: prenom, passion: passion, poids: poids, taille: taille, date: date, heure: heure, timestamp: serverTimestamp()
                 });
 
                 await triggerPushNotification("👶 Nouveau Pronostic (par Admin) !", `Un prono a été ajouté pour ${targetUser} !`);
@@ -449,6 +457,7 @@
                     const data = docSnap.get();
                     selectGender(data.sexe);
                     document.getElementById('vote-name').value = data.prenom || "";
+                    document.getElementById('vote-passion').value = data.passion || "";
                     document.getElementById('vote-weight').value = data.poids || "";
                     document.getElementById('vote-height').value = data.taille || "";
                     document.getElementById('vote-date').value = data.date !== "--" ? data.date : "";
@@ -523,6 +532,7 @@
                 nameCounts[p] = (nameCounts[p] || 0) + 1;
 
                 const genderIcon = data.sexe === 'Fille' ? 'fa-venus text-pink-400' : 'fa-mars text-blue-400';
+                const passion = data.passion || "Mystère 🔮";
                 
                 listAll.innerHTML += `
                     <div class="glass p-5 rounded-3xl border-l-4 ${data.sexe === 'Fille' ? 'border-pink-500' : 'border-blue-500'} flex flex-col gap-2 relative">
@@ -532,9 +542,10 @@
                         </div>
                         <div class="grid grid-cols-2 gap-y-1 text-[11px] text-slate-300">
                             <p><b>Prénom :</b> ${data.prenom}</p>
+                            <p class="truncate"><b>Passion :</b> ${passion}</p>
                             <p><b>Poids :</b> ${data.poids} kg</p>
                             <p><b>Taille :</b> ${data.taille} cm</p>
-                            <p><b>Le :</b> ${data.date} à ${data.heure}</p>
+                            <p class="col-span-2"><b>Le :</b> ${data.date} à ${data.heure}</p>
                         </div>
                         <button onclick="deleteProno('${data.user}')" class="admin-only absolute top-4 right-4 text-red-400/60 text-xs p-2 hover:text-red-400 transition-all">
                             <i class="fas fa-trash"></i>
