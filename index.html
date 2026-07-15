@@ -6,8 +6,6 @@
     <title>BABY PREDICT 2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <!-- Librairie de reconnaissance de texte OCR (Tesseract) -->
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <style>
         body { background: #07070a; color: #e2e8f0; font-family: 'Inter', sans-serif; margin: 0; min-height: 100vh; }
         .glass { background: rgba(23, 23, 33, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.05); }
@@ -25,7 +23,7 @@
 </head>
 <body>
 
-    <!-- ALERTES PUSH SATELLITE -->
+    <!-- ALERTES PUSH SATELLITE (ALERTE NAISSANCE) -->
     <div id="push-alert" class="fixed top-0 left-1/2 -translate-x-1/2 w-[90%] max-w-sm glass p-4 rounded-3xl border-l-4 border-purple-500 shadow-2xl flex items-center gap-3">
         <div class="bg-purple-500/20 w-10 h-10 rounded-full flex items-center justify-center text-purple-500"><i class="fas fa-baby"></i></div>
         <div class="flex-1">
@@ -189,42 +187,12 @@
                 </div>
             </section>
 
-            <!-- SONDAGE DES PHOTOS (Sondage Papier Manuscrits OCR) -->
-            <section id="tab-photos" class="tab-content space-y-6">
-                <div class="flex justify-between items-center mb-6 px-2">
-                    <h3 class="text-2xl font-black italic uppercase">Sondage Photos</h3>
-                    <button id="btn-add-photo" class="admin-only bg-purple-600/20 border border-purple-500 text-purple-400 text-[10px] font-black uppercase px-4 py-2 rounded-xl">
-                        <i class="fas fa-plus mr-1"></i> Ajouter une photo
-                    </button>
-                </div>
-
-                <!-- Galerie Photo Dynamique -->
-                <div id="photo-gallery" class="grid grid-cols-1 gap-6">
-                    <p class="text-slate-500 italic text-center py-8">Aucune photo pour le moment.</p>
-                </div>
-            </section>
-
             <!-- TOUS LES PRONOS DE LA TEAM -->
             <section id="tab-ranking" class="tab-content">
                 <div class="flex justify-between items-center mb-6 px-2">
                     <h3 class="text-2xl font-black italic uppercase">Les Pronostics</h3>
-                    <div class="flex gap-2">
-                        <!-- NOUVEAU BOUTON : Scanner un pronostic manuscrit -->
-                        <label for="ocr-scan-input" class="admin-only cursor-pointer bg-blue-600/20 border border-blue-500 text-blue-400 text-[10px] font-black uppercase px-4 py-2 rounded-xl flex items-center gap-1.5 transition-all">
-                            <i class="fas fa-camera"></i> Scanner une fiche
-                        </label>
-                        <input type="file" id="ocr-scan-input" accept="image/*" class="hidden">
-                        
-                        <button id="btn-manual-add" class="admin-only bg-purple-600/20 border border-purple-500 text-purple-400 text-[10px] font-black uppercase px-4 py-2 rounded-xl"><i class="fas fa-plus mr-1"></i> Saisie Manuelle</button>
-                    </div>
+                    <button id="btn-manual-add" class="admin-only bg-purple-600/20 border border-purple-500 text-purple-400 text-[10px] font-black uppercase px-4 py-2 rounded-xl"><i class="fas fa-plus mr-1"></i> Ajouter pour un proche</button>
                 </div>
-
-                <!-- ZONE DE CHARGEMENT DE L'OCR -->
-                <div id="ocr-loading" class="hidden glass p-6 rounded-3xl border border-blue-500/30 text-center mb-4 space-y-2 animate-pulse">
-                    <div class="text-2xl">🔍 Scan de la photo en cours...</div>
-                    <div class="text-[10px] text-blue-400 uppercase font-black tracking-widest" id="ocr-status">Traitement de l'image manuscrite...</div>
-                </div>
-
                 <div id="list-all-votes" class="space-y-4"></div>
             </section>
 
@@ -247,65 +215,10 @@
             <div class="glass rounded-[2.5rem] flex justify-around p-3 border border-white/10 shadow-2xl">
                 <button onclick="switchTab('home', this)" class="nav-btn text-purple-400 p-3"><i class="fas fa-chart-pie"></i></button>
                 <button onclick="switchTab('vote', this)" class="nav-btn text-slate-500 p-3"><i class="fas fa-vote-yea"></i></button>
-                <button onclick="switchTab('photos', this)" class="nav-btn text-slate-500 p-3"><i class="fas fa-camera"></i></button>
                 <button onclick="switchTab('ranking', this)" class="nav-btn text-slate-500 p-3"><i class="fas fa-list-ol"></i></button>
                 <button onclick="switchTab('chat', this)" class="nav-btn text-slate-500 p-3"><i class="fas fa-comments"></i></button>
             </div>
         </nav>
-    </div>
-
-    <!-- MODALE INTERACTIVE POUR VALIDER LE SCAN MANUSCRIT -->
-    <div id="ocr-modal" class="fixed inset-0 bg-black/90 backdrop-blur-sm z-[9999] flex items-center justify-center p-4 hidden">
-        <div class="glass p-6 rounded-[2.5rem] w-full max-w-sm border border-white/10 space-y-4 max-h-[90vh] overflow-y-auto">
-            <div class="text-center">
-                <span class="text-[10px] font-black uppercase text-blue-400 tracking-widest italic">Analyse de la fiche manuscrite</span>
-                <h3 class="text-lg font-bold text-white mt-1">Données Détectées</h3>
-                <p class="text-[10px] text-slate-400">Modifie les valeurs si le robot a fait des erreurs de lecture.</p>
-            </div>
-
-            <div class="space-y-3 text-xs">
-                <div>
-                    <label class="block text-slate-400 mb-1 font-bold">Nom du participant :</label>
-                    <input type="text" id="ocr-res-user" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none">
-                </div>
-                <div>
-                    <label class="block text-slate-400 mb-1 font-bold">Sexe estimé :</label>
-                    <select id="ocr-res-gender" class="w-full bg-[#07070a] border border-white/10 p-3 rounded-xl text-white outline-none">
-                        <option value="Fille">Fille</option>
-                        <option value="Garçon">Garçon</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-slate-400 mb-1 font-bold">Idée de Prénom :</label>
-                    <input type="text" id="ocr-res-name" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none">
-                </div>
-                <div class="grid grid-cols-2 gap-2">
-                    <div>
-                        <label class="block text-slate-400 mb-1 font-bold">Poids (kg) :</label>
-                        <input type="number" step="0.001" id="ocr-res-weight" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-slate-400 mb-1 font-bold">Taille (cm) :</label>
-                        <input type="number" step="0.5" id="ocr-res-height" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none">
-                    </div>
-                </div>
-                <div class="grid grid-cols-2 gap-2">
-                    <div>
-                        <label class="block text-slate-400 mb-1 font-bold">Date :</label>
-                        <input type="date" id="ocr-res-date" class="w-full bg-[#07070a] border border-white/10 p-3 rounded-xl text-white outline-none text-xs">
-                    </div>
-                    <div>
-                        <label class="block text-slate-400 mb-1 font-bold">Heure :</label>
-                        <input type="time" id="ocr-res-time" class="w-full bg-[#07070a] border border-white/10 p-3 rounded-xl text-white outline-none text-xs">
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex gap-2">
-                <button id="ocr-btn-save" class="flex-1 bg-blue-600 text-white font-black py-4 rounded-xl uppercase text-[10px] tracking-wider shadow-lg">Enregistrer</button>
-                <button id="ocr-btn-cancel" class="bg-white/5 border border-white/10 text-slate-400 hover:text-white px-4 rounded-xl uppercase text-[10px] font-bold">Annuler</button>
-            </div>
-        </div>
     </div>
 
     <!-- MODALE ADMIN : CHOIX DU SEXE ERGONOMIQUE -->
@@ -335,7 +248,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp, setDoc, limit, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp, setDoc, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
 
         const VAPID_KEY = "KyCv3GvPMoavPSSZllmgVr5lLHpf-sohTDLhAMvW20w"; 
@@ -435,7 +348,6 @@
                 setupUserVoteListener();
                 setupChatListener();
                 setupPresenceListener();
-                setupPhotosListener();
             }
         };
 
@@ -491,108 +403,7 @@
             alert("Pronostic enregistré avec succès ! 🎉");
         };
 
-        // --- INTÉGRATION SCANNER OCR (MANUSCRITS SUR PHOTOS) ---
-        document.getElementById('ocr-scan-input').onchange = async (event) => {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const loadingZone = document.getElementById('ocr-loading');
-            const statusLabel = document.getElementById('ocr-status');
-            
-            // Affichage du loader
-            loadingZone.classList.remove('hidden');
-            statusLabel.innerText = "Initialisation du moteur de lecture...";
-
-            try {
-                // Création du Worker Tesseract pour la reconnaissance de caractères
-                const worker = await Tesseract.createWorker('fra'); // 'fra' pour le français
-                statusLabel.innerText = "Lecture de la photo en cours (écriture manuscrite)...";
-                
-                const { data: { text } } = await worker.recognize(file);
-                await worker.terminate();
-
-                // Cache le loader
-                loadingZone.classList.add('hidden');
-
-                // EXTRACTION INTELLIGENTE : Recherche des termes clés dans l'écriture lue
-                const textLower = text.toLowerCase();
-
-                // 1. Détection du Sexe
-                let detectedGender = "Fille";
-                if (textLower.includes("garcon") || textLower.includes("garçon") || textLower.includes("mec") || textLower.includes("homme")) {
-                    detectedGender = "Garçon";
-                }
-
-                // 2. Détection du Prénom (Mot après "prenom" ou "nom" ou première ligne)
-                let detectedName = "";
-                const nameMatch = text.match(/(?:prenom|prénom|nom|bébé|bebe)\s*[:=-]?\s*([A-Za-zÀ-ÖØ-öø-ÿ]+)/i);
-                if (nameMatch && nameMatch[1]) {
-                    detectedName = nameMatch[1].trim();
-                }
-
-                // 3. Détection du Poids (Recherche d'un nombre décimal proche de "kg" ou "g")
-                let detectedWeight = "";
-                const weightMatch = text.match(/([2-5][.,]\d{2,3})\s*(?:kg|kilo|g)?/i) || text.match(/(?:poids)\s*[:=-]?\s*([2-5][.,]\d{2,3})/i);
-                if (weightMatch && weightMatch[1]) {
-                    detectedWeight = weightMatch[1].replace(',', '.');
-                }
-
-                // 4. Détection de la Taille (Recherche d'un nombre entre 40 et 56 proche de "cm")
-                let detectedHeight = "";
-                const heightMatch = text.match(/(?:taille)?\s*([4-5]\d(?:[.,]5)?)\s*cm/i) || text.match(/(?:taille)\s*[:=-]?\s*([4-5]\d)/i);
-                if (heightMatch && heightMatch[1]) {
-                    detectedHeight = heightMatch[1].replace(',', '.');
-                }
-
-                // Préremplissage de la modale de validation
-                document.getElementById('ocr-res-user').value = "";
-                document.getElementById('ocr-res-gender').value = detectedGender;
-                document.getElementById('ocr-res-name').value = detectedName;
-                document.getElementById('ocr-res-weight').value = detectedWeight;
-                document.getElementById('ocr-res-height').value = detectedHeight;
-                document.getElementById('ocr-res-date').value = "";
-                document.getElementById('ocr-res-time').value = "";
-
-                // Afficher la modale interactive pour confirmation
-                document.getElementById('ocr-modal').classList.remove('hidden');
-
-            } catch (error) {
-                console.error("Erreur OCR:", error);
-                loadingZone.classList.add('hidden');
-                alert("Une erreur est survenue lors de la lecture de l'image. Veuillez saisir manuellement.");
-            }
-        };
-
-        // Sauvegarde du pronostic scanné
-        document.getElementById('ocr-btn-save').onclick = async () => {
-            const user = document.getElementById('ocr-res-user').value.trim();
-            const sexe = document.getElementById('ocr-res-gender').value;
-            const prenom = document.getElementById('ocr-res-name').value.trim();
-            const poids = parseFloat(document.getElementById('ocr-res-weight').value);
-            const taille = parseFloat(document.getElementById('ocr-res-height').value);
-            const date = document.getElementById('ocr-res-date').value || "--";
-            const heure = document.getElementById('ocr-res-time').value || "--";
-
-            if (!user || !sexe || !prenom || isNaN(poids) || isNaN(taille)) {
-                return alert("Veuillez remplir le nom du participant, prénom du bébé, poids et sa taille !");
-            }
-
-            await setDoc(doc(db, "predictions", user), {
-                user: user, sexe: sexe, prenom: prenom, poids: poids, taille: taille, date: date, heure: heure, timestamp: serverTimestamp()
-            });
-
-            await triggerPushNotification("👶 Fiche Manuscrite Numérisée !", `Le pronostic de ${user} a été ajouté via scan photo !`);
-            
-            document.getElementById('ocr-modal').classList.add('hidden');
-            alert(`Pronostic de ${user} enregistré avec succès ! 🎉`);
-        };
-
-        // Annulation du scan
-        document.getElementById('ocr-btn-cancel').onclick = () => {
-            document.getElementById('ocr-modal').classList.add('hidden');
-        };
-
-        // --- AJOUT MANUEL PAR L'ADMIN ---
+        // --- AJOUT MANUEL PAR L'ADMIN (AVEC MODALE GRAPHIQUE) ---
         document.getElementById('btn-manual-add').onclick = () => {
             if(!isAdmin) return;
             
@@ -604,6 +415,7 @@
             const btnBoy = document.getElementById('admin-btn-boy');
             const btnCancel = document.getElementById('admin-btn-cancel');
 
+            // Afficher la modale graphique
             modal.classList.remove('hidden');
 
             const savePrediction = async (sexe) => {
@@ -645,119 +457,6 @@
             });
         }
 
-        // --- SONDAGE DES PHOTOS (LOGIQUE) ---
-        function setupPhotosListener() {
-            const q = query(collection(db, "photos"), orderBy("timestamp", "desc"));
-            onSnapshot(q, snapshot => {
-                const gallery = document.getElementById('photo-gallery');
-                gallery.innerHTML = "";
-
-                if(snapshot.empty) {
-                    gallery.innerHTML = `<p class="text-slate-500 italic text-center py-8">Aucune photo pour le moment.</p>`;
-                    return;
-                }
-
-                let totalAllVotes = 0;
-                let photoList = [];
-
-                snapshot.forEach(docSnap => {
-                    const data = docSnap.data();
-                    const voters = data.votes || [];
-                    totalAllVotes += voters.length;
-                    photoList.push({ id: docSnap.id, ...data });
-                });
-
-                photoList.forEach(photo => {
-                    const voters = photo.votes || [];
-                    const hasVoted = voters.includes(userName);
-                    const votePct = totalAllVotes > 0 ? Math.round((voters.length / totalAllVotes) * 100) : 0;
-
-                    gallery.innerHTML += `
-                        <div class="glass rounded-[2.5rem] overflow-hidden border border-white/5 relative">
-                            <img src="${photo.url}" alt="${photo.title}" class="w-full h-56 object-cover bg-slate-900">
-                            
-                            <div class="p-6 space-y-4">
-                                <div class="flex justify-between items-start">
-                                    <div>
-                                        <h4 class="font-black text-lg text-white">${photo.title}</h4>
-                                        <p class="text-xs text-slate-400 mt-1">${photo.description || ""}</p>
-                                    </div>
-                                    <button onclick="deletePhoto('${photo.id}')" class="admin-only text-red-400 p-2 text-xs hover:text-red-500 transition-all">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-
-                                <div class="space-y-2">
-                                    <div class="flex justify-between text-xs font-bold">
-                                        <span class="text-purple-400"><i class="fas fa-heart mr-1"></i> ${voters.length} vote(s)</span>
-                                        <span class="text-slate-400">${votePct}%</span>
-                                    </div>
-                                    <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden">
-                                        <div class="bg-gradient-to-r from-purple-500 to-indigo-500 h-full transition-all duration-500" style="width: ${votePct}%"></div>
-                                    </div>
-                                </div>
-
-                                <button onclick="voteForPhoto('${photo.id}')" class="w-full py-3 rounded-xl uppercase text-[10px] font-black tracking-wider transition-all flex items-center justify-center gap-2 ${hasVoted ? 'bg-purple-600 text-white' : 'bg-white/5 border border-white/10 text-purple-400 hover:bg-white/10'}">
-                                    <i class="fas fa-heart"></i> ${hasVoted ? 'Voté !' : 'Voter pour cette photo'}
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                });
-            });
-        }
-
-        window.voteForPhoto = async (photoId) => {
-            if (!userName) return;
-
-            // Retirer le vote précédent de cet utilisateur sur toutes les autres photos
-            onSnapshot(collection(db, "photos"), async (snapshot) => {
-                snapshot.forEach(async (docSnap) => {
-                    const data = docSnap.data();
-                    let voters = data.votes || [];
-                    if (voters.includes(userName) && docSnap.id !== photoId) {
-                        voters = voters.filter(v => v !== userName);
-                        await updateDoc(doc(db, "photos", docSnap.id), { votes: voters });
-                    }
-                });
-            }, { onlyOnce: true });
-
-            // Ajouter le vote sur la photo actuelle
-            const pRef = doc(db, "photos", photoId);
-            const pSnap = await getDoc(pRef);
-            if (pSnap.exists()) {
-                let currentVotes = pSnap.data().votes || [];
-                if (!currentVotes.includes(userName)) {
-                    currentVotes.push(userName);
-                } else {
-                    currentVotes = currentVotes.filter(v => v !== userName);
-                }
-                await updateDoc(pRef, { votes: currentVotes });
-            }
-        };
-
-        document.getElementById('btn-add-photo').onclick = async () => {
-            if(!isAdmin) return;
-            const url = prompt("Adresse URL de la photo :");
-            if(!url) return;
-            const title = prompt("Titre de la photo :") || "Photo";
-            const description = prompt("Description rapide :") || "";
-
-            await addDoc(collection(db, "photos"), {
-                url: url, title: title, description: description, votes: [], timestamp: serverTimestamp()
-            });
-
-            alert("Photo ajoutée avec succès ! 📸");
-        };
-
-        window.deletePhoto = async (photoId) => {
-            if(!isAdmin) return;
-            if(confirm("Supprimer définitivement cette photo ?")) {
-                await deleteDoc(doc(db, "photos", photoId));
-                alert("Photo supprimée.");
-            }
-        };
-
         // --- CHAT EN TEMPS REEL ---
         function setupChatListener() {
             const chatBox = document.getElementById('chat-box');
@@ -785,7 +484,9 @@
             const msg = chatInput.value.trim();
             if(msg.length > 0) {
                 await addDoc(collection(db, "chat"), {
-                    user: userName, message: msg, timestamp: serverTimestamp()
+                    user: userName,
+                    message: msg,
+                    timestamp: serverTimestamp()
                 });
                 chatInput.value = "";
             }
@@ -873,17 +574,21 @@
             }
         }
 
+        // --- FONCTION GLOBALE DE SUPPRESSION ---
         window.deleteProno = async (userId) => { 
             if(!isAdmin) return;
-            if(confirm(`Supprimer définitivement le pronostic de "${userId}" ?`)) {
+            if(confirm(`Voulez-vous supprimer définitivement le pronostic de "${userId}" ?`)) {
                 try {
                     await deleteDoc(doc(db, "predictions", userId)); 
-                    alert("Pronostic supprimé.");
-                } catch (error) { console.error(error); }
+                    alert("Pronostic supprimé avec succès.");
+                } catch (error) {
+                    console.error("Erreur lors de la suppression :", error);
+                    alert("Impossible de supprimer le document.");
+                }
             }
         };
 
-        // --- VERDICT DE NAISSANCE ---
+        // --- VERDICT DE NAISSANCE (SAUVEGARDE ET PUBLICATION) ---
         document.getElementById('btn-save-final').onclick = async () => {
             if(!isAdmin) return;
             const g = document.getElementById('final-gender').value;
@@ -961,13 +666,15 @@
             }
         };
 
-        // --- DECONNEXION / LOGOUT ---
+        // --- DECONNEXION / LOGOUT (AVEC NETTOYAGE FIRESTORE) ---
         document.getElementById('logout-btn').onclick = async () => {
             if(confirm("Voulez-vous vous déconnecter ?")) {
                 if(userName) {
                     try {
                         await deleteDoc(doc(db, "presence", userName));
-                    } catch (e) { console.error(e); }
+                    } catch (e) {
+                        console.error("Erreur lors de la suppression de la présence :", e);
+                    }
                 }
                 window.location.reload();
             }
