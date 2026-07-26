@@ -6,6 +6,8 @@
     <title>BABY PREDICT 2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Chart.js pour le graphique de température -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body { background: #07070a; color: #e2e8f0; font-family: 'Inter', sans-serif; margin: 0; min-height: 100vh; }
         .glass { background: rgba(23, 23, 33, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.05); }
@@ -41,7 +43,7 @@
         <div class="glass p-10 rounded-[3rem] w-full max-w-sm border border-purple-500/20 text-center shadow-2xl">
             <div class="text-4xl mb-4">👶✨</div>
             <h1 class="text-3xl font-black italic text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-blue-400 mb-2">BABY PREDICT</h1>
-            <p class="text-[10px] uppercase tracking-widest text-slate-500 mb-8 font-bold">Pronostics de Naissance</p>
+            <p class="text-[10px] uppercase tracking-widest text-slate-500 mb-8 font-bold">Pronostics & Suivi Maternité</p>
             <input type="tel" id="input-pass" class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-center text-2xl mb-5 text-white outline-none focus:border-purple-500 transition-all" placeholder="Code d'accès">
             <button id="btn-to-name" class="w-full bg-gradient-to-r from-pink-600 to-blue-600 text-white font-black py-5 rounded-2xl uppercase text-xs transition-all shadow-lg italic tracking-wider">Vérifier le code</button>
             <p class="text-[9px] text-slate-500 mt-4 italic">Demandez le code d'accès (Admin ou Proche) aux parents.</p>
@@ -53,7 +55,7 @@
         <div class="glass p-10 rounded-[3rem] w-full max-w-sm border border-white/10 shadow-2xl">
             <p class="text-[10px] uppercase font-bold text-purple-400 mb-4 tracking-widest italic">Qui es-tu ?</p>
             <input type="text" id="input-name" class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-center text-xl mb-5 text-white outline-none focus:border-white/30 transition-all" placeholder="Ton Prénom / Pseudo">
-            <button id="btn-to-app" class="w-full bg-white text-black font-black py-5 rounded-2xl uppercase text-xs hover:bg-slate-200 transition-all shadow-lg italic">Rejoindre le concours</button>
+            <button id="btn-to-app" class="w-full bg-white text-black font-black py-5 rounded-2xl uppercase text-xs hover:bg-slate-200 transition-all shadow-lg italic">Rejoindre l'application</button>
         </div>
     </div>
 
@@ -146,6 +148,138 @@
                 </div>
             </section>
 
+            <!-- NOUVEL ONGLET : SUIVI BÉBÉ & FEUILLE DE SOINS MATERNITÉ -->
+            <section id="tab-tracker" class="tab-content space-y-6">
+                <div class="flex justify-between items-center mb-2 px-2">
+                    <div>
+                        <h3 class="text-2xl font-black italic uppercase">Suivi Maternité</h3>
+                        <p class="text-[10px] text-slate-400">Santé & Fiche de Soins (KANGOUROU / SME2)</p>
+                    </div>
+                </div>
+
+                <!-- ALERTE DE TEMPERATURE DYNAMIQUE -->
+                <div id="temp-alert-box" class="hidden p-4 rounded-2xl border flex items-center gap-3">
+                    <i id="temp-alert-icon" class="fas text-xl"></i>
+                    <div>
+                        <h5 id="temp-alert-title" class="font-bold text-xs uppercase"></h5>
+                        <p id="temp-alert-msg" class="text-[11px]"></p>
+                    </div>
+                </div>
+
+                <!-- CARTES RAPIDES "DERNIERS..." -->
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="glass p-4 rounded-2xl border border-white/5">
+                        <span class="text-[9px] font-bold text-slate-400 uppercase block">🍼 Dernier Repas</span>
+                        <p id="last-meal" class="text-sm font-black text-pink-400 mt-1">Aucun</p>
+                    </div>
+                    <div class="glass p-4 rounded-2xl border border-white/5">
+                        <span class="text-[9px] font-bold text-slate-400 uppercase block">💩 Dernière Selle</span>
+                        <p id="last-stool" class="text-sm font-black text-amber-400 mt-1">Aucune</p>
+                    </div>
+                    <div class="glass p-4 rounded-2xl border border-white/5">
+                        <span class="text-[9px] font-bold text-slate-400 uppercase block">💧 Dernière Urine</span>
+                        <p id="last-urine" class="text-sm font-black text-blue-400 mt-1">Aucune</p>
+                    </div>
+                    <div class="glass p-4 rounded-2xl border border-white/5">
+                        <span class="text-[9px] font-bold text-slate-400 uppercase block">⚖️ Dernier Poids</span>
+                        <p id="last-weight" class="text-sm font-black text-purple-400 mt-1">-- kg</p>
+                    </div>
+                </div>
+
+                <!-- GRAPHIQUE COURBE DE TEMPÉRATURE BÉBÉ -->
+                <div class="glass p-5 rounded-[2.5rem] border border-white/10 space-y-3">
+                    <h4 class="text-xs font-black uppercase text-purple-400 italic flex items-center justify-between">
+                        <span><i class="fas fa-chart-line mr-2"></i> Courbe de Température (°C)</span>
+                        <span class="text-[9px] text-slate-500 font-normal">Min: 36.5°C | Max: 37.5°C</span>
+                    </h4>
+                    <div class="w-full h-48">
+                        <canvas id="tempChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- FORMULAIRE DE SAISIE FICHE SOINS -->
+                <div class="glass p-6 rounded-[2.5rem] space-y-4 border border-white/10">
+                    <h4 class="text-xs font-black uppercase text-slate-300 italic"><i class="fas fa-plus-circle mr-2 text-purple-400"></i> Ajouter une saisie de soins</h4>
+                    
+                    <div class="grid grid-cols-2 gap-3 text-xs">
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-400 mb-1">Jour de suivi</label>
+                            <select id="track-day" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none">
+                                <option value="Naissance" class="bg-[#07070a]">NAISSANCE</option>
+                                <option value="1er JOUR" class="bg-[#07070a]">1er JOUR</option>
+                                <option value="2ème JOUR" class="bg-[#07070a]">2ème JOUR</option>
+                                <option value="3ème JOUR" class="bg-[#07070a]">3ème JOUR</option>
+                                <option value="4ème JOUR" class="bg-[#07070a]">4ème JOUR</option>
+                                <option value="5ème JOUR" class="bg-[#07070a]">5ème JOUR</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-400 mb-1">Heure (ex: 08h30)</label>
+                            <input type="text" id="track-time" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none" placeholder="Ex: 14h30">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-400 mb-1">T° Bébé (°C)</label>
+                            <input type="number" step="0.1" id="track-temp-bb" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none" placeholder="Ex: 36.8">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-400 mb-1">T° LC/INC (°C)</label>
+                            <input type="number" step="0.1" id="track-temp-inc" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none" placeholder="Ex: 37.0">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 text-xs">
+                        <label class="flex items-center gap-2 bg-white/5 p-3 rounded-xl cursor-pointer">
+                            <input type="checkbox" id="track-urine" class="rounded accent-purple-500 w-4 h-4">
+                            <span class="text-slate-300 font-bold">💧 Urine</span>
+                        </label>
+                        <label class="flex items-center gap-2 bg-white/5 p-3 rounded-xl cursor-pointer">
+                            <input type="checkbox" id="track-stool" class="rounded accent-purple-500 w-4 h-4">
+                            <span class="text-slate-300 font-bold">💩 Selle</span>
+                        </label>
+                    </div>
+
+                    <div class="space-y-3 text-xs">
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-400 mb-1">Alimentation (ex: Bib 35mL, Tétée...)</label>
+                            <input type="text" id="track-food" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none" placeholder="Ex: Bib 45 ml Pre">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-400 mb-1">Observations / Soins (ex: Bain, Cordon...)</label>
+                            <input type="text" id="track-obs" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none" placeholder="Ex: Cordon fait, Bain OK">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-400 mb-1">Mise à jour Poids du jour (kg)</label>
+                            <input type="number" step="0.001" id="track-weight" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none" placeholder="Ex: 2.650">
+                        </div>
+                    </div>
+
+                    <button id="btn-add-track" class="w-full bg-gradient-to-r from-pink-600 to-purple-600 text-white font-black py-4 rounded-xl uppercase text-xs tracking-wider shadow-lg">
+                        <i class="fas fa-save mr-2"></i> Enregistrer la saisie
+                    </button>
+                </div>
+
+                <!-- TABLEAU RECAPITULATIF REPRODUISANT LA FICHE DE MATERNITÉ -->
+                <div class="glass p-5 rounded-[2.5rem] border border-white/10 overflow-x-auto space-y-3">
+                    <h4 class="text-xs font-black uppercase text-slate-300 italic"><i class="fas fa-table mr-2 text-purple-400"></i> Historique Fiche de Soins</h4>
+                    <table class="w-full text-left text-[11px] border-collapse min-w-[500px]">
+                        <thead>
+                            <tr class="border-b border-white/10 text-slate-400 uppercase text-[9px]">
+                                <th class="p-2">Jour/Heure</th>
+                                <th class="p-2">U/S</th>
+                                <th class="p-2">T° BB</th>
+                                <th class="p-2">T° LC</th>
+                                <th class="p-2">Alimentation</th>
+                                <th class="p-2">Observations</th>
+                                <th class="p-2 text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-track-body" class="divide-y divide-white/5 text-slate-200">
+                            <tr><td colspan="7" class="p-4 text-center text-slate-500 italic">Aucune donnée enregistrée</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
             <!-- FORMULAIRE DE VOTE -->
             <section id="tab-vote" class="tab-content">
                 <div class="flex justify-between items-center mb-6 px-2">
@@ -221,10 +355,11 @@
             </section>
         </main>
 
-        <!-- NAVIGATION INFÉRIEURE -->
+        <!-- NAVIGATION INFÉRIEURE AVEC L'ONGLET TRACKER BÉBÉ -->
         <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[95%] max-w-sm z-50">
             <div class="glass rounded-[2.5rem] flex justify-around p-3 border border-white/10 shadow-2xl">
                 <button onclick="switchTab('home', this)" class="nav-btn text-purple-400 p-3"><i class="fas fa-chart-pie"></i></button>
+                <button onclick="switchTab('tracker', this)" class="nav-btn text-slate-500 p-3"><i class="fas fa-baby-carriage"></i></button>
                 <button onclick="switchTab('vote', this)" class="nav-btn text-slate-500 p-3"><i class="fas fa-vote-yea"></i></button>
                 <button onclick="switchTab('ranking', this)" class="nav-btn text-slate-500 p-3"><i class="fas fa-list-ol"></i></button>
                 <button onclick="switchTab('chat', this)" class="nav-btn text-slate-500 p-3"><i class="fas fa-comments"></i></button>
@@ -282,10 +417,10 @@
         let selectedGender = "";
         let isAdmin = false;
         let globalPredictions = [];
+        let tempChartInstance = null;
 
-        // --- LISTE DES 37 PRONOSTICS ÉCRITS À LA MAIN ---
+        // --- LISTE DES PRONOSTICS ÉCRITS À LA MAIN ---
         const manualImports = [
-            // Page 1
             { user: "Sandra P.", sexe: "Garçon", prenom: "Aloïs", taille: 51, poids: 3.300, passion: "Danse", date: "2026-08-10", heure: "--" },
             { user: "Laura M.", sexe: "Fille", prenom: "Alice", taille: 51, poids: 3.450, passion: "Bouffe", date: "2026-07-23", heure: "--" },
             { user: "Alison", sexe: "Garçon", prenom: "Louis", taille: 50.5, poids: 3.500, passion: "Musique", date: "2026-08-10", heure: "--" },
@@ -295,8 +430,6 @@
             { user: "Alicia", sexe: "Fille", prenom: "Enola", taille: 52, poids: 3.570, passion: "Apéros", date: "2026-08-08", heure: "--" },
             { user: "Benjamin", sexe: "Garçon", prenom: "Nod junior", taille: 51.5, poids: 3.430, passion: "Salsa/Fifs", date: "2026-08-11", heure: "--" },
             { user: "Sarah", sexe: "Fille", prenom: "Léo", taille: 51, poids: 3.260, passion: "Musique", date: "2026-08-02", heure: "--" },
-            
-            // Page 2
             { user: "Christine", sexe: "Fille", prenom: "Vanille", taille: 50, poids: 3.000, passion: "Sport", date: "2026-08-28", heure: "--" },
             { user: "Maxime G.", sexe: "Garçon", prenom: "Jean", taille: 49.4, poids: 3.120, passion: "Escrime", date: "2026-08-10", heure: "--" },
             { user: "Céline", sexe: "Garçon", prenom: "Marius", taille: 48.7, poids: 2.900, passion: "Voyages", date: "2026-08-09", heure: "--" },
@@ -306,8 +439,6 @@
             { user: "Jérôme", sexe: "Garçon", prenom: "Jean-Claude", taille: 50.1, poids: 3.200, passion: "Sport", date: "2026-08-07", heure: "--" },
             { user: "Henri", sexe: "Fille", prenom: "Teahorui / Perai", taille: 48, poids: 3.100, passion: "Sport", date: "2026-08-11", heure: "--" },
             { user: "Valou", sexe: "Garçon", prenom: "Théo", taille: 50, poids: 2.800, passion: "Sport", date: "2026-08-12", heure: "--" },
-            
-            // Page 3
             { user: "Anna", sexe: "Fille", prenom: "Hélène", taille: 50, poids: 2.900, passion: "Danse", date: "2026-07-29", heure: "--" },
             { user: "Sam", sexe: "Garçon", prenom: "Michael ou Killian", taille: 50, poids: 3.100, passion: "10 maths", date: "2026-08-01", heure: "--" },
             { user: "Iris", sexe: "Fille", prenom: "Céanne", taille: 51, poids: 3.050, passion: "Gym", date: "2026-08-01", heure: "--" },
@@ -322,8 +453,6 @@
             { user: "Kévin", sexe: "Garçon", prenom: "Nelson", taille: 48, poids: 3.400, passion: "Basket", date: "2026-08-05", heure: "--" },
             { user: "Tani", sexe: "Garçon", prenom: "William", taille: 47, poids: 2.900, passion: "Foot", date: "2026-07-30", heure: "--" },
             { user: "Ami de l'enfant", sexe: "Garçon", prenom: "Miguel", taille: 50, poids: 3.000, passion: "Dessin", date: "2026-07-31", heure: "--" },
-            
-            // Page 4
             { user: "Marlyse", sexe: "Fille", prenom: "Aucun", taille: 45, poids: 3.250, passion: "Danse", date: "2026-08-11", heure: "--" },
             { user: "BADE", sexe: "Garçon", prenom: "KAïS", taille: 50, poids: 2.800, passion: "Football", date: "2026-08-05", heure: "--" },
             { user: "Isaac", sexe: "Garçon", prenom: "Benjamin/Raphaël", taille: 52, poids: 3.700, passion: "Échecs", date: "2026-08-07", heure: "--" },
@@ -335,14 +464,12 @@
             try {
                 const snap = await getDocs(collection(db, "predictions"));
                 if (snap.empty) {
-                    console.log("Base de données vide. Injection automatique des 37 pronostics...");
                     for (const docData of manualImports) {
                         await setDoc(doc(db, "predictions", docData.user), {
                             ...docData,
                             timestamp: serverTimestamp()
                         });
                     }
-                    console.log("Injection réussie !");
                 }
             } catch (err) {
                 console.error("Erreur lors de l'injection des pronostics :", err);
@@ -364,49 +491,31 @@
         // --- CONFIGURATION NOTIFICATIONS PUSH ---
         async function setupPushNotifications() {
             if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
-
             try {
                 const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
                 const permission = await Notification.requestPermission();
-                
                 if (permission === 'granted') {
-                    const currentToken = await getToken(messaging, { 
-                        vapidKey: VAPID_KEY,
-                        serviceWorkerRegistration: registration 
-                    });
-
+                    const currentToken = await getToken(messaging, { vapidKey: VAPID_KEY, serviceWorkerRegistration: registration });
                     if (currentToken) {
-                        await setDoc(doc(db, "fcm_tokens", userName), {
-                            token: currentToken, user: userName, updatedAt: Date.now()
-                        });
+                        await setDoc(doc(db, "fcm_tokens", userName), { token: currentToken, user: userName, updatedAt: Date.now() });
                     }
                 }
-            } catch (error) {
-                console.error("Erreur push registration:", error);
-            }
+            } catch (error) { console.error(error); }
         }
 
         async function triggerPushNotification(title, body) {
             try {
-                await addDoc(collection(db, "triggered_alerts"), {
-                    title: title, body: body, timestamp: serverTimestamp()
-                });
+                await addDoc(collection(db, "triggered_alerts"), { title: title, body: body, timestamp: serverTimestamp() });
             } catch (e) { console.error(e); }
         }
 
         // --- GESTION DE LA CONNEXION ---
         document.getElementById('btn-to-name').onclick = () => {
             const code = document.getElementById('input-pass').value.trim();
-            
-            // Code 1993 : Mode Admin | Code 2026 : Mode Proche / Invité
             if(code === "1993" || code === "2026") {
-                if(code === "1993") {
-                    isAdmin = true;
-                    document.body.classList.add('is-admin');
-                } else {
-                    isAdmin = false;
-                    document.body.classList.remove('is-admin');
-                }
+                isAdmin = (code === "1993");
+                if(isAdmin) document.body.classList.add('is-admin');
+                else document.body.classList.remove('is-admin');
                 document.getElementById('page-login').classList.add('hidden');
                 document.getElementById('page-name').classList.remove('hidden');
                 document.getElementById('role-tag').innerText = isAdmin ? "MODE ADMIN" : "MODE INVITÉ";
@@ -431,6 +540,7 @@
                 setupUserVoteListener();
                 setupChatListener();
                 setupPresenceListener();
+                setupBabyTrackerListener();
             } else {
                 alert("Veuillez entrer un prénom ou pseudo d'au moins 2 lettres !");
             }
@@ -481,18 +591,205 @@
                 user: userName, sexe: selectedGender, prenom: nameProno, passion: passionProno, poids: weightProno, taille: heightProno, date: dateProno, heure: timeProno, timestamp: serverTimestamp()
             });
 
-            await triggerPushNotification(
-                "👶 Nouveau Pronostic !", 
-                `${userName} voit une ${selectedGender} nommée ${nameProno} (${weightProno}kg) !`
-            );
-
+            await triggerPushNotification("👶 Nouveau Pronostic !", `${userName} voit une ${selectedGender} nommée ${nameProno} (${weightProno}kg) !`);
             alert("Pronostic enregistré avec succès ! 🎉");
         };
 
-        // --- AJOUT MANUEL PAR L'ADMIN (AVEC MODALE GRAPHIQUE) ---
+        // --- GESTION DU SUIVI BÉBÉ & FICHE MATERNITÉ ---
+        document.getElementById('btn-add-track').onclick = async () => {
+            const day = document.getElementById('track-day').value;
+            const time = document.getElementById('track-time').value.trim();
+            const tempBb = parseFloat(document.getElementById('track-temp-bb').value);
+            const tempInc = parseFloat(document.getElementById('track-temp-inc').value);
+            const urine = document.getElementById('track-urine').checked;
+            const stool = document.getElementById('track-stool').checked;
+            const food = document.getElementById('track-food').value.trim();
+            const obs = document.getElementById('track-obs').value.trim();
+            const weight = parseFloat(document.getElementById('track-weight').value);
+
+            if(!time) {
+                return alert("Veuillez saisir l'heure du soin / relevé !");
+            }
+
+            // Gestion de l'alerte température si sous la norme (ex: < 36.5°C) ou au-dessus (> 37.5°C)
+            if(!isNaN(tempBb)) {
+                if(tempBb < 36.5) {
+                    await triggerPushNotification("⚠️ ALERTE TEMPÉRATURE BÉBÉ", `Température basse détectée : ${tempBb}°C à ${time} !`);
+                } else if(tempBb > 37.5) {
+                    await triggerPushNotification("🔥 ALERTE FIÈVRE BÉBÉ", `Température élevée détectée : ${tempBb}°C à ${time} !`);
+                }
+            }
+
+            await addDoc(collection(db, "baby_tracking"), {
+                day, time, tempBb: isNaN(tempBb) ? null : tempBb, tempInc: isNaN(tempInc) ? null : tempInc,
+                urine, stool, food, obs, weight: isNaN(weight) ? null : weight, timestamp: serverTimestamp()
+            });
+
+            // Reinitialisation partielle du formulaire
+            document.getElementById('track-temp-bb').value = "";
+            document.getElementById('track-temp-inc').value = "";
+            document.getElementById('track-urine').checked = false;
+            document.getElementById('track-stool').checked = false;
+            document.getElementById('track-food').value = "";
+            document.getElementById('track-obs').value = "";
+
+            alert("Saisie de soin enregistrée !");
+        };
+
+        // EECOUTE DU SUIVI BÉBÉ EN TEMPS RÉEL ET RENDU
+        function setupBabyTrackerListener() {
+            const q = query(collection(db, "baby_tracking"), orderBy("timestamp", "asc"));
+            onSnapshot(q, snapshot => {
+                const tableBody = document.getElementById('table-track-body');
+                tableBody.innerHTML = "";
+
+                let tempLabels = [];
+                let tempBbData = [];
+                let tempIncData = [];
+
+                let lastMealText = "Aucun";
+                let lastStoolText = "Aucune";
+                let lastUrineText = "Aucune";
+                let lastWeightText = "-- kg";
+                let latestTempBb = null;
+
+                if(snapshot.empty) {
+                    tableBody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-500 italic">Aucune donnée enregistrée</td></tr>`;
+                } else {
+                    snapshot.forEach(docSnap => {
+                        const d = docSnap.data();
+                        const id = docSnap.id;
+
+                        // Remplissage graphique
+                        if(d.tempBb !== null && d.tempBb !== undefined) {
+                            tempLabels.push(`${d.day} ${d.time}`);
+                            tempBbData.push(d.tempBb);
+                            tempIncData.push(d.tempInc || null);
+                            latestTempBb = d.tempBb;
+                        }
+
+                        // Mises à jour des derniers enregistrements
+                        if(d.food) lastMealText = `${d.food} (${d.time})`;
+                        if(d.stool) lastStoolText = `Oui (${d.time})`;
+                        if(d.urine) lastUrineText = `Oui (${d.time})`;
+                        if(d.weight) lastWeightText = `${d.weight} kg`;
+
+                        // Tableau Fiche de Soins
+                        tableBody.innerHTML += `
+                            <tr>
+                                <td class="p-2 font-bold">${d.day} <span class="text-purple-400 block text-[9px]">${d.time}</span></td>
+                                <td class="p-2">${d.urine ? '💧' : ''} ${d.stool ? '💩' : ''}</td>
+                                <td class="p-2 font-black ${d.tempBb < 36.5 ? 'text-blue-400' : d.tempBb > 37.5 ? 'text-red-400' : 'text-green-400'}">${d.tempBb ? d.tempBb + '°' : '--'}</td>
+                                <td class="p-2 text-slate-400">${d.tempInc ? d.tempInc + '°' : '--'}</td>
+                                <td class="p-2">${d.food || '--'}</td>
+                                <td class="p-2 text-slate-300">${d.obs || '--'}</td>
+                                <td class="p-2 text-right">
+                                    <button onclick="deleteTrackDoc('${id}')" class="admin-only text-red-400 hover:text-red-500 text-xs is-block"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                }
+
+                // Mettre à jour les Cartes "Dernier..."
+                document.getElementById('last-meal').innerText = lastMealText;
+                document.getElementById('last-stool').innerText = lastStoolText;
+                document.getElementById('last-urine').innerText = lastUrineText;
+                document.getElementById('last-weight').innerText = lastWeightText;
+
+                // Affichage / Masquage du Panneau d'Alerte Température
+                const alertBox = document.getElementById('temp-alert-box');
+                if(latestTempBb !== null) {
+                    if(latestTempBb < 36.5) {
+                        alertBox.className = "p-4 rounded-2xl border flex items-center gap-3 bg-blue-500/10 border-blue-500/30 text-blue-300";
+                        document.getElementById('temp-alert-icon').className = "fas fa-temperature-low text-2xl text-blue-400 animate-bounce";
+                        document.getElementById('temp-alert-title').innerText = "⚠️ Température basse (Hypothermie)";
+                        document.getElementById('temp-alert-msg').innerText = `Dernière mesure: ${latestTempBb}°C. Couvrir le bébé ou réchauffer selon consignes médicales.`;
+                    } else if(latestTempBb > 37.5) {
+                        alertBox.className = "p-4 rounded-2xl border flex items-center gap-3 bg-red-500/10 border-red-500/30 text-red-300";
+                        document.getElementById('temp-alert-icon').className = "fas fa-temperature-high text-2xl text-red-400 animate-pulse";
+                        document.getElementById('temp-alert-title').innerText = "🔥 Alerte Fièvre / Température Élevée";
+                        document.getElementById('temp-alert-msg').innerText = `Dernière mesure: ${latestTempBb}°C. Surveiller et informer l'équipe soignante.`;
+                    } else {
+                        alertBox.className = "p-4 rounded-2xl border flex items-center gap-3 bg-green-500/10 border-green-500/30 text-green-300";
+                        document.getElementById('temp-alert-icon').className = "fas fa-check-circle text-2xl text-green-400";
+                        document.getElementById('temp-alert-title').innerText = "✅ Température Normale";
+                        document.getElementById('temp-alert-msg').innerText = `Dernière mesure: ${latestTempBb}°C. Bébé est dans la zone de confort !`;
+                    }
+                } else {
+                    alertBox.className = "hidden";
+                }
+
+                // Mise à jour du graphique Chart.js
+                updateTempChart(tempLabels, tempBbData, tempIncData);
+            });
+        }
+
+        // --- SUPPRESSION FICHE DE SOIN (ADMIN) ---
+        window.deleteTrackDoc = async (docId) => {
+            if(!isAdmin) return;
+            if(confirm("Supprimer cette ligne du suivi ?")) {
+                await deleteDoc(doc(db, "baby_tracking", docId));
+            }
+        };
+
+        // --- RENDU GRAPHIC CHART.JS ---
+        function updateTempChart(labels, bbData, incData) {
+            const ctx = document.getElementById('tempChart').getContext('2d');
+            if(tempChartInstance) tempChartInstance.destroy();
+
+            tempChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'T° Bébé (°C)',
+                            data: bbData,
+                            borderColor: '#ec4899',
+                            backgroundColor: 'rgba(236, 72, 153, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            fill: true,
+                            pointRadius: 4,
+                            pointBackgroundColor: '#f472b6'
+                        },
+                        {
+                            label: 'T° Incubateur (°C)',
+                            data: incData,
+                            borderColor: '#a855f7',
+                            borderDash: [5, 5],
+                            borderWidth: 1.5,
+                            tension: 0.3,
+                            pointRadius: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            min: 35.5,
+                            max: 38.5,
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#94a3b8' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#94a3b8', font: { size: 9 } }
+                        }
+                    },
+                    plugins: {
+                        legend: { labels: { color: '#e2e8f0', font: { size: 10 } } }
+                    }
+                }
+            });
+        }
+
+        // --- AJOUT MANUEL PAR L'ADMIN (MODALE GRAPHIQUE) ---
         document.getElementById('btn-manual-add').onclick = () => {
             if(!isAdmin) return;
-            
             const targetUser = prompt("Nom/Prénom du proche :");
             if(!targetUser || targetUser.trim().length < 2) return alert("Nom invalide");
 
@@ -505,7 +802,6 @@
 
             const savePrediction = async (sexe) => {
                 modal.classList.add('hidden');
-                
                 const prenom = prompt("Idée de prénom :");
                 const passion = prompt("Future passion estimée :") || "Mystère 🔮";
                 const poids = parseFloat(prompt("Poids estimé (kg) :"));
@@ -513,7 +809,7 @@
                 const date = prompt("Date estimée (AAAA-MM-JJ) :") || "--";
                 const heure = prompt("Heure estimée (HH:MM) :") || "--";
 
-                if(!prenom || isNaN(poids) || isNaN(taille)) return alert("Données incomplètes. Pronostic annulé.");
+                if(!prenom || isNaN(poids) || isNaN(taille)) return alert("Données incomplètes.");
 
                 await setDoc(doc(db, "predictions", targetUser.trim()), {
                     user: targetUser.trim(), sexe: sexe, prenom: prenom, passion: passion, poids: poids, taille: taille, date: date, heure: heure, timestamp: serverTimestamp()
@@ -570,11 +866,7 @@
             const chatInput = document.getElementById('chat-input');
             const msg = chatInput.value.trim();
             if(msg.length > 0) {
-                await addDoc(collection(db, "chat"), {
-                    user: userName,
-                    message: msg,
-                    timestamp: serverTimestamp()
-                });
+                await addDoc(collection(db, "chat"), { user: userName, message: msg, timestamp: serverTimestamp() });
                 chatInput.value = "";
             }
         };
@@ -612,8 +904,7 @@
                 const isFille = (data.sexe === 'Fille' || data.sexe === 'F');
                 const genderIcon = isFille ? 'fa-venus text-pink-400' : 'fa-mars text-blue-400';
                 const passion = data.passion || "Mystère 🔮";
-                
-                // Le bouton de suppression possède la classe 'admin-only' et s'affiche uniquement si l'admin est connecté
+
                 listAll.innerHTML += `
                     <div class="glass p-5 rounded-3xl border-l-4 ${isFille ? 'border-pink-500' : 'border-blue-500'} flex flex-col gap-2 relative">
                         <div class="flex justify-between items-center">
@@ -676,12 +967,11 @@
                     alert("Pronostic supprimé avec succès.");
                 } catch (error) {
                     console.error("Erreur lors de la suppression :", error);
-                    alert("Impossible de supprimer le document.");
                 }
             }
         };
 
-        // --- VERDICT DE NAISSANCE (SAUVEGARDE ET PUBLICATION) ---
+        // --- VERDICT DE NAISSANCE ---
         document.getElementById('btn-save-final').onclick = async () => {
             if(!isAdmin) return;
             const g = document.getElementById('final-gender').value;
@@ -725,24 +1015,18 @@
 
             globalPredictions.forEach(p => {
                 let score = 0;
-                
-                // Normalisation du sexe
                 const pSexe = (p.sexe === 'Fille' || p.sexe === 'F') ? 'Fille' : 'Garçon';
                 const fSexe = (finalResultData.sexe === 'Fille' || finalResultData.sexe === 'F') ? 'Fille' : 'Garçon';
                 
                 if(pSexe !== fSexe) score += 100;
-                
-                if(p.prenom && p.prenom.trim().toLowerCase() === finalResultData.prenom.trim().toLowerCase()) {
-                    score -= 50;
-                }
+                if(p.prenom && p.prenom.trim().toLowerCase() === finalResultData.prenom.trim().toLowerCase()) score -= 50;
                 score += Math.abs(p.poids - finalResultData.poids) * 100;
                 score += Math.abs(p.taille - finalResultData.taille) * 10;
                 
                 if(p.date !== "--" && finalResultData.date !== "--") {
                     const voteDate = new Date(p.date);
                     const realDate = new Date(finalResultData.date);
-                    const diffTime = Math.abs(realDate - voteDate);
-                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    const diffDays = Math.ceil(Math.abs(realDate - voteDate) / (1000 * 60 * 60 * 24));
                     score += diffDays * 20;
                 }
 
@@ -755,7 +1039,7 @@
             document.getElementById('winner-name').innerText = winner;
         }
 
-        // --- ALERTE URGENCE NAISSANCE (ADMIN) ---
+        // --- ALERTE URGENCE NAISSANCE ---
         document.getElementById('btn-urgent').onclick = async () => {
             if(!isAdmin) return;
             const message = prompt("Message d'alerte :", "Le travail a commencé ! On fonce à la maternité ! 🏥🚑");
@@ -765,15 +1049,11 @@
             }
         };
 
-        // --- DECONNEXION / LOGOUT (AVEC NETTOYAGE FIRESTORE) ---
+        // --- DECONNEXION ---
         document.getElementById('logout-btn').onclick = async () => {
             if(confirm("Voulez-vous vous déconnecter ?")) {
                 if(userName) {
-                    try {
-                        await deleteDoc(doc(db, "presence", userName));
-                    } catch (e) {
-                        console.error("Erreur lors de la suppression de la présence :", e);
-                    }
+                    try { await deleteDoc(doc(db, "presence", userName)); } catch (e) { console.error(e); }
                 }
                 window.location.reload();
             }
