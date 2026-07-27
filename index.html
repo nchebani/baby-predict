@@ -167,7 +167,7 @@
                             <span class="text-[9px] font-black uppercase text-pink-300 tracking-widest block">⏰ Prochain Biberon</span>
                             <h4 id="next-bottle-time" class="text-2xl font-black text-white">--h--</h4>
                             <p id="next-bottle-status" class="text-[10px] text-slate-300 font-bold mt-0.5">En attente de données...</p>
-                            <!-- NOUVEAU: DOSE RECOMMANDEE -->
+                            <!-- DOSE RECOMMANDEE DYNAMIQUE -->
                             <span id="next-bottle-dose" class="inline-block mt-2 bg-pink-500/20 text-pink-300 border border-pink-500/30 text-[9px] font-bold px-2.5 py-0.5 rounded-full">
                                 🍼 Dose conseillée : -- ml
                             </span>
@@ -497,7 +497,6 @@
 
         // --- CALCUL DE LA DOSE RECOMMANDEE (BASÉ SUR LA DATE DE NAISSANCE DU 23/07/2026) ---
         function getRecommendedBottleDose(day, weightKg, intervalHours) {
-            // Nettoyage de la clé pour comparaison
             const d = (day || "").toUpperCase();
 
             if (d.includes("NAISSANCE")) return "10 - 15 ml";
