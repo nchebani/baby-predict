@@ -29,7 +29,7 @@
 </head>
 <body>
 
-    <!-- ALERTES PUSH SATELLITE (ALERTE NAISSANCE) -->
+    <!-- ALERTES PUSH SATELLITE (ALERTE NAISSANCE & BIBERON) -->
     <div id="push-alert" class="fixed top-0 left-1/2 -translate-x-1/2 w-[90%] max-w-sm glass p-4 rounded-3xl border-l-4 border-purple-500 shadow-2xl flex items-center gap-3">
         <div class="bg-purple-500/20 w-10 h-10 rounded-full flex items-center justify-center text-purple-500"><i class="fas fa-baby"></i></div>
         <div class="flex-1">
@@ -148,12 +148,38 @@
                 </div>
             </section>
 
-            <!-- NOUVEL ONGLET : SUIVI BÉBÉ & FEUILLE DE SOINS MATERNITÉ -->
+            <!-- ONGLET : SUIVI BÉBÉ & FEUILLE DE SOINS MATERNITÉ -->
             <section id="tab-tracker" class="tab-content space-y-6">
                 <div class="flex justify-between items-center mb-2 px-2">
                     <div>
                         <h3 class="text-2xl font-black italic uppercase">Suivi Maternité</h3>
-                        <p class="text-[10px] text-slate-400">Santé & Fiche de Soins (KANGOUROU / SME2)</p>
+                        <p class="text-[10px] text-slate-400">Santé & Fiche de Soins</p>
+                    </div>
+                </div>
+
+                <!-- CARTE ALERTE RAPPEL PROCHAIN BIBERON -->
+                <div id="next-bottle-card" class="bg-gradient-to-r from-pink-900/40 via-purple-900/40 to-indigo-900/40 border border-pink-500/30 p-5 rounded-[2.5rem] flex items-center justify-between shadow-2xl relative overflow-hidden">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-2xl bg-pink-500/20 flex items-center justify-center text-pink-400 text-2xl border border-pink-500/30">
+                            <i class="fas fa-baby-bottle animate-bounce"></i>
+                        </div>
+                        <div>
+                            <span class="text-[9px] font-black uppercase text-pink-300 tracking-widest block">⏰ Prochain Biberon</span>
+                            <h4 id="next-bottle-time" class="text-2xl font-black text-white">--h--</h4>
+                            <p id="next-bottle-status" class="text-[10px] text-slate-300 font-bold mt-0.5">En attente de données...</p>
+                        </div>
+                    </div>
+                    
+                    <!-- REGLAGE INTERVALLE BIBERON -->
+                    <div class="text-right">
+                        <label class="text-[8px] uppercase font-bold text-slate-400 block mb-1">Fréquence</label>
+                        <select id="bottle-interval" onchange="updateNextBottleDisplay()" class="bg-black/50 border border-white/10 text-xs font-bold text-pink-300 p-2 rounded-xl outline-none">
+                            <option value="2.5" class="bg-[#07070a]">2h30</option>
+                            <option value="3.0" class="bg-[#07070a]">3h00</option>
+                            <option value="3.5" class="bg-[#07070a]" selected>3h30</option>
+                            <option value="4.0" class="bg-[#07070a]">4h00</option>
+                            <option value="4.5" class="bg-[#07070a]">4h30</option>
+                        </select>
                     </div>
                 </div>
 
@@ -214,7 +240,7 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-[9px] font-bold text-slate-400 mb-1">Heure (ex: 08h30)</label>
+                            <label class="block text-[9px] font-bold text-slate-400 mb-1">Heure (ex: 14h30)</label>
                             <input type="text" id="track-time" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none" placeholder="Ex: 14h30">
                         </div>
                         <div>
@@ -240,7 +266,7 @@
 
                     <div class="space-y-3 text-xs">
                         <div>
-                            <label class="block text-[9px] font-bold text-slate-400 mb-1">Alimentation (ex: Bib 35mL, Tétée...)</label>
+                            <label class="block text-[9px] font-bold text-slate-400 mb-1">Alimentation (ex: Bib 45ml, Tétée...)</label>
                             <input type="text" id="track-food" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none" placeholder="Ex: Bib 45 ml Pre">
                         </div>
                         <div>
@@ -418,6 +444,7 @@
         let isAdmin = false;
         let globalPredictions = [];
         let tempChartInstance = null;
+        let lastMealRawTimeStr = null; // Stocke la dernière heure brute du repas enregistrée
 
         // --- LISTE DES PRONOSTICS ÉCRITS À LA MAIN ---
         const manualImports = [
@@ -459,24 +486,17 @@
             { user: "Loane", sexe: "Garçon", prenom: "Mathis", taille: 50, poids: 3.100, passion: "Football", date: "2026-08-08", heure: "--" }
         ];
 
-        // --- INJECTION AUTOMATIQUE (DÉPÔT INITIAL EN BASE) ---
         async function checkAndInjectPredictions() {
             try {
                 const snap = await getDocs(collection(db, "predictions"));
                 if (snap.empty) {
                     for (const docData of manualImports) {
-                        await setDoc(doc(db, "predictions", docData.user), {
-                            ...docData,
-                            timestamp: serverTimestamp()
-                        });
+                        await setDoc(doc(db, "predictions", docData.user), { ...docData, timestamp: serverTimestamp() });
                     }
                 }
-            } catch (err) {
-                console.error("Erreur lors de l'injection des pronostics :", err);
-            }
+            } catch (err) { console.error(err); }
         }
 
-        // --- NAVIGATION DES ONGLETS ---
         window.switchTab = (tabId, button) => {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(btn => {
@@ -488,7 +508,6 @@
             button.classList.add('text-purple-400');
         };
 
-        // --- CONFIGURATION NOTIFICATIONS PUSH ---
         async function setupPushNotifications() {
             if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
             try {
@@ -509,7 +528,6 @@
             } catch (e) { console.error(e); }
         }
 
-        // --- GESTION DE LA CONNEXION ---
         document.getElementById('btn-to-name').onclick = () => {
             const code = document.getElementById('input-pass').value.trim();
             if(code === "1993" || code === "2026") {
@@ -519,9 +537,7 @@
                 document.getElementById('page-login').classList.add('hidden');
                 document.getElementById('page-name').classList.remove('hidden');
                 document.getElementById('role-tag').innerText = isAdmin ? "MODE ADMIN" : "MODE INVITÉ";
-            } else { 
-                alert("Code d'accès invalide ! Entrez '1993' pour l'Admin ou '2026' pour les invités."); 
-            }
+            } else { alert("Code d'accès invalide !"); }
         };
 
         document.getElementById('btn-to-app').onclick = async () => {
@@ -541,12 +557,12 @@
                 setupChatListener();
                 setupPresenceListener();
                 setupBabyTrackerListener();
-            } else {
-                alert("Veuillez entrer un prénom ou pseudo d'au moins 2 lettres !");
-            }
+
+                // Rafraîchir l'affichage du compte à rebours biberon chaque minute
+                setInterval(updateNextBottleDisplay, 60000);
+            } else { alert("Entrez un nom valide"); }
         };
 
-        // --- PRESENCE EN LIGNE LISTENER ---
         function setupPresenceListener() {
             onSnapshot(collection(db, "presence"), snapshot => {
                 const listContainer = document.getElementById('list-online');
@@ -565,7 +581,6 @@
             });
         }
 
-        // --- ACTION SELECTION SEXE ---
         window.selectGender = (gender) => {
             selectedGender = gender;
             document.getElementById('vote-girl').classList.remove('selected-pink');
@@ -574,7 +589,6 @@
             if(gender === 'Garçon') document.getElementById('vote-boy').classList.add('selected-blue');
         };
 
-        // --- SOUMETTRE UN PRONOSTIC ---
         document.getElementById('btn-submit-vote').onclick = async () => {
             const nameProno = document.getElementById('vote-name').value.trim();
             const passionProno = document.getElementById('vote-passion').value.trim() || "Mystère 🔮";
@@ -584,7 +598,7 @@
             const timeProno = document.getElementById('vote-time').value || "--";
 
             if(!selectedGender || !nameProno || !weightProno || !heightProno) {
-                return alert("Remplis au moins le Sexe, le Prénom, le Poids et la Taille !");
+                return alert("Remplis le Sexe, Prénom, Poids et Taille !");
             }
 
             await setDoc(doc(db, "predictions", userName), {
@@ -595,7 +609,7 @@
             alert("Pronostic enregistré avec succès ! 🎉");
         };
 
-        // --- GESTION DU SUIVI BÉBÉ & FICHE MATERNITÉ ---
+        // --- GESTION DES SOINS & TRACKING BÉBÉ ---
         document.getElementById('btn-add-track').onclick = async () => {
             const day = document.getElementById('track-day').value;
             const time = document.getElementById('track-time').value.trim();
@@ -607,17 +621,11 @@
             const obs = document.getElementById('track-obs').value.trim();
             const weight = parseFloat(document.getElementById('track-weight').value);
 
-            if(!time) {
-                return alert("Veuillez saisir l'heure du soin / relevé !");
-            }
+            if(!time) return alert("Veuillez saisir l'heure du soin !");
 
-            // Gestion de l'alerte température si sous la norme (ex: < 36.5°C) ou au-dessus (> 37.5°C)
             if(!isNaN(tempBb)) {
-                if(tempBb < 36.5) {
-                    await triggerPushNotification("⚠️ ALERTE TEMPÉRATURE BÉBÉ", `Température basse détectée : ${tempBb}°C à ${time} !`);
-                } else if(tempBb > 37.5) {
-                    await triggerPushNotification("🔥 ALERTE FIÈVRE BÉBÉ", `Température élevée détectée : ${tempBb}°C à ${time} !`);
-                }
+                if(tempBb < 36.5) await triggerPushNotification("⚠️ ALERTE TEMPÉRATURE BÉBÉ", `Température basse : ${tempBb}°C à ${time} !`);
+                else if(tempBb > 37.5) await triggerPushNotification("🔥 ALERTE FIÈVRE BÉBÉ", `Température élevée : ${tempBb}°C à ${time} !`);
             }
 
             await addDoc(collection(db, "baby_tracking"), {
@@ -625,7 +633,6 @@
                 urine, stool, food, obs, weight: isNaN(weight) ? null : weight, timestamp: serverTimestamp()
             });
 
-            // Reinitialisation partielle du formulaire
             document.getElementById('track-temp-bb').value = "";
             document.getElementById('track-temp-inc').value = "";
             document.getElementById('track-urine').checked = false;
@@ -633,10 +640,74 @@
             document.getElementById('track-food').value = "";
             document.getElementById('track-obs').value = "";
 
-            alert("Saisie de soin enregistrée !");
+            alert("Saisie enregistrée !");
         };
 
-        // EECOUTE DU SUIVI BÉBÉ EN TEMPS RÉEL ET RENDU
+        // --- CALCUL DU PROCHAIN BIBERON ---
+        window.updateNextBottleDisplay = () => {
+            if(!lastMealRawTimeStr) {
+                document.getElementById('next-bottle-time').innerText = "--h--";
+                document.getElementById('next-bottle-status').innerText = "Aucun repas enregistré";
+                return;
+            }
+
+            // Extraction heure / minutes du dernier biberon enregistré (ex: 14h30 ou 14:30)
+            const cleanTime = lastMealRawTimeStr.replace('h', ':').replace('H', ':');
+            const parts = cleanTime.split(':');
+            
+            if(parts.length < 2) {
+                document.getElementById('next-bottle-time').innerText = "--h--";
+                document.getElementById('next-bottle-status').innerText = "Heure de dernier repas invalide";
+                return;
+            }
+
+            const lastHours = parseInt(parts[0], 10);
+            const lastMinutes = parseInt(parts[1], 10);
+
+            if(isNaN(lastHours) || isNaN(lastMinutes)) return;
+
+            // Lecture de l'intervalle réglé par les parents (ex: 3.5 = 3h30)
+            const intervalHours = parseFloat(document.getElementById('bottle-interval').value);
+            const intervalTotalMinutes = Math.round(intervalHours * 60);
+
+            // Création des objets Date
+            const now = new Date();
+            const lastBottleDate = new Date();
+            lastBottleDate.setHours(lastHours, lastMinutes, 0, 0);
+
+            // Si l'heure enregistrée est supérieure à maintenant, on suppose que c'était hier
+            if(lastBottleDate > now) {
+                lastBottleDate.setDate(lastBottleDate.getDate() - 1);
+            }
+
+            // Calcul de la date du prochain biberon
+            const nextBottleDate = new Date(lastBottleDate.getTime() + intervalTotalMinutes * 60000);
+            
+            const nextH = String(nextBottleDate.getHours()).padStart(2, '0');
+            const nextM = String(nextBottleDate.getMinutes()).padStart(2, '0');
+            document.getElementById('next-bottle-time').innerText = `${nextH}h${nextM}`;
+
+            // Calcul du temps restant en minutes
+            const diffMs = nextBottleDate - now;
+            const diffMinutes = Math.round(diffMs / 60000);
+
+            const statusEl = document.getElementById('next-bottle-status');
+
+            if(diffMinutes > 0) {
+                const hoursLeft = Math.floor(diffMinutes / 60);
+                const minsLeft = diffMinutes % 60;
+                let text = "Dans ";
+                if(hoursLeft > 0) text += `${hoursLeft}h `;
+                text += `${minsLeft} min`;
+                statusEl.innerText = text;
+                statusEl.className = "text-[10px] text-green-400 font-bold mt-0.5";
+            } else {
+                const lateMins = Math.abs(diffMinutes);
+                statusEl.innerText = `⚠️ Retard de ${lateMins} min ! Préparez le biberon !`;
+                statusEl.className = "text-[10px] text-red-400 font-bold mt-0.5 animate-pulse";
+            }
+        };
+
         function setupBabyTrackerListener() {
             const q = query(collection(db, "baby_tracking"), orderBy("timestamp", "asc"));
             onSnapshot(q, snapshot => {
@@ -652,6 +723,7 @@
                 let lastUrineText = "Aucune";
                 let lastWeightText = "-- kg";
                 let latestTempBb = null;
+                lastMealRawTimeStr = null;
 
                 if(snapshot.empty) {
                     tableBody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-500 italic">Aucune donnée enregistrée</td></tr>`;
@@ -660,7 +732,6 @@
                         const d = docSnap.data();
                         const id = docSnap.id;
 
-                        // Remplissage graphique
                         if(d.tempBb !== null && d.tempBb !== undefined) {
                             tempLabels.push(`${d.day} ${d.time}`);
                             tempBbData.push(d.tempBb);
@@ -668,20 +739,21 @@
                             latestTempBb = d.tempBb;
                         }
 
-                        // Mises à jour des derniers enregistrements
-                        if(d.food) lastMealText = `${d.food} (${d.time})`;
+                        if(d.food) {
+                            lastMealText = `${d.food} (${d.time})`;
+                            lastMealRawTimeStr = d.time; // Retient la dernière heure de biberon
+                        }
                         if(d.stool) lastStoolText = `Oui (${d.time})`;
                         if(d.urine) lastUrineText = `Oui (${d.time})`;
                         if(d.weight) lastWeightText = `${d.weight} kg`;
 
-                        // Tableau Fiche de Soins
                         tableBody.innerHTML += `
                             <tr>
                                 <td class="p-2 font-bold">${d.day} <span class="text-purple-400 block text-[9px]">${d.time}</span></td>
                                 <td class="p-2">${d.urine ? '💧' : ''} ${d.stool ? '💩' : ''}</td>
                                 <td class="p-2 font-black ${d.tempBb < 36.5 ? 'text-blue-400' : d.tempBb > 37.5 ? 'text-red-400' : 'text-green-400'}">${d.tempBb ? d.tempBb + '°' : '--'}</td>
                                 <td class="p-2 text-slate-400">${d.tempInc ? d.tempInc + '°' : '--'}</td>
-                                <td class="p-2">${d.food || '--'}</td>
+                                <td class="p-2 font-semibold text-pink-300">${d.food || '--'}</td>
                                 <td class="p-2 text-slate-300">${d.obs || '--'}</td>
                                 <td class="p-2 text-right">
                                     <button onclick="deleteTrackDoc('${id}')" class="admin-only text-red-400 hover:text-red-500 text-xs is-block"><i class="fas fa-trash"></i></button>
@@ -691,49 +763,44 @@
                     });
                 }
 
-                // Mettre à jour les Cartes "Dernier..."
                 document.getElementById('last-meal').innerText = lastMealText;
                 document.getElementById('last-stool').innerText = lastStoolText;
                 document.getElementById('last-urine').innerText = lastUrineText;
                 document.getElementById('last-weight').innerText = lastWeightText;
 
-                // Affichage / Masquage du Panneau d'Alerte Température
+                // Mise à jour de la carte Prochain Biberon
+                updateNextBottleDisplay();
+
+                // Alerte température
                 const alertBox = document.getElementById('temp-alert-box');
                 if(latestTempBb !== null) {
                     if(latestTempBb < 36.5) {
                         alertBox.className = "p-4 rounded-2xl border flex items-center gap-3 bg-blue-500/10 border-blue-500/30 text-blue-300";
                         document.getElementById('temp-alert-icon').className = "fas fa-temperature-low text-2xl text-blue-400 animate-bounce";
                         document.getElementById('temp-alert-title').innerText = "⚠️ Température basse (Hypothermie)";
-                        document.getElementById('temp-alert-msg').innerText = `Dernière mesure: ${latestTempBb}°C. Couvrir le bébé ou réchauffer selon consignes médicales.`;
+                        document.getElementById('temp-alert-msg').innerText = `Dernière mesure: ${latestTempBb}°C. Couvrir le bébé.`;
                     } else if(latestTempBb > 37.5) {
                         alertBox.className = "p-4 rounded-2xl border flex items-center gap-3 bg-red-500/10 border-red-500/30 text-red-300";
                         document.getElementById('temp-alert-icon').className = "fas fa-temperature-high text-2xl text-red-400 animate-pulse";
-                        document.getElementById('temp-alert-title').innerText = "🔥 Alerte Fièvre / Température Élevée";
-                        document.getElementById('temp-alert-msg').innerText = `Dernière mesure: ${latestTempBb}°C. Surveiller et informer l'équipe soignante.`;
+                        document.getElementById('temp-alert-title').innerText = "🔥 Alerte Fièvre";
+                        document.getElementById('temp-alert-msg').innerText = `Dernière mesure: ${latestTempBb}°C. Surveiller l'évolution.`;
                     } else {
                         alertBox.className = "p-4 rounded-2xl border flex items-center gap-3 bg-green-500/10 border-green-500/30 text-green-300";
                         document.getElementById('temp-alert-icon').className = "fas fa-check-circle text-2xl text-green-400";
                         document.getElementById('temp-alert-title').innerText = "✅ Température Normale";
-                        document.getElementById('temp-alert-msg').innerText = `Dernière mesure: ${latestTempBb}°C. Bébé est dans la zone de confort !`;
+                        document.getElementById('temp-alert-msg').innerText = `Dernière mesure: ${latestTempBb}°C. Bébé est en zone de confort !`;
                     }
-                } else {
-                    alertBox.className = "hidden";
-                }
+                } else alertBox.className = "hidden";
 
-                // Mise à jour du graphique Chart.js
                 updateTempChart(tempLabels, tempBbData, tempIncData);
             });
         }
 
-        // --- SUPPRESSION FICHE DE SOIN (ADMIN) ---
         window.deleteTrackDoc = async (docId) => {
             if(!isAdmin) return;
-            if(confirm("Supprimer cette ligne du suivi ?")) {
-                await deleteDoc(doc(db, "baby_tracking", docId));
-            }
+            if(confirm("Supprimer cette ligne ?")) await deleteDoc(doc(db, "baby_tracking", docId));
         };
 
-        // --- RENDU GRAPHIC CHART.JS ---
         function updateTempChart(labels, bbData, incData) {
             const ctx = document.getElementById('tempChart').getContext('2d');
             if(tempChartInstance) tempChartInstance.destroy();
@@ -769,35 +836,20 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     scales: {
-                        y: {
-                            min: 35.5,
-                            max: 38.5,
-                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                            ticks: { color: '#94a3b8' }
-                        },
-                        x: {
-                            grid: { display: false },
-                            ticks: { color: '#94a3b8', font: { size: 9 } }
-                        }
+                        y: { min: 35.5, max: 38.5, grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#94a3b8' } },
+                        x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 9 } } }
                     },
-                    plugins: {
-                        legend: { labels: { color: '#e2e8f0', font: { size: 10 } } }
-                    }
+                    plugins: { legend: { labels: { color: '#e2e8f0', font: { size: 10 } } } }
                 }
             });
         }
 
-        // --- AJOUT MANUEL PAR L'ADMIN (MODALE GRAPHIQUE) ---
         document.getElementById('btn-manual-add').onclick = () => {
             if(!isAdmin) return;
             const targetUser = prompt("Nom/Prénom du proche :");
             if(!targetUser || targetUser.trim().length < 2) return alert("Nom invalide");
 
             const modal = document.getElementById('admin-modal-gender');
-            const btnGirl = document.getElementById('admin-btn-girl');
-            const btnBoy = document.getElementById('admin-btn-boy');
-            const btnCancel = document.getElementById('admin-btn-cancel');
-
             modal.classList.remove('hidden');
 
             const savePrediction = async (sexe) => {
@@ -819,12 +871,11 @@
                 alert(`Pronostic de ${targetUser} ajouté avec succès !`);
             };
 
-            btnGirl.onclick = () => savePrediction("Fille");
-            btnBoy.onclick = () => savePrediction("Garçon");
-            btnCancel.onclick = () => modal.classList.add('hidden');
+            document.getElementById('admin-btn-girl').onclick = () => savePrediction("Fille");
+            document.getElementById('admin-btn-boy').onclick = () => savePrediction("Garçon");
+            document.getElementById('admin-btn-cancel').onclick = () => modal.classList.add('hidden');
         };
 
-        // --- CHARGEMENT PRONOSTIC EXISTANT ---
         function setupUserVoteListener() {
             onSnapshot(doc(db, "predictions", userName), (docSnap) => {
                 if(docSnap.exists()) {
@@ -840,7 +891,6 @@
             });
         }
 
-        // --- CHAT EN TEMPS REEL ---
         function setupChatListener() {
             const chatBox = document.getElementById('chat-box');
             const q = query(collection(db, "chat"), orderBy("timestamp", "asc"), limit(100));
@@ -871,7 +921,6 @@
             }
         };
 
-        // --- FLUX DE DONNÉES ET GESTIONNAIRE DES PRONOSTICS ---
         onSnapshot(collection(db, "predictions"), snapshot => {
             let totalVotes = snapshot.size;
             let countGirl = 0; let countBoy = 0;
@@ -903,22 +952,19 @@
 
                 const isFille = (data.sexe === 'Fille' || data.sexe === 'F');
                 const genderIcon = isFille ? 'fa-venus text-pink-400' : 'fa-mars text-blue-400';
-                const passion = data.passion || "Mystère 🔮";
 
                 listAll.innerHTML += `
                     <div class="glass p-5 rounded-3xl border-l-4 ${isFille ? 'border-pink-500' : 'border-blue-500'} flex flex-col gap-2 relative">
                         <div class="flex justify-between items-center">
                             <span class="font-black text-xs uppercase tracking-wider text-purple-400">${data.user}</span>
                             <div class="flex items-center gap-2">
-                                <button onclick="deleteProno('${data.user}')" class="admin-only text-red-400 hover:text-red-500 p-1 mr-2 text-sm transition-all is-block">
-                                    <i class="fas fa-trash"></i>
-                                </button>
+                                <button onclick="deleteProno('${data.user}')" class="admin-only text-red-400 hover:text-red-500 p-1 mr-2 text-sm transition-all is-block"><i class="fas fa-trash"></i></button>
                                 <i class="fas ${genderIcon} text-base"></i>
                             </div>
                         </div>
                         <div class="grid grid-cols-2 gap-y-1 text-[11px] text-slate-300">
                             <p><b>Prénom :</b> ${data.prenom || "--"}</p>
-                            <p class="truncate"><b>Passion :</b> ${passion}</p>
+                            <p class="truncate"><b>Passion :</b> ${data.passion || "Mystère 🔮"}</p>
                             <p><b>Poids :</b> ${data.poids} kg</p>
                             <p><b>Taille :</b> ${data.taille} cm</p>
                             <p class="col-span-2"><b>Le :</b> ${data.date} à ${data.heure}</p>
@@ -958,20 +1004,13 @@
             }
         }
 
-        // --- FONCTION GLOBALE DE SUPPRESSION ---
         window.deleteProno = async (userId) => { 
             if(!isAdmin) return;
-            if(confirm(`Voulez-vous supprimer définitivement le pronostic de "${userId}" ?`)) {
-                try {
-                    await deleteDoc(doc(db, "predictions", userId)); 
-                    alert("Pronostic supprimé avec succès.");
-                } catch (error) {
-                    console.error("Erreur lors de la suppression :", error);
-                }
+            if(confirm(`Supprimer le pronostic de "${userId}" ?`)) {
+                await deleteDoc(doc(db, "predictions", userId)); 
             }
         };
 
-        // --- VERDICT DE NAISSANCE ---
         document.getElementById('btn-save-final').onclick = async () => {
             if(!isAdmin) return;
             const g = document.getElementById('final-gender').value;
@@ -981,15 +1020,11 @@
             const d = document.getElementById('final-date').value;
             const t = document.getElementById('final-time').value;
 
-            if(!g || !n || isNaN(w) || isNaN(h)) {
-                return alert("Veuillez remplir au moins le Sexe, Prénom, Poids et Taille réels !");
-            }
+            if(!g || !n || isNaN(w) || isNaN(h)) return alert("Saisie incomplète !");
 
-            await setDoc(doc(db, "resultat", "verdict"), {
-                sexe: g, prenom: n, poids: w, taille: h, date: d || "--", heure: t || "--"
-            });
-            await triggerPushNotification("🏁 LE VERDICT EST TOMBÉ !", `Le bébé est arrivé ! Découvre vite le gagnant !`);
-            alert("Le résultat final a été publié ! 🏁");
+            await setDoc(doc(db, "resultat", "verdict"), { sexe: g, prenom: n, poids: w, taille: h, date: d || "--", heure: t || "--" });
+            await triggerPushNotification("🏁 LE VERDICT EST TOMBÉ !", `Le bébé est là ! Découvre le gagnant !`);
+            alert("Résultat final publié ! 🏁");
         };
 
         let finalResultData = null;
@@ -1007,7 +1042,6 @@
             }
         });
 
-        // --- SYSTEME DE CALCUL DU GAGNANT ---
         function checkAndCalculateWinner() {
             if(!finalResultData || globalPredictions.length === 0) return;
             let bestScore = Infinity; 
@@ -1022,7 +1056,7 @@
                 if(p.prenom && p.prenom.trim().toLowerCase() === finalResultData.prenom.trim().toLowerCase()) score -= 50;
                 score += Math.abs(p.poids - finalResultData.poids) * 100;
                 score += Math.abs(p.taille - finalResultData.taille) * 10;
-                
+
                 if(p.date !== "--" && finalResultData.date !== "--") {
                     const voteDate = new Date(p.date);
                     const realDate = new Date(finalResultData.date);
@@ -1032,29 +1066,25 @@
 
                 if(score < bestScore) {
                     bestScore = score;
-                    winner = `${p.user} (avec ${score.toFixed(1)} pts de différence)`;
+                    winner = `${p.user} (${score.toFixed(1)} pts diff.)`;
                 }
             });
 
             document.getElementById('winner-name').innerText = winner;
         }
 
-        // --- ALERTE URGENCE NAISSANCE ---
         document.getElementById('btn-urgent').onclick = async () => {
             if(!isAdmin) return;
-            const message = prompt("Message d'alerte :", "Le travail a commencé ! On fonce à la maternité ! 🏥🚑");
+            const message = prompt("Message d'alerte :", "Le travail a commencé ! 🏥");
             if(message) {
                 await triggerPushNotification("🚨 ALERTE MATERNITÉ !", message);
-                alert("Alerte envoyée à tout le monde !");
+                alert("Alerte envoyée !");
             }
         };
 
-        // --- DECONNEXION ---
         document.getElementById('logout-btn').onclick = async () => {
-            if(confirm("Voulez-vous vous déconnecter ?")) {
-                if(userName) {
-                    try { await deleteDoc(doc(db, "presence", userName)); } catch (e) { console.error(e); }
-                }
+            if(confirm("Déconnexion ?")) {
+                if(userName) await deleteDoc(doc(db, "presence", userName));
                 window.location.reload();
             }
         };
