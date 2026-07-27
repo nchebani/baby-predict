@@ -234,13 +234,14 @@
                     <div class="grid grid-cols-2 gap-3 text-xs">
                         <div>
                             <label class="block text-[9px] font-bold text-slate-400 mb-1">Jour de suivi</label>
+                            <!-- OPTION DÉTAILLÉE AVEC JOUR, DATE ET DOSE RECOMMANDEE -->
                             <select id="track-day" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none">
-                                <option value="Naissance" class="bg-[#07070a]">Naissance (23/07)</option>
+                                <option value="Naissance" class="bg-[#07070a]">Naissance (23/07 - Jeu)</option>
                                 <option value="1er JOUR" class="bg-[#07070a]">1er JOUR (24/07 - Ven)</option>
                                 <option value="2ème JOUR" class="bg-[#07070a]">2ème JOUR (25/07 - Sam)</option>
                                 <option value="3ème JOUR" class="bg-[#07070a]">3ème JOUR (26/07 - Dim)</option>
                                 <option value="4ème JOUR" class="bg-[#07070a]">4ème JOUR (27/07 - Lun)</option>
-                                <option value="5ème JOUR" class="bg-[#07070a]">5ème JOUR (28/07 - Mar)</option>
+                                <option value="5ème JOUR" class="bg-[#07070a]" selected>5ème JOUR (28/07 - Mar)</option>
                                 <option value="6ème JOUR" class="bg-[#07070a]">6ème JOUR (29/07 - Mer)</option>
                                 <option value="7ème JOUR" class="bg-[#07070a]">7ème JOUR (30/07 - Jeu)</option>
                                 <option value="8ème JOUR" class="bg-[#07070a]">8ème JOUR (31/07 - Ven)</option>
@@ -275,8 +276,8 @@
 
                     <div class="space-y-3 text-xs">
                         <div>
-                            <label class="block text-[9px] font-bold text-slate-400 mb-1">Alimentation (ex: Bib 45ml, Tétée...)</label>
-                            <input type="text" id="track-food" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none" placeholder="Ex: Bib 10 - 30 ml">
+                            <label class="block text-[9px] font-bold text-slate-400 mb-1">Alimentation (ex: Bib 50ml, Tétée...)</label>
+                            <input type="text" id="track-food" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none" placeholder="Ex: Bib 50 - 70 ml">
                         </div>
                         <div>
                             <label class="block text-[9px] font-bold text-slate-400 mb-1">Observations / Soins (ex: Bain, Cordon...)</label>
@@ -495,32 +496,40 @@
             { user: "Loane", sexe: "Garçon", prenom: "Mathis", taille: 50, poids: 3.100, passion: "Football", date: "2026-08-08", heure: "--" }
         ];
 
-        // --- CALCUL DE LA DOSE RECOMMANDEE (BASÉ SUR LA DATE DE NAISSANCE DU 23/07/2026) ---
+        // --- CALCUL DU DOSAGE BASÉ SUR LE CARNET PAR JOURS & DATES ---
         function getRecommendedBottleDose(day, weightKg, intervalHours) {
             const d = (day || "").toUpperCase();
 
-            if (d.includes("NAISSANCE")) return "10 - 15 ml";
-            if (d.includes("1ER")) return "10 - 30 ml";
-            if (d.includes("2È") || d.includes("2E")) return "20 - 40 ml";
-            if (d.includes("3È") || d.includes("3E")) return "30 - 50 ml";
-            if (d.includes("4È") || d.includes("4E")) return "40 - 60 ml";
-            if (d.includes("5È") || d.includes("5E")) return "50 - 70 ml"; // Mardi 28/07
-            if (d.includes("6È") || d.includes("6E")) return "60 - 80 ml"; // Mercredi 29/07
-            if (d.includes("7È") || d.includes("7E")) return "70 - 90 ml";
-            if (d.includes("8È") || d.includes("8E")) return "80 - 100 ml";
-            if (d.includes("9È") || d.includes("9E")) return "90 - 110 ml";
-            if (d.includes("10È") || d.includes("10E")) return "100 - 120 ml";
+            // Mappings exacts selon le carnet d'alimentation manuscrit :
+            // 1er j = 10 - 30 ml
+            // 2ème = 20 - 40 ml
+            // 3ème = 30 - 50 ml
+            // 4ème = 40 - 60 ml
+            // 5ème (Mardi) = 50 - 70 ml
+            // 6ème (Mercredi) = 60 - 80 ml
+            
+            if (d.includes("NAISSANCE")) return { dose: "10 - 15 ml", label: "Naissance (23/07 - Jeu)" };
+            if (d.includes("1ER")) return { dose: "10 - 30 ml", label: "1er JOUR (24/07 - Ven)" };
+            if (d.includes("2È") || d.includes("2E")) return { dose: "20 - 40 ml", label: "2ème JOUR (25/07 - Sam)" };
+            if (d.includes("3È") || d.includes("3E")) return { dose: "30 - 50 ml", label: "3ème JOUR (26/07 - Dim)" };
+            if (d.includes("4È") || d.includes("4E")) return { dose: "40 - 60 ml", label: "4ème JOUR (27/07 - Lun)" };
+            if (d.includes("5È") || d.includes("5E")) return { dose: "50 - 70 ml", label: "5ème JOUR - Mardi (28/07)" };
+            if (d.includes("6È") || d.includes("6E")) return { dose: "60 - 80 ml", label: "6ème JOUR - Mercredi (29/07)" };
+            if (d.includes("7È") || d.includes("7E")) return { dose: "70 - 90 ml", label: "7ème JOUR (30/07 - Jeu)" };
+            if (d.includes("8È") || d.includes("8E")) return { dose: "80 - 100 ml", label: "8ème JOUR (31/07 - Ven)" };
+            if (d.includes("9È") || d.includes("9E")) return { dose: "90 - 110 ml", label: "9ème JOUR (01/08 - Sam)" };
+            if (d.includes("10È") || d.includes("10E")) return { dose: "100 - 120 ml", label: "10ème JOUR (02/08 - Dim)" };
 
-            // En dehors du carnet : Règle d'Appert si le poids est disponible
+            // Après le carnet, calcul selon la Règle d'Appert en fonction du poids
             if (weightKg && weightKg > 0) {
                 const bottlesPerDay = Math.round(24 / (intervalHours || 3.5));
                 const weightGrams = weightKg * 1000;
                 const totalDailyMl = (weightGrams / 10) + 250;
                 const dosePerBottle = Math.round(totalDailyMl / bottlesPerDay);
-                return `~${dosePerBottle} ml`;
+                return { dose: `~${dosePerBottle} ml`, label: d };
             }
 
-            return "60 - 90 ml";
+            return { dose: "60 - 90 ml", label: d };
         }
 
         async function checkAndInjectPredictions() {
@@ -595,25 +604,23 @@
                 setupPresenceListener();
                 setupBabyTrackerListener();
 
-                // Rafraîchir l'affichage du compte à rebours biberon chaque minute
+                // Actualiser le rappel de biberon toutes les minutes
                 setInterval(updateNextBottleDisplay, 60000);
             } else { alert("Entrez un nom valide"); }
         };
 
-        // Ecoute du changement de jour pour mettre à jour la suggestion dans le formulaire
+        // Écoute des changements de jour sélectionnés
         document.getElementById('track-day').addEventListener('change', (e) => {
             const selectedDay = e.target.value;
             const intervalHours = parseFloat(document.getElementById('bottle-interval').value) || 3.5;
-            
             const rawWeight = document.getElementById('last-weight').innerText.replace(' kg', '');
             const lastWeight = parseFloat(rawWeight) || 0;
 
-            const suggestedDose = getRecommendedBottleDose(selectedDay, lastWeight, intervalHours);
+            const doseInfo = getRecommendedBottleDose(selectedDay, lastWeight, intervalHours);
             
             const foodInput = document.getElementById('track-food');
-            foodInput.placeholder = `Ex: Bib ${suggestedDose}`;
+            foodInput.placeholder = `Ex: Bib ${doseInfo.dose}`;
             
-            // Mise à jour de la carte du prochain biberon
             updateNextBottleDisplay();
         });
 
@@ -697,16 +704,16 @@
             alert("Saisie enregistrée !");
         };
 
-        // --- CALCUL DU PROCHAIN BIBERON ET DE LA DOSE ---
+        // --- CALCUL DU PROCHAIN BIBERON ET AFFICHAGE DOSE & DATE ---
         window.updateNextBottleDisplay = () => {
             const intervalHours = parseFloat(document.getElementById('bottle-interval').value);
             const currentDay = document.getElementById('track-day').value;
             const rawWeight = document.getElementById('last-weight').innerText.replace(' kg', '');
             const lastWeight = parseFloat(rawWeight) || 0;
 
-            // Calcul & mise à jour de la dose conseillée
-            const recDose = getRecommendedBottleDose(currentDay, lastWeight, intervalHours);
-            document.getElementById('next-bottle-dose').innerText = `🍼 Dose conseillée : ${recDose}`;
+            // Dose recommandée et libellé complet (avec jour & date)
+            const doseInfo = getRecommendedBottleDose(currentDay, lastWeight, intervalHours);
+            document.getElementById('next-bottle-dose').innerHTML = `🍼 Dose conseillée (${doseInfo.label}) : <b class="text-white">${doseInfo.dose}</b>`;
 
             if(!lastMealRawTimeStr) {
                 document.getElementById('next-bottle-time').innerText = "--h--";
@@ -714,7 +721,6 @@
                 return;
             }
 
-            // Extraction heure / minutes du dernier biberon enregistré (ex: 14h30 ou 14:30)
             const cleanTime = lastMealRawTimeStr.replace('h', ':').replace('H', ':');
             const parts = cleanTime.split(':');
             
@@ -731,7 +737,6 @@
 
             const intervalTotalMinutes = Math.round(intervalHours * 60);
 
-            // Création des objets Date
             const now = new Date();
             const lastBottleDate = new Date();
             lastBottleDate.setHours(lastHours, lastMinutes, 0, 0);
@@ -740,14 +745,12 @@
                 lastBottleDate.setDate(lastBottleDate.getDate() - 1);
             }
 
-            // Calcul de la date du prochain biberon
             const nextBottleDate = new Date(lastBottleDate.getTime() + intervalTotalMinutes * 60000);
             
             const nextH = String(nextBottleDate.getHours()).padStart(2, '0');
             const nextM = String(nextBottleDate.getMinutes()).padStart(2, '0');
             document.getElementById('next-bottle-time').innerText = `${nextH}h${nextM}`;
 
-            // Calcul du temps restant en minutes
             const diffMs = nextBottleDate - now;
             const diffMinutes = Math.round(diffMs / 60000);
 
@@ -801,7 +804,7 @@
 
                         if(d.food) {
                             lastMealText = `${d.food} (${d.time})`;
-                            lastMealRawTimeStr = d.time; // Retient la dernière heure de biberon
+                            lastMealRawTimeStr = d.time;
                         }
                         if(d.stool) lastStoolText = `Oui (${d.time})`;
                         if(d.urine) lastUrineText = `Oui (${d.time})`;
@@ -828,10 +831,8 @@
                 document.getElementById('last-urine').innerText = lastUrineText;
                 document.getElementById('last-weight').innerText = lastWeightText;
 
-                // Mise à jour de la carte Prochain Biberon & Dose
                 updateNextBottleDisplay();
 
-                // Alerte température
                 const alertBox = document.getElementById('temp-alert-box');
                 if(latestTempBb !== null) {
                     if(latestTempBb < 36.5) {
