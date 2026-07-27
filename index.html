@@ -157,7 +157,7 @@
                     </div>
                 </div>
 
-                <!-- CARTE ALERTE RAPPEL PROCHAIN BIBERON -->
+                <!-- CARTE ALERTE RAPPEL PROCHAIN BIBERON & DOSE CONSEILLEE -->
                 <div id="next-bottle-card" class="bg-gradient-to-r from-pink-900/40 via-purple-900/40 to-indigo-900/40 border border-pink-500/30 p-5 rounded-[2.5rem] flex items-center justify-between shadow-2xl relative overflow-hidden">
                     <div class="flex items-center gap-4">
                         <div class="w-12 h-12 rounded-2xl bg-pink-500/20 flex items-center justify-center text-pink-400 text-2xl border border-pink-500/30">
@@ -167,6 +167,10 @@
                             <span class="text-[9px] font-black uppercase text-pink-300 tracking-widest block">⏰ Prochain Biberon</span>
                             <h4 id="next-bottle-time" class="text-2xl font-black text-white">--h--</h4>
                             <p id="next-bottle-status" class="text-[10px] text-slate-300 font-bold mt-0.5">En attente de données...</p>
+                            <!-- NOUVEAU: DOSE RECOMMANDEE -->
+                            <span id="next-bottle-dose" class="inline-block mt-2 bg-pink-500/20 text-pink-300 border border-pink-500/30 text-[9px] font-bold px-2.5 py-0.5 rounded-full">
+                                🍼 Dose conseillée : -- ml
+                            </span>
                         </div>
                     </div>
                     
@@ -267,7 +271,7 @@
                     <div class="space-y-3 text-xs">
                         <div>
                             <label class="block text-[9px] font-bold text-slate-400 mb-1">Alimentation (ex: Bib 45ml, Tétée...)</label>
-                            <input type="text" id="track-food" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none" placeholder="Ex: Bib 45 ml Pre">
+                            <input type="text" id="track-food" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none" placeholder="Ex: Bib 10 - 15 ml">
                         </div>
                         <div>
                             <label class="block text-[9px] font-bold text-slate-400 mb-1">Observations / Soins (ex: Bain, Cordon...)</label>
@@ -486,6 +490,35 @@
             { user: "Loane", sexe: "Garçon", prenom: "Mathis", taille: 50, poids: 3.100, passion: "Football", date: "2026-08-08", heure: "--" }
         ];
 
+        // --- CALCUL DE LA DOSE RECOMMANDEE ---
+        function getRecommendedBottleDose(day, weightKg, intervalHours) {
+            const bottlesPerDay = Math.round(24 / (intervalHours || 3.5));
+
+            switch (day) {
+                case "Naissance":
+                    return "10 - 15 ml";
+                case "1er JOUR":
+                    return "15 - 20 ml";
+                case "2ème JOUR":
+                    return "20 - 30 ml";
+                case "3ème JOUR":
+                    return "30 - 40 ml";
+                case "4ème JOUR":
+                    return "40 - 50 ml";
+                case "5ème JOUR":
+                    return "50 - 60 ml";
+                default:
+                    // Règle d'Appert si le poids est disponible
+                    if (weightKg && weightKg > 0) {
+                        const weightGrams = weightKg * 1000;
+                        const totalDailyMl = (weightGrams / 10) + 250;
+                        const dosePerBottle = Math.round(totalDailyMl / bottlesPerDay);
+                        return `~${dosePerBottle} ml`;
+                    }
+                    return "60 - 90 ml";
+            }
+        }
+
         async function checkAndInjectPredictions() {
             try {
                 const snap = await getDocs(collection(db, "predictions"));
@@ -562,6 +595,20 @@
                 setInterval(updateNextBottleDisplay, 60000);
             } else { alert("Entrez un nom valide"); }
         };
+
+        // Ecoute du changement de jour pour mettre à jour la suggestion dans le formulaire
+        document.getElementById('track-day').addEventListener('change', (e) => {
+            const selectedDay = e.target.value;
+            const intervalHours = parseFloat(document.getElementById('bottle-interval').value) || 3.5;
+            
+            const rawWeight = document.getElementById('last-weight').innerText.replace(' kg', '');
+            const lastWeight = parseFloat(rawWeight) || 0;
+
+            const suggestedDose = getRecommendedBottleDose(selectedDay, lastWeight, intervalHours);
+            
+            const foodInput = document.getElementById('track-food');
+            foodInput.placeholder = `Ex: Bib ${suggestedDose}`;
+        });
 
         function setupPresenceListener() {
             onSnapshot(collection(db, "presence"), snapshot => {
@@ -643,8 +690,17 @@
             alert("Saisie enregistrée !");
         };
 
-        // --- CALCUL DU PROCHAIN BIBERON ---
+        // --- CALCUL DU PROCHAIN BIBERON ET DE LA DOSE ---
         window.updateNextBottleDisplay = () => {
+            const intervalHours = parseFloat(document.getElementById('bottle-interval').value);
+            const currentDay = document.getElementById('track-day').value;
+            const rawWeight = document.getElementById('last-weight').innerText.replace(' kg', '');
+            const lastWeight = parseFloat(rawWeight) || 0;
+
+            // Calcul & mise à jour de la dose conseillée
+            const recDose = getRecommendedBottleDose(currentDay, lastWeight, intervalHours);
+            document.getElementById('next-bottle-dose').innerText = `🍼 Dose conseillée : ${recDose}`;
+
             if(!lastMealRawTimeStr) {
                 document.getElementById('next-bottle-time').innerText = "--h--";
                 document.getElementById('next-bottle-status').innerText = "Aucun repas enregistré";
@@ -657,7 +713,7 @@
             
             if(parts.length < 2) {
                 document.getElementById('next-bottle-time').innerText = "--h--";
-                document.getElementById('next-bottle-status').innerText = "Heure de dernier repas invalide";
+                document.getElementById('next-bottle-status').innerText = "Heure invalide";
                 return;
             }
 
@@ -666,8 +722,6 @@
 
             if(isNaN(lastHours) || isNaN(lastMinutes)) return;
 
-            // Lecture de l'intervalle réglé par les parents (ex: 3.5 = 3h30)
-            const intervalHours = parseFloat(document.getElementById('bottle-interval').value);
             const intervalTotalMinutes = Math.round(intervalHours * 60);
 
             // Création des objets Date
@@ -675,7 +729,6 @@
             const lastBottleDate = new Date();
             lastBottleDate.setHours(lastHours, lastMinutes, 0, 0);
 
-            // Si l'heure enregistrée est supérieure à maintenant, on suppose que c'était hier
             if(lastBottleDate > now) {
                 lastBottleDate.setDate(lastBottleDate.getDate() - 1);
             }
@@ -768,7 +821,7 @@
                 document.getElementById('last-urine').innerText = lastUrineText;
                 document.getElementById('last-weight').innerText = lastWeightText;
 
-                // Mise à jour de la carte Prochain Biberon
+                // Mise à jour de la carte Prochain Biberon & Dose
                 updateNextBottleDisplay();
 
                 // Alerte température
