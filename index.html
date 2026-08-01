@@ -187,16 +187,16 @@
                     </div>
                 </div>
 
-                <!-- CARTE INTERVALLE DE DURÉE DU REPAS (1H30 MAX) -->
+                <!-- CARTE INTERVALLE DE DURÉE DU REPAS PROCHAIN (CALCUL ÉCHÉANCE ET PLAGE 1H30 DU PROCHAIN REPAS) -->
                 <div id="meal-window-card" class="bg-gradient-to-r from-amber-900/30 via-orange-900/30 to-purple-900/30 border border-amber-500/30 p-5 rounded-[2.5rem] flex items-center justify-between shadow-2xl relative overflow-hidden">
                     <div class="flex items-center gap-4">
                         <div class="w-12 h-12 rounded-2xl bg-amber-500/20 flex items-center justify-center text-amber-400 text-2xl border border-amber-500/30">
                             <i class="fas fa-clock"></i>
                         </div>
                         <div>
-                            <span class="text-[9px] font-black uppercase text-amber-300 tracking-widest block">⏳ Plage Repas (Max 1h30)</span>
+                            <span class="text-[9px] font-black uppercase text-amber-300 tracking-widest block">⏳ Plage Prochain Repas (1h30 Max)</span>
                             <h4 id="meal-window-range" class="text-xl font-black text-white">--h-- à --h--</h4>
-                            <p id="meal-window-status" class="text-[10px] text-slate-300 font-bold mt-0.5">Aucun biberon en cours</p>
+                            <p id="meal-window-status" class="text-[10px] text-slate-300 font-bold mt-0.5">Aucun biberon programmé</p>
                         </div>
                     </div>
                 </div>
@@ -248,7 +248,6 @@
                     <div class="grid grid-cols-2 gap-3 text-xs">
                         <div>
                             <label class="block text-[9px] font-bold text-slate-400 mb-1">Jour de suivi</label>
-                            <!-- OPTION DÉTAILLÉE AVEC JOUR, DATE ET DOSE RECOMMANDEE -->
                             <select id="track-day" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none">
                                 <option value="Naissance" class="bg-[#07070a]">Naissance (23/07 - Jeu)</option>
                                 <option value="1er JOUR" class="bg-[#07070a]">1er JOUR (24/07 - Ven)</option>
@@ -285,6 +284,17 @@
                         <label class="flex items-center gap-2 bg-white/5 p-3 rounded-xl cursor-pointer">
                             <input type="checkbox" id="track-stool" class="rounded accent-purple-500 w-4 h-4">
                             <span class="text-slate-300 font-bold">💩 Selle</span>
+                        </label>
+                    </div>
+
+                    <!-- BOUTON/CHECKBOX DE VALIDATION DE PRISE DU BIBERON DANS LES TEMPS -->
+                    <div class="bg-pink-500/10 border border-pink-500/20 p-3 rounded-xl">
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" id="track-bottle-ontime" class="rounded accent-pink-500 w-5 h-5">
+                            <div>
+                                <span class="text-pink-300 font-black text-xs block">✅ Biberon pris & validé en temps et en heure</span>
+                                <span class="text-[9px] text-slate-400">Calcule directement l'heure et la plage du repas suivant.</span>
+                            </div>
                         </label>
                     </div>
 
@@ -471,7 +481,6 @@
         let lastMealRawTimeStr = null;
         let mealAlertSent = false;
 
-        // --- LISTE DES PRONOSTICS ÉCRITS À LA MAIN ---
         const manualImports = [
             { user: "Sandra P.", sexe: "Garçon", prenom: "Aloïs", taille: 51, poids: 3.300, passion: "Danse", date: "2026-08-10", heure: "--" },
             { user: "Laura M.", sexe: "Fille", prenom: "Alice", taille: 51, poids: 3.450, passion: "Bouffe", date: "2026-07-23", heure: "--" },
@@ -511,7 +520,6 @@
             { user: "Loane", sexe: "Garçon", prenom: "Mathis", taille: 50, poids: 3.100, passion: "Football", date: "2026-08-08", heure: "--" }
         ];
 
-        // --- CALCUL DU DOSAGE BASÉ SUR LE CARNET PAR JOURS & DATES ---
         function getRecommendedBottleDose(day, weightKg, intervalHours) {
             const d = (day || "").toUpperCase();
 
@@ -616,12 +624,10 @@
                 setupPresenceListener();
                 setupBabyTrackerListener();
 
-                // Actualiser le rappel de biberon et de temps de repas toutes les minutes
                 setInterval(updateNextBottleDisplay, 60000);
             } else { alert("Entrez un nom valide"); }
         };
 
-        // Écoute des changements de jour sélectionnés
         document.getElementById('track-day').addEventListener('change', (e) => {
             const selectedDay = e.target.value;
             const intervalHours = parseFloat(document.getElementById('bottle-interval').value) || 3.5;
@@ -690,9 +696,10 @@
             const tempInc = parseFloat(document.getElementById('track-temp-inc').value);
             const urine = document.getElementById('track-urine').checked;
             const stool = document.getElementById('track-stool').checked;
-            const food = document.getElementById('track-food').value.trim();
+            let food = document.getElementById('track-food').value.trim();
             const obs = document.getElementById('track-obs').value.trim();
             const weight = parseFloat(document.getElementById('track-weight').value);
+            const bottleOnTime = document.getElementById('track-bottle-ontime').checked;
 
             if(!time) return alert("Veuillez saisir l'heure du soin !");
 
@@ -701,14 +708,17 @@
                 else if(tempBb > 37.5) await triggerPushNotification("🔥 ALERTE FIÈVRE BÉBÉ", `Température élevée : ${tempBb}°C à ${time} !`);
             }
 
-            // Si un nouveau repas est enregistré, on réinitialise le verrou d'alerte de temps repas
+            if(bottleOnTime && !food) {
+                food = "Bib validé à temps ✅";
+            }
+
             if(food) {
-                mealAlertSent = false;
+                mealAlertSent = false; 
             }
 
             await addDoc(collection(db, "baby_tracking"), {
                 day, time, tempBb: isNaN(tempBb) ? null : tempBb, tempInc: isNaN(tempInc) ? null : tempInc,
-                urine, stool, food, obs, weight: isNaN(weight) ? null : weight, timestamp: serverTimestamp()
+                urine, stool, food, obs, weight: isNaN(weight) ? null : weight, bottleOnTime: bottleOnTime, timestamp: serverTimestamp()
             });
 
             document.getElementById('track-temp-bb').value = "";
@@ -717,18 +727,18 @@
             document.getElementById('track-stool').checked = false;
             document.getElementById('track-food').value = "";
             document.getElementById('track-obs').value = "";
+            document.getElementById('track-bottle-ontime').checked = false;
 
             alert("Saisie enregistrée !");
         };
 
-        // --- CALCUL DU PROCHAIN BIBERON ET INTERVALLE DE TEMPS DE REPAS (1H30) ---
+        // --- CALCUL DYNAMIQUE ET AUTOMATIQUE DU PROCHAIN BIBERON ET DE LA PLAGE DE REPAS SUIVANTE (1H30) ---
         window.updateNextBottleDisplay = () => {
             const intervalHours = parseFloat(document.getElementById('bottle-interval').value);
             const currentDay = document.getElementById('track-day').value;
             const rawWeight = document.getElementById('last-weight').innerText.replace(' kg', '');
             const lastWeight = parseFloat(rawWeight) || 0;
 
-            // Dose recommandée et libellé complet (avec jour & date)
             const doseInfo = getRecommendedBottleDose(currentDay, lastWeight, intervalHours);
             document.getElementById('next-bottle-dose').innerHTML = `🍼 Dose conseillée (${doseInfo.label}) : <b class="text-white">${doseInfo.dose}</b>`;
 
@@ -736,7 +746,7 @@
                 document.getElementById('next-bottle-time').innerText = "--h--";
                 document.getElementById('next-bottle-status').innerText = "Aucun repas enregistré";
                 document.getElementById('meal-window-range').innerText = "--h-- à --h--";
-                document.getElementById('meal-window-status').innerText = "Aucun biberon en cours";
+                document.getElementById('meal-window-status').innerText = "Aucun biberon programmé";
                 return;
             }
 
@@ -764,7 +774,7 @@
                 lastBottleDate.setDate(lastBottleDate.getDate() - 1);
             }
 
-            // 1. Calcul du prochain biberon (ex: toutes les 3h30)
+            // HEURE PREVUE DU PROCHAIN BIBERON
             const nextBottleDate = new Date(lastBottleDate.getTime() + intervalTotalMinutes * 60000);
             
             const nextH = String(nextBottleDate.getHours()).padStart(2, '0');
@@ -790,38 +800,43 @@
                 statusEl.className = "text-[10px] text-red-400 font-bold mt-0.5 animate-pulse";
             }
 
-            // 2. CALCUL DU TEMPS DE PRISTE DU BIBERON (Plage de 1h30 max)
-            const mealMaxDate = new Date(lastBottleDate.getTime() + 90 * 60000); // +90 min (1h30)
-            const startH = String(lastBottleDate.getHours()).padStart(2, '0');
-            const startM = String(lastBottleDate.getMinutes()).padStart(2, '0');
-            const endH = String(mealMaxDate.getHours()).padStart(2, '0');
-            const endM = String(mealMaxDate.getMinutes()).padStart(2, '0');
+            // CALCUL AUTOMATIQUE DE LA FENÊTRE DU PROCHAIN REPAS (H + 1h30)
+            const nextMealMaxDate = new Date(nextBottleDate.getTime() + 90 * 60000);
+            const nextMealStartH = String(nextBottleDate.getHours()).padStart(2, '0');
+            const nextMealStartM = String(nextBottleDate.getMinutes()).padStart(2, '0');
+            const nextMealEndH = String(nextMealMaxDate.getHours()).padStart(2, '0');
+            const nextMealEndM = String(nextMealMaxDate.getMinutes()).padStart(2, '0');
 
-            document.getElementById('meal-window-range').innerText = `${startH}h${startM} à ${endH}h${endM}`;
-
-            const mealDiffMs = mealMaxDate - now;
-            const mealDiffMins = Math.round(mealDiffMs / 60000);
+            document.getElementById('meal-window-range').innerText = `${nextMealStartH}h${nextMealStartM} à ${nextMealEndH}h${nextMealEndM}`;
 
             const mealStatusEl = document.getElementById('meal-window-status');
             const mealCard = document.getElementById('meal-window-card');
 
-            if (mealDiffMins >= 0) {
-                mealStatusEl.innerText = `⏳ Bébé a encore ${mealDiffMins} min pour terminer son repas.`;
+            if (diffMinutes > 0) {
+                mealStatusEl.innerText = `⏳ Plage du prochain repas calculée automatique (${nextMealStartH}h${nextMealStartM} max ${nextMealEndH}h${nextMealEndM})`;
                 mealStatusEl.className = "text-[10px] text-amber-300 font-bold mt-0.5";
                 mealCard.className = "bg-gradient-to-r from-amber-900/30 via-orange-900/30 to-purple-900/30 border border-amber-500/30 p-5 rounded-[2.5rem] flex items-center justify-between shadow-2xl relative overflow-hidden";
             } else {
-                const elapsedOver = Math.abs(mealDiffMins);
-                mealStatusEl.innerText = `📢 DÉPASSÉ DE ${elapsedOver} MIN ! Le temps pour boire (1h30) est écoulé !`;
-                mealStatusEl.className = "text-[10px] text-red-400 font-black mt-0.5 animate-bounce";
-                mealCard.className = "bg-gradient-to-r from-red-900/60 via-pink-900/60 to-purple-900/60 border border-red-500 p-5 rounded-[2.5rem] flex items-center justify-between shadow-2xl relative overflow-hidden";
+                const mealDiffMs = nextMealMaxDate - now;
+                const mealDiffMins = Math.round(mealDiffMs / 60000);
 
-                // Déclenchement automatique de la notification 📢 si dépassement
-                if (!mealAlertSent) {
-                    mealAlertSent = true;
-                    triggerPushNotification(
-                        "📢 TEMPS DE REPAS DÉPASSÉ !",
-                        `Bébé a commencé son biberon à ${startH}h${startM}. La limite de 1h30 (${endH}h${endM}) est dépassée !`
-                    );
+                if (mealDiffMins >= 0) {
+                    mealStatusEl.innerText = `⏳ Repas en cours ! Bébé a encore ${mealDiffMins} min pour terminer son biberon.`;
+                    mealStatusEl.className = "text-[10px] text-amber-300 font-bold mt-0.5";
+                    mealCard.className = "bg-gradient-to-r from-amber-900/30 via-orange-900/30 to-purple-900/30 border border-amber-500/30 p-5 rounded-[2.5rem] flex items-center justify-between shadow-2xl relative overflow-hidden";
+                } else {
+                    const elapsedOver = Math.abs(mealDiffMins);
+                    mealStatusEl.innerText = `📢 DÉPASSÉ DE ${elapsedOver} MIN ! Limite de 1h30 dépassée ! Validez le biberon dès qu'il est fini.`;
+                    mealStatusEl.className = "text-[10px] text-red-400 font-black mt-0.5 animate-bounce";
+                    mealCard.className = "bg-gradient-to-r from-red-900/60 via-pink-900/60 to-purple-900/60 border border-red-500 p-5 rounded-[2.5rem] flex items-center justify-between shadow-2xl relative overflow-hidden";
+
+                    if (!mealAlertSent) {
+                        mealAlertSent = true;
+                        triggerPushNotification(
+                            "📢 TEMPS DE REPAS DÉPASSÉ !",
+                            `Heure prévue : ${nextMealStartH}h${nextMealStartM}. La limite de 1h30 (${nextMealEndH}h${nextMealEndM}) est dépassée !`
+                        );
+                    }
                 }
             }
         };
@@ -857,8 +872,8 @@
                             latestTempBb = d.tempBb;
                         }
 
-                        if(d.food) {
-                            lastMealText = `${d.food} (${d.time})`;
+                        if(d.food || d.bottleOnTime) {
+                            lastMealText = `${d.food || 'Validé'} (${d.time})`;
                             lastMealRawTimeStr = d.time;
                         }
                         if(d.stool) lastStoolText = `Oui (${d.time})`;
@@ -871,7 +886,7 @@
                                 <td class="p-2">${d.urine ? '💧' : ''} ${d.stool ? '💩' : ''}</td>
                                 <td class="p-2 font-black ${d.tempBb < 36.5 ? 'text-blue-400' : d.tempBb > 37.5 ? 'text-red-400' : 'text-green-400'}">${d.tempBb ? d.tempBb + '°' : '--'}</td>
                                 <td class="p-2 text-slate-400">${d.tempInc ? d.tempInc + '°' : '--'}</td>
-                                <td class="p-2 font-semibold text-pink-300">${d.food || '--'}</td>
+                                <td class="p-2 font-semibold text-pink-300">${d.food || (d.bottleOnTime ? '✅ À temps' : '--')}</td>
                                 <td class="p-2 text-slate-300">${d.obs || '--'}</td>
                                 <td class="p-2 text-right">
                                     <button onclick="deleteTrackDoc('${id}')" class="admin-only text-red-400 hover:text-red-500 text-xs is-block"><i class="fas fa-trash"></i></button>
