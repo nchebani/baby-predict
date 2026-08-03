@@ -187,7 +187,7 @@
                     </div>
                 </div>
 
-                <!-- CARTE INTERVALLE DE DURÉE DU REPAS PROCHAIN (CALCUL ÉCHÉANCE ET PLAGE 1H30 DU PROCHAIN REPAS) -->
+                <!-- CARTE INTERVALLE DE DURÉE DU REPAS PROCHAIN -->
                 <div id="meal-window-card" class="bg-gradient-to-r from-amber-900/30 via-orange-900/30 to-purple-900/30 border border-amber-500/30 p-5 rounded-[2.5rem] flex items-center justify-between shadow-2xl relative overflow-hidden">
                     <div class="flex items-center gap-4">
                         <div class="w-12 h-12 rounded-2xl bg-amber-500/20 flex items-center justify-center text-amber-400 text-2xl border border-amber-500/30">
@@ -254,12 +254,41 @@
                                 <option value="2ème JOUR" class="bg-[#07070a]">Jour 2 (25/07 - Sam)</option>
                                 <option value="3ème JOUR" class="bg-[#07070a]">Jour 3 (26/07 - Dim)</option>
                                 <option value="4ème JOUR" class="bg-[#07070a]">Jour 4 (27/07 - Lun)</option>
-                                <option value="5ème JOUR" class="bg-[#07070a]" selected>Jour 5 (28/07 - Mar)</option>
+                                <option value="5ème JOUR" class="bg-[#07070a]">Jour 5 (28/07 - Mar)</option>
                                 <option value="6ème JOUR" class="bg-[#07070a]">Jour 6 (29/07 - Mer)</option>
                                 <option value="7ème JOUR" class="bg-[#07070a]">Jour 7 (30/07 - Jeu)</option>
                                 <option value="8ème JOUR" class="bg-[#07070a]">Jour 8 (31/07 - Ven)</option>
                                 <option value="9ème JOUR" class="bg-[#07070a]">Jour 9 (01/08 - Sam)</option>
                                 <option value="10ème JOUR" class="bg-[#07070a]">Jour 10 (02/08 - Dim)</option>
+                                <option value="11ème JOUR" class="bg-[#07070a]" selected>Jour 11 (03/08 - Lun)</option>
+                                <option value="12ème JOUR" class="bg-[#07070a]">Jour 12 (04/08 - Mar)</option>
+                                <option value="13ème JOUR" class="bg-[#07070a]">Jour 13 (05/08 - Mer)</option>
+                                <option value="14ème JOUR" class="bg-[#07070a]">Jour 14 (06/08 - Jeu)</option>
+                                <option value="15ème JOUR" class="bg-[#07070a]">Jour 15 (07/08 - Ven)</option>
+                                <option value="16ème JOUR" class="bg-[#07070a]">Jour 16 (08/08 - Sam)</option>
+                                <option value="17ème JOUR" class="bg-[#07070a]">Jour 17 (09/08 - Dim)</option>
+                                <option value="18ème JOUR" class="bg-[#07070a]">Jour 18 (10/08 - Lun)</option>
+                                <option value="19ème JOUR" class="bg-[#07070a]">Jour 19 (11/08 - Mar)</option>
+                                <option value="20ème JOUR" class="bg-[#07070a]">Jour 20 (12/08 - Mer)</option>
+                                <option value="21ème JOUR" class="bg-[#07070a]">Jour 21 (13/08 - Jeu)</option>
+                                <option value="22ème JOUR" class="bg-[#07070a]">Jour 22 (14/08 - Ven)</option>
+                                <option value="23ème JOUR" class="bg-[#07070a]">Jour 23 (15/08 - Sam)</option>
+                                <option value="24ème JOUR" class="bg-[#07070a]">Jour 24 (16/08 - Dim)</option>
+                                <option value="25ème JOUR" class="bg-[#07070a]">Jour 25 (17/08 - Lun)</option>
+                                <option value="26ème JOUR" class="bg-[#07070a]">Jour 26 (18/08 - Mar)</option>
+                                <option value="27ème JOUR" class="bg-[#07070a]">Jour 27 (19/08 - Mer)</option>
+                                <option value="28ème JOUR" class="bg-[#07070a]">Jour 28 (20/08 - Jeu)</option>
+                                <option value="29ème JOUR" class="bg-[#07070a]">Jour 29 (21/08 - Ven)</option>
+                                <option value="30ème JOUR" class="bg-[#07070a]">Jour 30 (22/08 - Sam)</option>
+                                <option value="31ème JOUR" class="bg-[#07070a]">Jour 31 (23/08 - Dim)</option>
+                                <option value="32ème JOUR" class="bg-[#07070a]">Jour 32 (24/08 - Lun)</option>
+                                <option value="33ème JOUR" class="bg-[#07070a]">Jour 33 (25/08 - Mar)</option>
+                                <option value="34ème JOUR" class="bg-[#07070a]">Jour 34 (26/08 - Mer)</option>
+                                <option value="35ème JOUR" class="bg-[#07070a]">Jour 35 (27/08 - Jeu)</option>
+                                <option value="36ème JOUR" class="bg-[#07070a]">Jour 36 (28/08 - Ven)</option>
+                                <option value="37ème JOUR" class="bg-[#07070a]">Jour 37 (29/08 - Sam)</option>
+                                <option value="38ème JOUR" class="bg-[#07070a]">Jour 38 (30/08 - Dim)</option>
+                                <option value="39ème JOUR" class="bg-[#07070a]">Jour 39 (31/08 - Lun)</option>
                             </select>
                         </div>
                         <div>
@@ -301,7 +330,7 @@
                     <div class="space-y-3 text-xs">
                         <div>
                             <label class="block text-[9px] font-bold text-slate-400 mb-1">Alimentation (ex: Bib 50ml, Tétée...)</label>
-                            <input type="text" id="track-food" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none" placeholder="Ex: Bib 50 - 70 ml">
+                            <input type="text" id="track-food" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none" placeholder="Ex: Bib 60 - 90 ml">
                         </div>
                         <div>
                             <label class="block text-[9px] font-bold text-slate-400 mb-1">Observations / Soins (ex: Bain, Cordon...)</label>
