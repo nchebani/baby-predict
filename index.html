@@ -24,16 +24,20 @@
         .gender-btn.selected-pink { background: #db2777 !important; border-color: #f472b6; color: white; }
         .gender-btn.selected-blue { background: #2563eb !important; border-color: #60a5fa; color: white; }
 
-        /* OPTIMISATION DE L'IMPRESSION PDF */
+        /* OPTIMISATION DE L'IMPRESSION PDF (CORRIGÉE) */
         @media print {
-            body { background: white !important; color: black !important; }
+            body, html { background: white !important; color: black !important; height: auto !important; overflow: visible !important; }
             nav, header, #push-alert, .page, .no-print, .tab-content:not(#tab-tracker) { display: none !important; }
-            #tab-tracker { display: block !important; padding: 0 !important; width: 100% !important; }
-            .glass { background: none !important; border: 1px solid #ddd !important; backdrop-filter: none !important; box-shadow: none !important; color: black !important; }
-            table { width: 100% !important; border: 1px solid #ccc !important; color: black !important; }
-            th, td { border: 1px solid #ddd !important; color: black !important; padding: 6px !important; }
-            canvas { max-width: 100% !important; height: auto !important; }
-            h3, h4, p, span { color: black !important; }
+            
+            /* Forcer l'affichage du tracker */
+            #tab-tracker { display: block !important; padding: 0 !important; width: 100% !important; margin: 0 !important; position: absolute !important; left: 0 !important; top: 0 !important; }
+            
+            .glass { background: none !important; border: 1px solid #ccc !important; backdrop-filter: none !important; box-shadow: none !important; color: black !important; border-radius: 8px !important; margin-bottom: 15px !important; }
+            table { width: 100% !important; border: 1px solid #000 !important; color: black !important; border-collapse: collapse !important; }
+            th, td { border: 1px solid #ccc !important; color: black !important; padding: 8px !important; }
+            th { background-color: #f0f0f0 !important; }
+            canvas { max-width: 100% !important; max-height: 250px !important; height: auto !important; }
+            h3, h4, p, span, td, th { color: black !important; }
         }
     </style>
 </head>
@@ -160,7 +164,8 @@
                         <h3 class="text-2xl font-black italic uppercase">Suivi Maternité</h3>
                         <p class="text-[10px] text-slate-400">Santé & Fiche de Soins</p>
                     </div>
-                    <button onclick="window.print()" class="glass text-purple-400 hover:bg-purple-500/20 p-3 rounded-2xl text-xs font-bold border border-purple-500/30 flex items-center gap-2">
+                    <!-- BOUTON D'IMPRESSION SÉCURISÉ -->
+                    <button onclick="exportToPDF()" class="glass text-purple-400 hover:bg-purple-500/20 p-3 rounded-2xl text-xs font-bold border border-purple-500/30 flex items-center gap-2 cursor-pointer">
                         <i class="fas fa-print"></i> Export PDF / Pédiatre
                     </button>
                 </div>
@@ -247,7 +252,7 @@
                     </div>
                 </div>
 
-                <!-- GRAPHIQUE POIDS (AJOUTÉ) -->
+                <!-- GRAPHIQUE POIDS -->
                 <div class="glass p-5 rounded-[2.5rem] border border-white/10 space-y-3">
                     <h4 class="text-xs font-black uppercase text-purple-400 italic flex items-center justify-between">
                         <span><i class="fas fa-weight-hanging mr-2"></i> Courbe de Poids (kg)</span>
@@ -501,6 +506,23 @@
         let weightChartInstance = null;
         let lastMealRawTimeStr = null;
         let mealAlertSent = false;
+
+        // FONCTION D'EXPORTATION ET IMPRESSION PDF CORRIGÉE
+        window.exportToPDF = () => {
+            const trackerTab = document.getElementById('tab-tracker');
+            const wasActive = trackerTab.classList.contains('active');
+            
+            // Forcer la visibilité avant de lancer l'impression
+            trackerTab.classList.add('active');
+            
+            setTimeout(() => {
+                window.print();
+                // Remettre l'état original si nécessaire
+                if (!wasActive) {
+                    trackerTab.classList.remove('active');
+                }
+            }, 200);
+        };
 
         function initDynamicDaysSelect() {
             const birthDate = new Date(2026, 6, 23); 
