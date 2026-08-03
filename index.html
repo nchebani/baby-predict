@@ -3,16 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BABY PREDICT 2026</title>
+    <title>BABY PREDICT 2026 - Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <!-- Chart.js pour le graphique de température -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body { background: #07070a; color: #e2e8f0; font-family: 'Inter', sans-serif; margin: 0; min-height: 100vh; }
         .glass { background: rgba(23, 23, 33, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.05); }
         
-        /* Gestion dynamique de l'affichage Admin */
         .admin-only { display: none !important; }
         .is-admin .admin-only { display: flex !important; }
         button.admin-only.is-block { display: block !important; }
@@ -25,11 +23,20 @@
         #push-alert.show { transform: translateY(20px); }
         .gender-btn.selected-pink { background: #db2777 !important; border-color: #f472b6; color: white; }
         .gender-btn.selected-blue { background: #2563eb !important; border-color: #60a5fa; color: white; }
+
+        @media print {
+            body { background: white !important; color: black !important; }
+            nav, header, #push-alert, .page, .no-print { display: none !important; }
+            .tab-content { display: block !important; padding: 0 !important; }
+            .glass { background: none !important; border: none !important; backdrop-filter: none !important; box-shadow: none !important; }
+            table { width: 100% !important; border: 1px solid #ccc !important; }
+            th, td { border: 1px solid #ddd !important; color: black !important; }
+        }
     </style>
 </head>
 <body>
 
-    <!-- ALERTES PUSH SATELLITE (ALERTE NAISSANCE, BIBERON & TEMPS REPAS) -->
+    <!-- ALERTES PUSH SATELLITE -->
     <div id="push-alert" class="fixed top-0 left-1/2 -translate-x-1/2 w-[90%] max-w-sm glass p-4 rounded-3xl border-l-4 border-purple-500 shadow-2xl flex items-center gap-3">
         <div class="bg-purple-500/20 w-10 h-10 rounded-full flex items-center justify-center text-purple-500"><i class="fas fa-baby"></i></div>
         <div class="flex-1">
@@ -74,7 +81,6 @@
             <!-- VUE GENERALE & STATS -->
             <section id="tab-home" class="tab-content active space-y-6">
                 
-                <!-- PANNEAU DES RESULTATS FINAUX -->
                 <div id="panel-final-result" class="hidden bg-gradient-to-br from-yellow-600/20 to-amber-600/20 border border-yellow-500/30 p-6 rounded-[2.5rem] text-center shadow-2xl">
                     <span class="text-[10px] font-black uppercase text-yellow-400 tracking-widest bg-yellow-500/10 px-3 py-1 rounded-full border border-yellow-500/20"><i class="fas fa-trophy mr-1"></i> Le Bébé est là ! <i class="fas fa-trophy ml-1"></i></span>
                     <h3 class="text-3xl font-black mt-4 text-white uppercase tracking-tight" id="res-final-name">---</h3>
@@ -90,7 +96,6 @@
                     </div>
                 </div>
 
-                <!-- CONFIGURATION DU VERDICT DE NAISSANCE (ADMIN ONLY) -->
                 <div class="admin-only glass p-6 rounded-[2.5rem] border border-yellow-500/20 space-y-4">
                     <h4 class="text-xs font-black uppercase tracking-wider text-yellow-500 italic"><i class="fas fa-edit mr-2"></i>[ADMIN] Clôturer & Entrer les vraies infos</h4>
                     <div class="grid grid-cols-2 gap-2 text-xs">
@@ -114,7 +119,6 @@
                     <div id="list-online" class="flex flex-wrap justify-center gap-2 text-[10px]"></div>
                 </div>
 
-                <!-- POURCENTAGES DU SEXE -->
                 <div class="glass p-6 rounded-[2.5rem] space-y-4">
                     <h4 class="text-xs font-black uppercase tracking-wider text-slate-400 italic text-center">Tendance Sexe</h4>
                     <div class="flex items-center justify-between text-xs font-bold px-2">
@@ -127,7 +131,6 @@
                     </div>
                 </div>
 
-                <!-- MOYENNES DES PRONOSTICS -->
                 <div class="grid grid-cols-2 gap-4">
                     <div class="glass p-6 rounded-3xl text-center">
                         <span class="text-[9px] text-slate-500 block uppercase font-bold mb-1 italic">Poids Moyen</span>
@@ -139,7 +142,6 @@
                     </div>
                 </div>
 
-                <!-- TOP PRENOMS -->
                 <div class="glass p-6 rounded-[2.5rem]">
                     <h4 class="text-xs font-black uppercase tracking-wider text-slate-400 italic mb-4"><i class="fas fa-star mr-2 text-yellow-400"></i>Prénoms les plus votés</h4>
                     <div id="top-names-list" class="space-y-2 text-xs">
@@ -150,15 +152,18 @@
 
             <!-- ONGLET : SUIVI BÉBÉ & FEUILLE DE SOINS MATERNITÉ -->
             <section id="tab-tracker" class="tab-content space-y-6">
-                <div class="flex justify-between items-center mb-2 px-2">
+                <div class="flex justify-between items-center mb-2 px-2 no-print">
                     <div>
                         <h3 class="text-2xl font-black italic uppercase">Suivi Maternité</h3>
                         <p class="text-[10px] text-slate-400">Santé & Fiche de Soins</p>
                     </div>
+                    <button onclick="window.print()" class="glass text-purple-400 hover:bg-purple-500/20 p-3 rounded-2xl text-xs font-bold border border-purple-500/30 flex items-center gap-2">
+                        <i class="fas fa-print"></i> Export PDF / Pédiatre
+                    </button>
                 </div>
 
-                <!-- CARTE ALERTE RAPPEL PROCHAIN BIBERON & DOSE CONSEILLEE -->
-                <div id="next-bottle-card" class="bg-gradient-to-r from-pink-900/40 via-purple-900/40 to-indigo-900/40 border border-pink-500/30 p-5 rounded-[2.5rem] flex items-center justify-between shadow-2xl relative overflow-hidden">
+                <!-- CARTE ALERTE RAPPEL PROCHAIN BIBERON -->
+                <div id="next-bottle-card" class="no-print bg-gradient-to-r from-pink-900/40 via-purple-900/40 to-indigo-900/40 border border-pink-500/30 p-5 rounded-[2.5rem] flex items-center justify-between shadow-2xl relative overflow-hidden">
                     <div class="flex items-center gap-4">
                         <div class="w-12 h-12 rounded-2xl bg-pink-500/20 flex items-center justify-center text-pink-400 text-2xl border border-pink-500/30">
                             <i class="fas fa-baby-bottle animate-bounce"></i>
@@ -167,14 +172,12 @@
                             <span class="text-[9px] font-black uppercase text-pink-300 tracking-widest block">⏰ Prochain Biberon</span>
                             <h4 id="next-bottle-time" class="text-2xl font-black text-white">--h--</h4>
                             <p id="next-bottle-status" class="text-[10px] text-slate-300 font-bold mt-0.5">En attente de données...</p>
-                            <!-- DOSE RECOMMANDEE DYNAMIQUE -->
                             <span id="next-bottle-dose" class="inline-block mt-2 bg-pink-500/20 text-pink-300 border border-pink-500/30 text-[9px] font-bold px-2.5 py-0.5 rounded-full">
                                 🍼 Dose conseillée : -- ml
                             </span>
                         </div>
                     </div>
                     
-                    <!-- REGLAGE INTERVALLE BIBERON -->
                     <div class="text-right">
                         <label class="text-[8px] uppercase font-bold text-slate-400 block mb-1">Fréquence</label>
                         <select id="bottle-interval" onchange="updateNextBottleDisplay()" class="bg-black/50 border border-white/10 text-xs font-bold text-pink-300 p-2 rounded-xl outline-none">
@@ -187,8 +190,8 @@
                     </div>
                 </div>
 
-                <!-- CARTE INTERVALLE DE DURÉE DU REPAS PROCHAIN -->
-                <div id="meal-window-card" class="bg-gradient-to-r from-amber-900/30 via-orange-900/30 to-purple-900/30 border border-amber-500/30 p-5 rounded-[2.5rem] flex items-center justify-between shadow-2xl relative overflow-hidden">
+                <!-- CARTE INTERVALLE REPAS -->
+                <div id="meal-window-card" class="no-print bg-gradient-to-r from-amber-900/30 via-orange-900/30 to-purple-900/30 border border-amber-500/30 p-5 rounded-[2.5rem] flex items-center justify-between shadow-2xl relative overflow-hidden">
                     <div class="flex items-center gap-4">
                         <div class="w-12 h-12 rounded-2xl bg-amber-500/20 flex items-center justify-center text-amber-400 text-2xl border border-amber-500/30">
                             <i class="fas fa-clock"></i>
@@ -201,8 +204,8 @@
                     </div>
                 </div>
 
-                <!-- ALERTE DE TEMPERATURE DYNAMIQUE -->
-                <div id="temp-alert-box" class="hidden p-4 rounded-2xl border flex items-center gap-3">
+                <!-- ALERTE DE TEMPERATURE -->
+                <div id="temp-alert-box" class="hidden p-4 rounded-2xl border flex items-center gap-3 no-print">
                     <i id="temp-alert-icon" class="fas text-xl"></i>
                     <div>
                         <h5 id="temp-alert-title" class="font-bold text-xs uppercase"></h5>
@@ -211,7 +214,7 @@
                 </div>
 
                 <!-- CARTES RAPIDES "DERNIERS..." -->
-                <div class="grid grid-cols-2 gap-3">
+                <div class="grid grid-cols-2 gap-3 no-print">
                     <div class="glass p-4 rounded-2xl border border-white/5">
                         <span class="text-[9px] font-bold text-slate-400 uppercase block">🍼 Dernier Repas</span>
                         <p id="last-meal" class="text-sm font-black text-pink-400 mt-1">Aucun</p>
@@ -230,8 +233,8 @@
                     </div>
                 </div>
 
-                <!-- GRAPHIQUE COURBE DE TEMPÉRATURE BÉBÉ -->
-                <div class="glass p-5 rounded-[2.5rem] border border-white/10 space-y-3">
+                <!-- GRAPHIQUE TEMPÉRATURE -->
+                <div class="glass p-5 rounded-[2.5rem] border border-white/10 space-y-3 no-print">
                     <h4 class="text-xs font-black uppercase text-purple-400 italic flex items-center justify-between">
                         <span><i class="fas fa-chart-line mr-2"></i> Courbe de Température (°C)</span>
                         <span class="text-[9px] text-slate-500 font-normal">Min: 36.5°C | Max: 37.5°C</span>
@@ -241,58 +244,22 @@
                     </div>
                 </div>
 
-                <!-- FORMULAIRE DE SAISIE FICHE SOINS -->
-                <div class="glass p-6 rounded-[2.5rem] space-y-4 border border-white/10">
+                <!-- FORMULAIRE DE SAISIE FICHE SOINS (CLEAN UX/ERGONOMIE) -->
+                <div class="glass p-6 rounded-[2.5rem] space-y-4 border border-white/10 no-print">
                     <h4 class="text-xs font-black uppercase text-slate-300 italic"><i class="fas fa-plus-circle mr-2 text-purple-400"></i> Ajouter une saisie de soins</h4>
                     
                     <div class="grid grid-cols-2 gap-3 text-xs">
                         <div>
                             <label class="block text-[9px] font-bold text-slate-400 mb-1">Jour de suivi</label>
+                            <!-- SELECT GENERATED DYNAMICALLY JS -->
                             <select id="track-day" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none">
-                                <option value="Naissance" class="bg-[#07070a]">Jour 0 - Naissance (23/07 - Jeu)</option>
-                                <option value="1er JOUR" class="bg-[#07070a]">Jour 1 (24/07 - Ven)</option>
-                                <option value="2ème JOUR" class="bg-[#07070a]">Jour 2 (25/07 - Sam)</option>
-                                <option value="3ème JOUR" class="bg-[#07070a]">Jour 3 (26/07 - Dim)</option>
-                                <option value="4ème JOUR" class="bg-[#07070a]">Jour 4 (27/07 - Lun)</option>
-                                <option value="5ème JOUR" class="bg-[#07070a]">Jour 5 (28/07 - Mar)</option>
-                                <option value="6ème JOUR" class="bg-[#07070a]">Jour 6 (29/07 - Mer)</option>
-                                <option value="7ème JOUR" class="bg-[#07070a]">Jour 7 (30/07 - Jeu)</option>
-                                <option value="8ème JOUR" class="bg-[#07070a]">Jour 8 (31/07 - Ven)</option>
-                                <option value="9ème JOUR" class="bg-[#07070a]">Jour 9 (01/08 - Sam)</option>
-                                <option value="10ème JOUR" class="bg-[#07070a]">Jour 10 (02/08 - Dim)</option>
-                                <option value="11ème JOUR" class="bg-[#07070a]" selected>Jour 11 (03/08 - Lun)</option>
-                                <option value="12ème JOUR" class="bg-[#07070a]">Jour 12 (04/08 - Mar)</option>
-                                <option value="13ème JOUR" class="bg-[#07070a]">Jour 13 (05/08 - Mer)</option>
-                                <option value="14ème JOUR" class="bg-[#07070a]">Jour 14 (06/08 - Jeu)</option>
-                                <option value="15ème JOUR" class="bg-[#07070a]">Jour 15 (07/08 - Ven)</option>
-                                <option value="16ème JOUR" class="bg-[#07070a]">Jour 16 (08/08 - Sam)</option>
-                                <option value="17ème JOUR" class="bg-[#07070a]">Jour 17 (09/08 - Dim)</option>
-                                <option value="18ème JOUR" class="bg-[#07070a]">Jour 18 (10/08 - Lun)</option>
-                                <option value="19ème JOUR" class="bg-[#07070a]">Jour 19 (11/08 - Mar)</option>
-                                <option value="20ème JOUR" class="bg-[#07070a]">Jour 20 (12/08 - Mer)</option>
-                                <option value="21ème JOUR" class="bg-[#07070a]">Jour 21 (13/08 - Jeu)</option>
-                                <option value="22ème JOUR" class="bg-[#07070a]">Jour 22 (14/08 - Ven)</option>
-                                <option value="23ème JOUR" class="bg-[#07070a]">Jour 23 (15/08 - Sam)</option>
-                                <option value="24ème JOUR" class="bg-[#07070a]">Jour 24 (16/08 - Dim)</option>
-                                <option value="25ème JOUR" class="bg-[#07070a]">Jour 25 (17/08 - Lun)</option>
-                                <option value="26ème JOUR" class="bg-[#07070a]">Jour 26 (18/08 - Mar)</option>
-                                <option value="27ème JOUR" class="bg-[#07070a]">Jour 27 (19/08 - Mer)</option>
-                                <option value="28ème JOUR" class="bg-[#07070a]">Jour 28 (20/08 - Jeu)</option>
-                                <option value="29ème JOUR" class="bg-[#07070a]">Jour 29 (21/08 - Ven)</option>
-                                <option value="30ème JOUR" class="bg-[#07070a]">Jour 30 (22/08 - Sam)</option>
-                                <option value="31ème JOUR" class="bg-[#07070a]">Jour 31 (23/08 - Dim)</option>
-                                <option value="32ème JOUR" class="bg-[#07070a]">Jour 32 (24/08 - Lun)</option>
-                                <option value="33ème JOUR" class="bg-[#07070a]">Jour 33 (25/08 - Mar)</option>
-                                <option value="34ème JOUR" class="bg-[#07070a]">Jour 34 (26/08 - Mer)</option>
-                                <option value="35ème JOUR" class="bg-[#07070a]">Jour 35 (27/08 - Jeu)</option>
-                                <option value="36ème JOUR" class="bg-[#07070a]">Jour 36 (28/08 - Ven)</option>
-                                <option value="37ème JOUR" class="bg-[#07070a]">Jour 37 (29/08 - Sam)</option>
-                                <option value="38ème JOUR" class="bg-[#07070a]">Jour 38 (30/08 - Dim)</option>
-                                <option value="39ème JOUR" class="bg-[#07070a]">Jour 39 (31/08 - Lun)</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-[9px] font-bold text-slate-400 mb-1">Heure (ex: 14h30)</label>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="block text-[9px] font-bold text-slate-400">Heure (ex: 14h30)</label>
+                                <button type="button" onclick="setNowTime()" class="text-[8px] bg-purple-500/20 text-purple-300 px-1.5 py-0.5 rounded font-bold">Maintenant</button>
+                            </div>
                             <input type="text" id="track-time" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none" placeholder="Ex: 14h30">
                         </div>
                         <div>
@@ -316,28 +283,35 @@
                         </label>
                     </div>
 
-                    <!-- BOUTON/CHECKBOX DE VALIDATION DE PRISE DU BIBERON DANS LES TEMPS -->
                     <div class="bg-pink-500/10 border border-pink-500/20 p-3 rounded-xl">
                         <label class="flex items-center gap-3 cursor-pointer">
                             <input type="checkbox" id="track-bottle-ontime" class="rounded accent-pink-500 w-5 h-5">
                             <div>
-                                <span class="text-pink-300 font-black text-xs block">✅ Biberon pris & validé en temps et en heure</span>
-                                <span class="text-[9px] text-slate-400">Calcule directement l'heure et la plage du repas suivant.</span>
+                                <span class="text-pink-300 font-black text-xs block">✅ Biberon pris & validé à temps</span>
+                                <span class="text-[9px] text-slate-400">Lance automatiquement la fenêtre du repas suivant.</span>
                             </div>
                         </label>
                     </div>
 
                     <div class="space-y-3 text-xs">
                         <div>
-                            <label class="block text-[9px] font-bold text-slate-400 mb-1">Alimentation (ex: Bib 50ml, Tétée...)</label>
-                            <input type="text" id="track-food" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none" placeholder="Ex: Bib 60 - 90 ml">
+                            <label class="block text-[9px] font-bold text-slate-400 mb-1">Alimentation (Saisie ou Sélection rapide)</label>
+                            <!-- ERGONOMIE QUICK-TAP DOSE -->
+                            <div class="flex gap-2 mb-2">
+                                <button type="button" onclick="setQuickFood('Bib 30ml')" class="bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg text-[10px] font-bold">30 ml</button>
+                                <button type="button" onclick="setQuickFood('Bib 60ml')" class="bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg text-[10px] font-bold">60 ml</button>
+                                <button type="button" onclick="setQuickFood('Bib 90ml')" class="bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg text-[10px] font-bold">90 ml</button>
+                                <button type="button" onclick="setQuickFood('Bib 120ml')" class="bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg text-[10px] font-bold">120 ml</button>
+                                <button type="button" onclick="setQuickFood('Tétée')" class="bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg text-[10px] font-bold">Tétée</button>
+                            </div>
+                            <input type="text" id="track-food" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none" placeholder="Ex: Bib 60 ml">
                         </div>
                         <div>
-                            <label class="block text-[9px] font-bold text-slate-400 mb-1">Observations / Soins (ex: Bain, Cordon...)</label>
+                            <label class="block text-[9px] font-bold text-slate-400 mb-1">Observations / Soins</label>
                             <input type="text" id="track-obs" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none" placeholder="Ex: Cordon fait, Bain OK">
                         </div>
                         <div>
-                            <label class="block text-[9px] font-bold text-slate-400 mb-1">Mise à jour Poids du jour (kg)</label>
+                            <label class="block text-[9px] font-bold text-slate-400 mb-1">Poids du jour (kg)</label>
                             <input type="number" step="0.001" id="track-weight" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none" placeholder="Ex: 2.650">
                         </div>
                     </div>
@@ -347,9 +321,9 @@
                     </button>
                 </div>
 
-                <!-- TABLEAU RECAPITULATIF REPRODUISANT LA FICHE DE MATERNITÉ -->
+                <!-- TABLEAU RECAPITULATIF (AVEC IMPRESSION PRO PÉDIATRE) -->
                 <div class="glass p-5 rounded-[2.5rem] border border-white/10 overflow-x-auto space-y-3">
-                    <h4 class="text-xs font-black uppercase text-slate-300 italic"><i class="fas fa-table mr-2 text-purple-400"></i> Historique Fiche de Soins</h4>
+                    <h4 class="text-xs font-black uppercase text-slate-300 italic"><i class="fas fa-table mr-2 text-purple-400"></i> Historique Fiche de Soins Maternité</h4>
                     <table class="w-full text-left text-[11px] border-collapse min-w-[500px]">
                         <thead>
                             <tr class="border-b border-white/10 text-slate-400 uppercase text-[9px]">
@@ -358,7 +332,8 @@
                                 <th class="p-2">T° BB</th>
                                 <th class="p-2">T° LC</th>
                                 <th class="p-2">Alimentation</th>
-                                <th class="p-2 text-right">Action</th>
+                                <th class="p-2">Observations</th>
+                                <th class="p-2 text-right no-print">Action</th>
                             </tr>
                         </thead>
                         <tbody id="table-track-body" class="divide-y divide-white/5 text-slate-200">
@@ -420,7 +395,7 @@
                 </div>
             </section>
 
-            <!-- TOUS LES PRONOS DE LA TEAM -->
+            <!-- TOUS LES PRONOS -->
             <section id="tab-ranking" class="tab-content">
                 <div class="flex justify-between items-center mb-6 px-2">
                     <h3 class="text-2xl font-black italic uppercase">Les Pronostics</h3>
@@ -429,7 +404,7 @@
                 <div id="list-all-votes" class="space-y-4"></div>
             </section>
 
-            <!-- FIL DE DISCUSSION / CHAT -->
+            <!-- CHAT -->
             <section id="tab-chat" class="tab-content">
                 <div class="flex justify-between items-center mb-6 px-2">
                     <h3 class="text-2xl font-black italic uppercase">Baby Chat</h3>
@@ -443,8 +418,8 @@
             </section>
         </main>
 
-        <!-- NAVIGATION INFÉRIEURE AVEC L'ONGLET TRACKER BÉBÉ -->
-        <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[95%] max-w-sm z-50">
+        <!-- NAVIGATION INFÉRIEURE -->
+        <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[95%] max-w-sm z-50 no-print">
             <div class="glass rounded-[2.5rem] flex justify-around p-3 border border-white/10 shadow-2xl">
                 <button onclick="switchTab('home', this)" class="nav-btn text-purple-400 p-3"><i class="fas fa-chart-pie"></i></button>
                 <button onclick="switchTab('tracker', this)" class="nav-btn text-slate-500 p-3"><i class="fas fa-baby-carriage"></i></button>
@@ -455,7 +430,7 @@
         </nav>
     </div>
 
-    <!-- MODALE ADMIN : CHOIX DU SEXE ERGONOMIQUE -->
+    <!-- MODALE ADMIN -->
     <div id="admin-modal-gender" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[9999] flex items-center justify-center p-4 hidden">
         <div class="glass p-8 rounded-[2.5rem] w-full max-w-sm border border-white/10 text-center shadow-2xl space-y-6">
             <div>
@@ -482,7 +457,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp, setDoc, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp, setDoc, limit, getDocs, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
 
         const VAPID_KEY = "KyCv3GvPMoavPSSZllmgVr5lLHpf-sohTDLhAMvW20w"; 
@@ -501,6 +476,13 @@
         const db = getFirestore(app);
         const messaging = getMessaging(app);
 
+        // PERSISTENCE HORS-LIGNE (PRO OPTIMIZATION)
+        try {
+            enableIndexedDbPersistence(db);
+        } catch (err) {
+            console.log("Persistence offline non supportée par le navigateur", err);
+        }
+
         let userName = "";
         let selectedGender = "";
         let isAdmin = false;
@@ -508,6 +490,56 @@
         let tempChartInstance = null;
         let lastMealRawTimeStr = null;
         let mealAlertSent = false;
+
+        // GENERATION DYNAMIQUE DES JOURS DANS LE SELECT (CLEAN CODE PRO)
+        function initDynamicDaysSelect() {
+            const birthDate = new Date(2026, 6, 23); // 23 Juillet 2026
+            const endDate = new Date(2026, 7, 31);   // 31 Août 2026
+            const selectEl = document.getElementById('track-day');
+            const now = new Date();
+
+            selectEl.innerHTML = "";
+            let cur = new Date(birthDate);
+            let dayIndex = 0;
+            const daysShort = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
+
+            while (cur <= endDate) {
+                const dayNum = String(cur.getDate()).padStart(2, '0');
+                const monthNum = String(cur.getMonth() + 1).padStart(2, '0');
+                const dayName = daysShort[cur.getDay()];
+                
+                let valueStr = dayIndex === 0 ? "Naissance" : `${dayIndex}ème JOUR`;
+                let labelStr = dayIndex === 0 
+                    ? `Jour 0 - Naissance (${dayNum}/${monthNum} - ${dayName})`
+                    : `Jour ${dayIndex} (${dayNum}/${monthNum} - ${dayName})`;
+
+                const opt = document.createElement('option');
+                opt.value = valueStr;
+                opt.textContent = labelStr;
+                opt.className = "bg-[#07070a]";
+
+                if (cur.toDateString() === now.toDateString()) {
+                    opt.selected = true;
+                }
+
+                selectEl.appendChild(opt);
+                cur.setDate(cur.getDate() + 1);
+                dayIndex++;
+            }
+        }
+        initDynamicDaysSelect();
+
+        // ERGONOMIE QUICK-TAP
+        window.setNowTime = () => {
+            const now = new Date();
+            const hh = String(now.getHours()).padStart(2, '0');
+            const mm = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('track-time').value = `${hh}h${mm}`;
+        };
+
+        window.setQuickFood = (val) => {
+            document.getElementById('track-food').value = val;
+        };
 
         const manualImports = [
             { user: "Sandra P.", sexe: "Garçon", prenom: "Aloïs", taille: 51, poids: 3.300, passion: "Danse", date: "2026-08-10", heure: "--" },
@@ -551,17 +583,17 @@
         function getRecommendedBottleDose(day, weightKg, intervalHours) {
             const d = (day || "").toUpperCase();
 
-            if (d.includes("NAISSANCE") || d.includes("JOUR 0")) return { dose: "10 - 15 ml", label: "Jour 0 - Naissance (23/07 - Jeu)" };
-            if (d.includes("1ER") || d.includes("JOUR 1")) return { dose: "10 - 30 ml", label: "Jour 1 (24/07 - Ven)" };
-            if (d.includes("2È") || d.includes("2E") || d.includes("JOUR 2")) return { dose: "20 - 40 ml", label: "Jour 2 (25/07 - Sam)" };
-            if (d.includes("3È") || d.includes("3E") || d.includes("JOUR 3")) return { dose: "30 - 50 ml", label: "Jour 3 (26/07 - Dim)" };
-            if (d.includes("4È") || d.includes("4E") || d.includes("JOUR 4")) return { dose: "40 - 60 ml", label: "Jour 4 (27/07 - Lun)" };
-            if (d.includes("5È") || d.includes("5E") || d.includes("JOUR 5")) return { dose: "50 - 70 ml", label: "Jour 5 (28/07 - Mar)" };
-            if (d.includes("6È") || d.includes("6E") || d.includes("JOUR 6")) return { dose: "60 - 80 ml", label: "Jour 6 (29/07 - Mer)" };
-            if (d.includes("7È") || d.includes("7E") || d.includes("JOUR 7")) return { dose: "70 - 90 ml", label: "Jour 7 (30/07 - Jeu)" };
-            if (d.includes("8È") || d.includes("8E") || d.includes("JOUR 8")) return { dose: "80 - 100 ml", label: "Jour 8 (31/07 - Ven)" };
-            if (d.includes("9È") || d.includes("9E") || d.includes("JOUR 9")) return { dose: "90 - 110 ml", label: "Jour 9 (01/08 - Sam)" };
-            if (d.includes("10È") || d.includes("10E") || d.includes("JOUR 10")) return { dose: "100 - 120 ml", label: "Jour 10 (02/08 - Dim)" };
+            if (d.includes("NAISSANCE") || d.includes("JOUR 0")) return { dose: "10 - 15 ml", label: "Jour 0" };
+            if (d.includes("1ER") || d.includes("JOUR 1")) return { dose: "10 - 30 ml", label: "Jour 1" };
+            if (d.includes("2È") || d.includes("2E") || d.includes("JOUR 2")) return { dose: "20 - 40 ml", label: "Jour 2" };
+            if (d.includes("3È") || d.includes("3E") || d.includes("JOUR 3")) return { dose: "30 - 50 ml", label: "Jour 3" };
+            if (d.includes("4È") || d.includes("4E") || d.includes("JOUR 4")) return { dose: "40 - 60 ml", label: "Jour 4" };
+            if (d.includes("5È") || d.includes("5E") || d.includes("JOUR 5")) return { dose: "50 - 70 ml", label: "Jour 5" };
+            if (d.includes("6È") || d.includes("6E") || d.includes("JOUR 6")) return { dose: "60 - 80 ml", label: "Jour 6" };
+            if (d.includes("7È") || d.includes("7E") || d.includes("JOUR 7")) return { dose: "70 - 90 ml", label: "Jour 7" };
+            if (d.includes("8È") || d.includes("8E") || d.includes("JOUR 8")) return { dose: "80 - 100 ml", label: "Jour 8" };
+            if (d.includes("9È") || d.includes("9E") || d.includes("JOUR 9")) return { dose: "90 - 110 ml", label: "Jour 9" };
+            if (d.includes("10È") || d.includes("10E") || d.includes("JOUR 10")) return { dose: "100 - 120 ml", label: "Jour 10" };
 
             if (weightKg && weightKg > 0) {
                 const bottlesPerDay = Math.round(24 / (intervalHours || 3.5));
@@ -716,7 +748,6 @@
             alert("Pronostic enregistré avec succès ! 🎉");
         };
 
-        // --- GESTION DES SOINS & TRACKING BÉBÉ ---
         document.getElementById('btn-add-track').onclick = async () => {
             const day = document.getElementById('track-day').value;
             const time = document.getElementById('track-time').value.trim();
@@ -760,7 +791,6 @@
             alert("Saisie enregistrée !");
         };
 
-        // --- CALCUL DYNAMIQUE ET AUTOMATIQUE DU PROCHAIN BIBERON ET DE LA PLAGE DE REPAS SUIVANTE (1H30) ---
         window.updateNextBottleDisplay = () => {
             const intervalHours = parseFloat(document.getElementById('bottle-interval').value);
             const currentDay = document.getElementById('track-day').value;
@@ -802,7 +832,6 @@
                 lastBottleDate.setDate(lastBottleDate.getDate() - 1);
             }
 
-            // HEURE PREVUE DU PROCHAIN BIBERON
             const nextBottleDate = new Date(lastBottleDate.getTime() + intervalTotalMinutes * 60000);
             
             const nextH = String(nextBottleDate.getHours()).padStart(2, '0');
@@ -828,7 +857,6 @@
                 statusEl.className = "text-[10px] text-red-400 font-bold mt-0.5 animate-pulse";
             }
 
-            // CALCUL AUTOMATIQUE DE LA FENÊTRE DU PROCHAIN REPAS (H + 1h30)
             const nextMealMaxDate = new Date(nextBottleDate.getTime() + 90 * 60000);
             const nextMealStartH = String(nextBottleDate.getHours()).padStart(2, '0');
             const nextMealStartM = String(nextBottleDate.getMinutes()).padStart(2, '0');
@@ -915,7 +943,8 @@
                                 <td class="p-2 font-black ${d.tempBb < 36.5 ? 'text-blue-400' : d.tempBb > 37.5 ? 'text-red-400' : 'text-green-400'}">${d.tempBb ? d.tempBb + '°' : '--'}</td>
                                 <td class="p-2 text-slate-400">${d.tempInc ? d.tempInc + '°' : '--'}</td>
                                 <td class="p-2 font-semibold text-pink-300">${d.food || (d.bottleOnTime ? '✅ À temps' : '--')}</td>
-                                <td class="p-2 text-right">
+                                <td class="p-2 text-slate-300">${d.obs || '--'}</td>
+                                <td class="p-2 text-right no-print">
                                     <button onclick="deleteTrackDoc('${id}')" class="admin-only text-red-400 hover:text-red-500 text-xs is-block"><i class="fas fa-trash"></i></button>
                                 </td>
                             </tr>
