@@ -249,17 +249,17 @@
                         <div>
                             <label class="block text-[9px] font-bold text-slate-400 mb-1">Jour de suivi</label>
                             <select id="track-day" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none">
-                                <option value="Naissance" class="bg-[#07070a]">Naissance (23/07 - Jeu)</option>
-                                <option value="1er JOUR" class="bg-[#07070a]">1er JOUR (24/07 - Ven)</option>
-                                <option value="2ème JOUR" class="bg-[#07070a]">2ème JOUR (25/07 - Sam)</option>
-                                <option value="3ème JOUR" class="bg-[#07070a]">3ème JOUR (26/07 - Dim)</option>
-                                <option value="4ème JOUR" class="bg-[#07070a]">4ème JOUR (27/07 - Lun)</option>
-                                <option value="5ème JOUR" class="bg-[#07070a]" selected>5ème JOUR (28/07 - Mar)</option>
-                                <option value="6ème JOUR" class="bg-[#07070a]">6ème JOUR (29/07 - Mer)</option>
-                                <option value="7ème JOUR" class="bg-[#07070a]">7ème JOUR (30/07 - Jeu)</option>
-                                <option value="8ème JOUR" class="bg-[#07070a]">8ème JOUR (31/07 - Ven)</option>
-                                <option value="9ème JOUR" class="bg-[#07070a]">9ème JOUR (01/08 - Sam)</option>
-                                <option value="10ème JOUR" class="bg-[#07070a]">10ème JOUR (02/08 - Dim)</option>
+                                <option value="Naissance" class="bg-[#07070a]">Jour 0 - Naissance (23/07 - Jeu)</option>
+                                <option value="1er JOUR" class="bg-[#07070a]">Jour 1 (24/07 - Ven)</option>
+                                <option value="2ème JOUR" class="bg-[#07070a]">Jour 2 (25/07 - Sam)</option>
+                                <option value="3ème JOUR" class="bg-[#07070a]">Jour 3 (26/07 - Dim)</option>
+                                <option value="4ème JOUR" class="bg-[#07070a]">Jour 4 (27/07 - Lun)</option>
+                                <option value="5ème JOUR" class="bg-[#07070a]" selected>Jour 5 (28/07 - Mar)</option>
+                                <option value="6ème JOUR" class="bg-[#07070a]">Jour 6 (29/07 - Mer)</option>
+                                <option value="7ème JOUR" class="bg-[#07070a]">Jour 7 (30/07 - Jeu)</option>
+                                <option value="8ème JOUR" class="bg-[#07070a]">Jour 8 (31/07 - Ven)</option>
+                                <option value="9ème JOUR" class="bg-[#07070a]">Jour 9 (01/08 - Sam)</option>
+                                <option value="10ème JOUR" class="bg-[#07070a]">Jour 10 (02/08 - Dim)</option>
                             </select>
                         </div>
                         <div>
@@ -329,7 +329,6 @@
                                 <th class="p-2">T° BB</th>
                                 <th class="p-2">T° LC</th>
                                 <th class="p-2">Alimentation</th>
-                                <th class="p-2">Observations</th>
                                 <th class="p-2 text-right">Action</th>
                             </tr>
                         </thead>
@@ -523,17 +522,17 @@
         function getRecommendedBottleDose(day, weightKg, intervalHours) {
             const d = (day || "").toUpperCase();
 
-            if (d.includes("NAISSANCE")) return { dose: "10 - 15 ml", label: "Naissance (23/07 - Jeu)" };
-            if (d.includes("1ER")) return { dose: "10 - 30 ml", label: "1er JOUR (24/07 - Ven)" };
-            if (d.includes("2È") || d.includes("2E")) return { dose: "20 - 40 ml", label: "2ème JOUR (25/07 - Sam)" };
-            if (d.includes("3È") || d.includes("3E")) return { dose: "30 - 50 ml", label: "3ème JOUR (26/07 - Dim)" };
-            if (d.includes("4È") || d.includes("4E")) return { dose: "40 - 60 ml", label: "4ème JOUR (27/07 - Lun)" };
-            if (d.includes("5È") || d.includes("5E")) return { dose: "50 - 70 ml", label: "5ème JOUR - Mardi (28/07)" };
-            if (d.includes("6È") || d.includes("6E")) return { dose: "60 - 80 ml", label: "6ème JOUR - Mercredi (29/07)" };
-            if (d.includes("7È") || d.includes("7E")) return { dose: "70 - 90 ml", label: "7ème JOUR (30/07 - Jeu)" };
-            if (d.includes("8È") || d.includes("8E")) return { dose: "80 - 100 ml", label: "8ème JOUR (31/07 - Ven)" };
-            if (d.includes("9È") || d.includes("9E")) return { dose: "90 - 110 ml", label: "9ème JOUR (01/08 - Sam)" };
-            if (d.includes("10È") || d.includes("10E")) return { dose: "100 - 120 ml", label: "10ème JOUR (02/08 - Dim)" };
+            if (d.includes("NAISSANCE") || d.includes("JOUR 0")) return { dose: "10 - 15 ml", label: "Jour 0 - Naissance (23/07 - Jeu)" };
+            if (d.includes("1ER") || d.includes("JOUR 1")) return { dose: "10 - 30 ml", label: "Jour 1 (24/07 - Ven)" };
+            if (d.includes("2È") || d.includes("2E") || d.includes("JOUR 2")) return { dose: "20 - 40 ml", label: "Jour 2 (25/07 - Sam)" };
+            if (d.includes("3È") || d.includes("3E") || d.includes("JOUR 3")) return { dose: "30 - 50 ml", label: "Jour 3 (26/07 - Dim)" };
+            if (d.includes("4È") || d.includes("4E") || d.includes("JOUR 4")) return { dose: "40 - 60 ml", label: "Jour 4 (27/07 - Lun)" };
+            if (d.includes("5È") || d.includes("5E") || d.includes("JOUR 5")) return { dose: "50 - 70 ml", label: "Jour 5 (28/07 - Mar)" };
+            if (d.includes("6È") || d.includes("6E") || d.includes("JOUR 6")) return { dose: "60 - 80 ml", label: "Jour 6 (29/07 - Mer)" };
+            if (d.includes("7È") || d.includes("7E") || d.includes("JOUR 7")) return { dose: "70 - 90 ml", label: "Jour 7 (30/07 - Jeu)" };
+            if (d.includes("8È") || d.includes("8E") || d.includes("JOUR 8")) return { dose: "80 - 100 ml", label: "Jour 8 (31/07 - Ven)" };
+            if (d.includes("9È") || d.includes("9E") || d.includes("JOUR 9")) return { dose: "90 - 110 ml", label: "Jour 9 (01/08 - Sam)" };
+            if (d.includes("10È") || d.includes("10E") || d.includes("JOUR 10")) return { dose: "100 - 120 ml", label: "Jour 10 (02/08 - Dim)" };
 
             if (weightKg && weightKg > 0) {
                 const bottlesPerDay = Math.round(24 / (intervalHours || 3.5));
@@ -887,7 +886,6 @@
                                 <td class="p-2 font-black ${d.tempBb < 36.5 ? 'text-blue-400' : d.tempBb > 37.5 ? 'text-red-400' : 'text-green-400'}">${d.tempBb ? d.tempBb + '°' : '--'}</td>
                                 <td class="p-2 text-slate-400">${d.tempInc ? d.tempInc + '°' : '--'}</td>
                                 <td class="p-2 font-semibold text-pink-300">${d.food || (d.bottleOnTime ? '✅ À temps' : '--')}</td>
-                                <td class="p-2 text-slate-300">${d.obs || '--'}</td>
                                 <td class="p-2 text-right">
                                     <button onclick="deleteTrackDoc('${id}')" class="admin-only text-red-400 hover:text-red-500 text-xs is-block"><i class="fas fa-trash"></i></button>
                                 </td>
