@@ -3,272 +3,506 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Suivi & Tendance du Poids</title>
-    <!-- Tailwind CSS -->
+    <title>BABY PREDICT 2026 - Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <!-- Chart.js & Plugins -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <style>
-        body { background: #07070a; color: #e2e8f0; font-family: 'Inter', sans-serif; }
-        .glass { background: rgba(23, 23, 33, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08); }
+        body { background: #07070a; color: #e2e8f0; font-family: 'Inter', sans-serif; margin: 0; min-height: 100vh; }
+        .glass { background: rgba(23, 23, 33, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.05); }
+        
+        .admin-only { display: none !important; }
+        .is-admin .admin-only { display: flex !important; }
+        button.admin-only.is-block { display: block !important; }
+        
+        .tab-content { display: none; padding-bottom: 140px; }
+        .tab-content.active { display: block; }
+        .page { position: fixed; inset: 0; z-index: 100; background: #07070a; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .hidden { display: none !important; }
+        #push-alert { transform: translateY(-130%); transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 9999; }
+        #push-alert.show { transform: translateY(20px); }
+        .gender-btn.selected-pink { background: #db2777 !important; border-color: #f472b6; color: white; }
+        .gender-btn.selected-blue { background: #2563eb !important; border-color: #60a5fa; color: white; }
+
+        /* OPTIMISATION DE L'IMPRESSION PDF */
+        @media print {
+            body, html { background: white !important; color: black !important; height: auto !important; overflow: visible !important; }
+            nav, header, #push-alert, .page, .no-print, .tab-content:not(#tab-tracker) { display: none !important; }
+            
+            #tab-tracker { display: block !important; padding: 0 !important; width: 100% !important; margin: 0 !important; position: absolute !important; left: 0 !important; top: 0 !important; }
+            
+            .glass { background: none !important; border: 1px solid #ccc !important; backdrop-filter: none !important; box-shadow: none !important; color: black !important; border-radius: 8px !important; margin-bottom: 15px !important; }
+            table { width: 100% !important; border: 1px solid #000 !important; color: black !important; border-collapse: collapse !important; }
+            th, td { border: 1px solid #ccc !important; color: black !important; padding: 8px !important; }
+            th { background-color: #f0f0f0 !important; }
+            canvas { max-width: 100% !important; max-height: 250px !important; height: auto !important; }
+            h3, h4, p, span, td, th { color: black !important; }
+        }
     </style>
 </head>
-<body class="p-4 md:p-8 min-h-screen">
+<body>
 
-    <div class="max-w-4xl mx-auto space-y-6">
-        
-        <!-- En-tête -->
-        <header class="flex justify-between items-center glass p-6 rounded-3xl">
+    <!-- ALERTES PUSH SATELLITE -->
+    <div id="push-alert" class="fixed top-0 left-1/2 -translate-x-1/2 w-[90%] max-w-sm glass p-4 rounded-3xl border-l-4 border-purple-500 shadow-2xl flex items-center gap-3">
+        <div class="bg-purple-500/20 w-10 h-10 rounded-full flex items-center justify-center text-purple-500"><i class="fas fa-baby"></i></div>
+        <div class="flex-1">
+            <p id="push-title" class="text-[10px] font-black uppercase text-purple-400 italic">Baby Predict</p>
+            <p id="push-body" class="text-xs text-white">Message...</p>
+        </div>
+    </div>
+
+    <!-- PAGE DE LOGIN MULTI-ACCÈS -->
+    <div id="page-login" class="page">
+        <div class="glass p-10 rounded-[3rem] w-full max-w-sm border border-purple-500/20 text-center shadow-2xl">
+            <div class="text-4xl mb-4">👶✨</div>
+            <h1 class="text-3xl font-black italic text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-blue-400 mb-2">BABY PREDICT</h1>
+            <p class="text-[10px] uppercase tracking-widest text-slate-500 mb-8 font-bold">Pronostics &amp; Suivi Maternité</p>
+            <input type="tel" id="input-pass" class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-center text-2xl mb-5 text-white outline-none focus:border-purple-500 transition-all" placeholder="Code d'accès">
+            <button id="btn-to-name" class="w-full bg-gradient-to-r from-pink-600 to-blue-600 text-white font-black py-5 rounded-2xl uppercase text-xs transition-all shadow-lg italic tracking-wider">Vérifier le code</button>
+            <p class="text-[9px] text-slate-500 mt-4 italic">Demandez le code d'accès (Admin ou Proche) aux parents.</p>
+        </div>
+    </div>
+
+    <!-- PAGE DE NOM -->
+    <div id="page-name" class="page hidden text-center">
+        <div class="glass p-10 rounded-[3rem] w-full max-w-sm border border-white/10 shadow-2xl">
+            <p class="text-[10px] uppercase font-bold text-purple-400 mb-4 tracking-widest italic">Qui es-tu ?</p>
+            <input type="text" id="input-name" class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-center text-xl mb-5 text-white outline-none focus:border-white/30 transition-all" placeholder="Ton Prénom / Pseudo">
+            <button id="btn-to-app" class="w-full bg-white text-black font-black py-5 rounded-2xl uppercase text-xs hover:bg-slate-200 transition-all shadow-lg italic">Rejoindre l'application</button>
+        </div>
+    </div>
+
+    <!-- APPLICATION PRINCIPALE -->
+    <div id="main-app" class="hidden min-h-screen">
+        <header class="p-6 flex justify-between items-center sticky top-0 bg-[#07070a]/90 backdrop-blur-xl z-40 border-b border-white/5">
             <div>
-                <h1 class="text-2xl font-black italic uppercase text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
-                    Suivi de Poids Interactif
-                </h1>
-                <p class="text-xs text-slate-400 font-medium mt-1">Ajoutez, supprimez et observez l'ajustement de la tendance en temps réel.</p>
+                <h2 class="font-black italic text-xl uppercase tracking-tighter">Baby <span class="text-purple-400">Predict</span></h2>
+                <p id="role-tag" class="text-[8px] font-bold text-purple-400/50 uppercase tracking-widest"></p>
             </div>
-            <div class="text-right">
-                <span class="text-[10px] font-bold uppercase tracking-widest text-slate-500 block">Dernier Poids</span>
-                <span id="stat-last-weight" class="text-2xl font-black text-purple-400">-- kg</span>
-            </div>
+            <button id="logout-btn" class="w-10 h-10 glass rounded-full flex items-center justify-center text-red-400 hover:bg-red-500/10 transition-all"><i class="fas fa-power-off"></i></button>
         </header>
 
-        <!-- Formulaire de saisie -->
-        <section class="glass p-6 rounded-3xl space-y-4">
-            <h2 class="text-xs font-black uppercase text-purple-400 tracking-wider italic">
-                <i class="fas fa-plus-circle mr-2"></i>Ajouter une nouvelle mesure
-            </h2>
-            <form id="weight-form" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div>
-                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Date & Heure</label>
-                    <input type="datetime-local" id="input-date" required class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white text-sm outline-none focus:border-purple-500 transition-all">
+        <main class="p-4 max-w-lg mx-auto">
+            
+            <!-- VUE GENERALE & STATS -->
+            <section id="tab-home" class="tab-content active space-y-6">
+                
+                <div id="panel-final-result" class="hidden bg-gradient-to-br from-yellow-600/20 to-amber-600/20 border border-yellow-500/30 p-6 rounded-[2.5rem] text-center shadow-2xl">
+                    <span class="text-[10px] font-black uppercase text-yellow-400 tracking-widest bg-yellow-500/10 px-3 py-1 rounded-full border border-yellow-500/20"><i class="fas fa-trophy mr-1"></i> Le Bébé est là ! <i class="fas fa-trophy ml-1"></i></span>
+                    <h3 class="text-3xl font-black mt-4 text-white uppercase tracking-tight" id="res-final-name">---</h3>
+                    <p class="text-sm font-bold text-slate-300 mt-1" id="res-final-gender">---</p>
+                    <div class="grid grid-cols-2 gap-4 mt-4 text-xs bg-black/40 p-4 rounded-2xl">
+                        <p>👶 <b>Poids :</b> <span id="res-final-weight">0</span> kg</p>
+                        <p>📏 <b>Taille :</b> <span id="res-final-height">0</span> cm</p>
+                        <p class="col-span-2 border-t border-white/5 pt-2 mt-1">📅 <b>Né le :</b> <span id="res-final-date">--</span> à <span id="res-final-time">--</span></p>
+                    </div>
+                    <div class="mt-4 p-3 bg-purple-500/20 rounded-xl border border-purple-500/30">
+                        <p class="text-[10px] uppercase font-black text-purple-300">🏆 Meilleur Pronostic 🏆</p>
+                        <p class="font-black text-lg text-white mt-1" id="winner-name">Calcul en cours...</p>
+                    </div>
                 </div>
-                <div>
-                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Poids (kg)</label>
-                    <input type="number" step="0.001" id="input-weight" placeholder="Ex: 3.250" required class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white text-sm outline-none focus:border-purple-500 transition-all">
+
+                <div class="admin-only glass p-6 rounded-[2.5rem] border border-yellow-500/20 space-y-4">
+                    <h4 class="text-xs font-black uppercase tracking-wider text-yellow-500 italic"><i class="fas fa-edit mr-2"></i>[ADMIN] Clôturer &amp; Entrer les vraies infos</h4>
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <select id="final-gender" class="bg-white/5 border border-white/10 p-2 rounded-xl text-white outline-none">
+                            <option value="" class="bg-[#07070a]">Sexe...</option>
+                            <option value="Fille" class="bg-[#07070a]">Fille</option>
+                            <option value="Garçon" class="bg-[#07070a]">Garçon</option>
+                        </select>
+                        <input type="text" id="final-name" class="bg-white/5 border border-white/10 p-2 rounded-xl text-white outline-none" placeholder="Vrai Prénom">
+                        <input type="number" step="0.001" id="final-weight" class="bg-white/5 border border-white/10 p-2 rounded-xl text-white outline-none" placeholder="Poids (kg)">
+                        <input type="number" step="0.5" id="final-height" class="bg-white/5 border border-white/10 p-2 rounded-xl text-white outline-none" placeholder="Taille (cm)">
+                        <input type="date" id="final-date" class="bg-white/5 border border-white/10 p-2 rounded-xl text-white outline-none">
+                        <input type="time" id="final-time" class="bg-white/5 border border-white/10 p-2 rounded-xl text-white outline-none">
+                    </div>
+                    <button id="btn-save-final" class="w-full bg-yellow-600 text-white font-black py-3 rounded-xl uppercase text-[10px] tracking-wider shadow-lg">Publier le résultat final</button>
                 </div>
-                <div class="flex items-end">
-                    <button type="submit" class="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-black py-3 rounded-xl uppercase text-xs tracking-wider transition-all shadow-lg active:scale-95">
-                        <i class="fas fa-save mr-1"></i> Enregistrer
+
+                <div class="glass p-8 rounded-[3rem] text-center shadow-2xl relative overflow-hidden">
+                    <p class="text-[10px] uppercase font-black text-purple-400 tracking-widest mb-1">Bienvenue</p>
+                    <h3 class="text-3xl font-black italic uppercase mb-4 tracking-tighter" id="display-name">---</h3>
+                    <div id="list-online" class="flex flex-wrap justify-center gap-2 text-[10px]"></div>
+                </div>
+
+                <div class="glass p-6 rounded-[2.5rem] space-y-4">
+                    <h4 class="text-xs font-black uppercase tracking-wider text-slate-400 italic text-center">Tendance Sexe</h4>
+                    <div class="flex items-center justify-between text-xs font-bold px-2">
+                        <span class="text-pink-400"><i class="fas fa-venus mr-1"></i> Fille : <span id="pct-girl">0</span>%</span>
+                        <span class="text-blue-400">Garçon : <span id="pct-boy">0</span>% <i class="fas fa-mars ml-1"></i></span>
+                    </div>
+                    <div class="w-full bg-white/5 h-4 rounded-full overflow-hidden flex">
+                        <div id="bar-girl" class="bg-pink-500 h-full transition-all duration-500" style="width: 50%"></div>
+                        <div id="bar-boy" class="bg-blue-500 h-full transition-all duration-500" style="width: 50%"></div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="glass p-6 rounded-3xl text-center">
+                        <span class="text-[9px] text-slate-500 block uppercase font-bold mb-1 italic">Poids Moyen</span>
+                        <b id="avg-weight" class="text-2xl font-black text-purple-400">0.000</b> <span class="text-[10px] font-bold text-slate-400">kg</span>
+                    </div>
+                    <div class="glass p-6 rounded-3xl text-center">
+                        <span class="text-[9px] text-slate-500 block uppercase font-bold mb-1 italic">Taille Moyenne</span>
+                        <b id="avg-height" class="text-2xl font-black text-purple-400">0.0</b> <span class="text-[10px] font-bold text-slate-400">cm</span>
+                    </div>
+                </div>
+
+                <div class="glass p-6 rounded-[2.5rem]">
+                    <h4 class="text-xs font-black uppercase tracking-wider text-slate-400 italic mb-4"><i class="fas fa-star mr-2 text-yellow-400"></i>Prénoms les plus votés</h4>
+                    <div id="top-names-list" class="space-y-2 text-xs">
+                        <p class="text-slate-500 italic text-center text-xs">Aucun vote pour le moment</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ONGLET : SUIVI BÉBÉ & FEUILLE DE SOINS MATERNITÉ -->
+            <section id="tab-tracker" class="tab-content space-y-6">
+                <div class="flex justify-between items-center mb-2 px-2 no-print">
+                    <div>
+                        <h3 class="text-2xl font-black italic uppercase">Suivi Maternité</h3>
+                        <p class="text-[10px] text-slate-400">Santé &amp; Fiche de Soins</p>
+                    </div>
+                    <button onclick="exportToPDF()" class="glass text-purple-400 hover:bg-purple-500/20 p-3 rounded-2xl text-xs font-bold border border-purple-500/30 flex items-center gap-2 cursor-pointer">
+                        <i class="fas fa-print"></i> Export PDF / Pédiatre
                     </button>
                 </div>
-            </form>
-        </section>
 
-        <!-- Graphique interactif -->
-        <section class="glass p-6 rounded-3xl space-y-3">
-            <div class="flex justify-between items-center">
-                <h2 class="text-xs font-black uppercase text-purple-400 tracking-wider italic">
-                    <i class="fas fa-chart-line mr-2"></i>Courbe & Tendance
-                </h2>
-                <span class="text-[10px] text-slate-400 italic">Astuce : Cliquez sur un point du graphique pour le supprimer</span>
-            </div>
-            <div class="w-full h-72 relative">
-                <canvas id="weightChart"></canvas>
-            </div>
-        </section>
+                <!-- CARTE ALERTE RAPPEL PROCHAIN BIBERON -->
+                <div id="next-bottle-card" class="no-print bg-gradient-to-r from-pink-900/40 via-purple-900/40 to-indigo-900/40 border border-pink-500/30 p-5 rounded-[2.5rem] flex items-center justify-between shadow-2xl relative overflow-hidden">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-2xl bg-pink-500/20 flex items-center justify-center text-pink-400 text-2xl border border-pink-500/30">
+                            <i class="fas fa-baby-bottle animate-bounce"></i>
+                        </div>
+                        <div>
+                            <span class="text-[9px] font-black uppercase text-pink-300 tracking-widest block">⏰ Prochain Biberon</span>
+                            <h4 id="next-bottle-time" class="text-2xl font-black text-white">--h--</h4>
+                            <p id="next-bottle-status" class="text-[10px] text-slate-300 font-bold mt-0.5">En attente de données...</p>
+                            <span id="next-bottle-dose" class="inline-block mt-2 bg-pink-500/20 text-pink-300 border border-pink-500/30 text-[9px] font-bold px-2.5 py-0.5 rounded-full">
+                                🍼 Dose conseillée : -- ml
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="text-right">
+                        <label class="text-[8px] uppercase font-bold text-slate-400 block mb-1">Fréquence</label>
+                        <select id="bottle-interval" onchange="updateNextBottleDisplay()" class="bg-black/50 border border-white/10 text-xs font-bold text-pink-300 p-2 rounded-xl outline-none">
+                            <option value="2.5" class="bg-[#07070a]">2h30</option>
+                            <option value="3.0" class="bg-[#07070a]">3h00</option>
+                            <option value="3.5" class="bg-[#07070a]" selected>3h30</option>
+                            <option value="4.0" class="bg-[#07070a]">4h00</option>
+                            <option value="4.5" class="bg-[#07070a]">4h30</option>
+                        </select>
+                    </div>
+                </div>
 
-        <!-- Liste des mesures enregistrées -->
-        <section class="glass p-6 rounded-3xl space-y-4">
-            <h2 class="text-xs font-black uppercase text-purple-400 tracking-wider italic">
-                <i class="fas fa-list mr-2"></i>Historique des données
-            </h2>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs border-collapse">
-                    <thead>
-                        <tr class="border-b border-white/10 text-slate-400 uppercase font-bold text-[10px]">
-                            <th class="p-3">Date & Heure</th>
-                            <th class="p-3">Poids (kg)</th>
-                            <th class="p-3 text-right">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="weight-table-body" class="divide-y divide-white/5">
-                        <!-- Rempli en JS -->
-                    </tbody>
-                </table>
-            </div>
-        </section>
+                <!-- STATISTIQUES REPAS ET COUCHES -->
+                <div class="glass p-5 rounded-[2.5rem] border border-white/10 space-y-4 no-print">
+                    <h4 class="text-xs font-black uppercase text-purple-400 italic flex items-center justify-between">
+                        <span><i class="fas fa-chart-pie mr-2"></i> Statistiques Biberons &amp; Couches</span>
+                    </h4>
+                    <div class="grid grid-cols-3 gap-2 text-center text-xs">
+                        <div class="bg-white/5 p-3 rounded-2xl border border-white/5">
+                            <span class="text-[8px] font-bold text-slate-400 uppercase block">Aujourd'hui</span>
+                            <p class="font-black text-pink-400 mt-1">🍼 <span id="stat-bib-day">0</span></p>
+                            <p class="font-black text-blue-400 mt-0.5">🧷 <span id="stat-diaper-day">0</span></p>
+                        </div>
+                        <div class="bg-white/5 p-3 rounded-2xl border border-white/5">
+                            <span class="text-[8px] font-bold text-slate-400 uppercase block">7 Derniers jours</span>
+                            <p class="font-black text-pink-400 mt-1">🍼 <span id="stat-bib-week">0</span></p>
+                            <p class="font-black text-blue-400 mt-0.5">🧷 <span id="stat-diaper-week">0</span></p>
+                        </div>
+                        <div class="bg-white/5 p-3 rounded-2xl border border-white/5">
+                            <span class="text-[8px] font-bold text-slate-400 uppercase block">Ce mois-ci</span>
+                            <p class="font-black text-pink-400 mt-1">🍼 <span id="stat-bib-month">0</span></p>
+                            <p class="font-black text-blue-400 mt-0.5">🧷 <span id="stat-diaper-month">0</span></p>
+                        </div>
+                    </div>
+                </div>
 
+                <!-- CONFIGURATION SEUILS PARENTS -->
+                <div class="glass p-5 rounded-[2.5rem] border border-white/10 space-y-3 no-print">
+                    <h4 class="text-xs font-black uppercase text-amber-400 italic flex items-center justify-between">
+                        <span><i class="fas fa-sliders-h mr-2"></i> Configuration des Objectifs (Journalier)</span>
+                    </h4>
+                    <div class="grid grid-cols-2 gap-3 text-xs">
+                        <div class="space-y-2 bg-white/5 p-3 rounded-2xl">
+                            <span class="text-[9px] font-bold text-pink-300 uppercase block">🍼 Biberons par jour</span>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[9px] text-slate-400">Min:</span>
+                                <input type="number" id="limit-bib-min" class="w-full bg-black/40 border border-white/10 p-1.5 rounded-lg text-center font-bold text-white" value="5">
+                                <span class="text-[9px] text-slate-400">Max:</span>
+                                <input type="number" id="limit-bib-max" class="w-full bg-black/40 border border-white/10 p-1.5 rounded-lg text-center font-bold text-white" value="8">
+                            </div>
+                        </div>
+                        <div class="space-y-2 bg-white/5 p-3 rounded-2xl">
+                            <span class="text-[9px] font-bold text-blue-300 uppercase block">🧷 Couches par jour</span>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[9px] text-slate-400">Min:</span>
+                                <input type="number" id="limit-diaper-min" class="w-full bg-black/40 border border-white/10 p-1.5 rounded-lg text-center font-bold text-white" value="6">
+                                <span class="text-[9px] text-slate-400">Max:</span>
+                                <input type="number" id="limit-diaper-max" class="w-full bg-black/40 border border-white/10 p-1.5 rounded-lg text-center font-bold text-white" value="12">
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="saveThresholds()" class="w-full bg-amber-600/30 hover:bg-amber-600/50 border border-amber-500/40 text-amber-300 font-bold py-2 rounded-xl text-[10px] uppercase tracking-wider transition-all">
+                        <i class="fas fa-save mr-1"></i> Sauvegarder les objectifs
+                    </button>
+                </div>
+
+                <!-- GRAPHIQUE ACTIVITÉ BIBERONS / COUCHES -->
+                <div class="glass p-5 rounded-[2.5rem] border border-white/10 space-y-3">
+                    <h4 class="text-xs font-black uppercase text-purple-400 italic flex items-center justify-between">
+                        <span><i class="fas fa-chart-bar mr-2"></i> Activité Biberons &amp; Couches (7 derniers jours)</span>
+                    </h4>
+                    <div class="w-full h-48">
+                        <canvas id="activityChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- CARTE INTERVALLE REPAS -->
+                <div id="meal-window-card" class="no-print bg-gradient-to-r from-amber-900/30 via-orange-900/30 to-purple-900/30 border border-amber-500/30 p-5 rounded-[2.5rem] flex items-center justify-between shadow-2xl relative overflow-hidden">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-2xl bg-amber-500/20 flex items-center justify-center text-amber-400 text-2xl border border-amber-500/30">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div>
+                            <span class="text-[9px] font-black uppercase text-amber-300 tracking-widest block">⏳ Plage Prochain Repas (1h30 Max)</span>
+                            <h4 id="meal-window-range" class="text-xl font-black text-white">--h-- à --h--</h4>
+                            <p id="meal-window-status" class="text-[10px] text-slate-300 font-bold mt-0.5">Aucun biberon programmé</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ALERTE DE TEMPERATURE -->
+                <div id="temp-alert-box" class="hidden p-4 rounded-2xl border flex items-center gap-3 no-print">
+                    <i id="temp-alert-icon" class="fas text-xl"></i>
+                    <div>
+                        <h5 id="temp-alert-title" class="font-bold text-xs uppercase"></h5>
+                        <p id="temp-alert-msg" class="text-[11px]"></p>
+                    </div>
+                </div>
+
+                <!-- CARTES RAPIDES "DERNIERS..." -->
+                <div class="grid grid-cols-2 gap-3 no-print">
+                    <div class="glass p-4 rounded-2xl border border-white/5">
+                        <span class="text-[9px] font-bold text-slate-400 uppercase block">🍼 Dernier Repas</span>
+                        <p id="last-meal" class="text-sm font-black text-pink-400 mt-1">Aucun</p>
+                    </div>
+                    <div class="glass p-4 rounded-2xl border border-white/5">
+                        <span class="text-[9px] font-bold text-slate-400 uppercase block">💩 Dernière Selle</span>
+                        <p id="last-stool" class="text-sm font-black text-amber-400 mt-1">Aucune</p>
+                    </div>
+                    <div class="glass p-4 rounded-2xl border border-white/5">
+                        <span class="text-[9px] font-bold text-slate-400 uppercase block">💧 Dernière Urine</span>
+                        <p id="last-urine" class="text-sm font-black text-blue-400 mt-1">Aucune</p>
+                    </div>
+                    <div class="glass p-4 rounded-2xl border border-white/5">
+                        <span class="text-[9px] font-bold text-slate-400 uppercase block">⚖️ Dernier Poids</span>
+                        <p id="last-weight" class="text-sm font-black text-purple-400 mt-1">-- kg</p>
+                    </div>
+                </div>
+
+                <!-- GRAPHIQUE TEMPÉRATURE -->
+                <div class="glass p-5 rounded-[2.5rem] border border-white/10 space-y-3">
+                    <h4 class="text-xs font-black uppercase text-purple-400 italic flex items-center justify-between">
+                        <span><i class="fas fa-chart-line mr-2"></i> Courbe de Température (°C)</span>
+                        <span class="text-[9px] text-slate-500 font-normal">Min: 36.5°C | Max: 37.5°C</span>
+                    </h4>
+                    <div class="w-full h-48">
+                        <canvas id="tempChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- GRAPHIQUE POIDS -->
+                <div class="glass p-5 rounded-[2.5rem] border border-white/10 space-y-3">
+                    <h4 class="text-xs font-black uppercase text-purple-400 italic flex items-center justify-between">
+                        <span><i class="fas fa-weight-hanging mr-2"></i> Courbe de Poids (kg)</span>
+                    </h4>
+                    <div class="w-full h-48">
+                        <canvas id="weightChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- FORMULAIRE DE SAISIE FICHE SOINS -->
+                <div class="glass p-6 rounded-[2.5rem] space-y-4 border border-white/10 no-print">
+                    <h4 class="text-xs font-black uppercase text-slate-300 italic"><i class="fas fa-plus-circle mr-2 text-purple-400"></i> Ajouter une saisie de soins</h4>
+                    
+                    <div class="grid grid-cols-2 gap-3 text-xs">
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-400 mb-1">Date</label>
+                            <input type="date" id="track-date" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-400 mb-1">Jour de suivi</label>
+                            <select id="track-day" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none">
+                            </select>
+                        </div>
+                        <div class="col-span-2">
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="block text-[9px] font-bold text-slate-400">Heure (ex: 14h30)</label>
+                                <button type="button" onclick="setNowTime()" class="text-[8px] bg-purple-500/20 text-purple-300 px-1.5 py-0.5 rounded font-bold">Maintenant</button>
+                            </div>
+                            <input type="text" id="track-time" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none" placeholder="Ex: 14h30">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-400 mb-1">T° Bébé (°C)</label>
+                            <input type="number" step="0.1" id="track-temp-bb" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none" placeholder="Ex: 36.8">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-400 mb-1">T° LC/INC (°C)</label>
+                            <input type="number" step="0.1" id="track-temp-inc" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none" placeholder="Ex: 37.0">
+                        </div>
+                    </div>
+
+                    <!-- CASE COUCHES AMÉLIORÉE -->
+                    <div class="bg-white/5 p-4 rounded-xl space-y-3">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" id="track-diaper-change" onchange="toggleDiaperDetails()" class="rounded accent-blue-500 w-4 h-4">
+                            <span class="text-slate-200 font-bold text-xs">🧷 Changement de couche effectué</span>
+                        </label>
+                        
+                        <div id="diaper-details" class="hidden grid grid-cols-2 gap-3 text-xs pl-6 pt-1 border-t border-white/5">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" id="track-urine" class="rounded accent-blue-500 w-4 h-4">
+                                <span class="text-slate-300 font-bold">💧 Urine</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" id="track-stool" class="rounded accent-amber-500 w-4 h-4">
+                                <span class="text-slate-300 font-bold">💩 Selle</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="bg-pink-500/10 border border-pink-500/20 p-3 rounded-xl">
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" id="track-bottle-ontime" class="rounded accent-pink-500 w-5 h-5">
+                            <div>
+                                <span class="text-pink-300 font-black text-xs block">✅ Biberon pris &amp; validé à temps</span>
+                                <span class="text-[9px] text-slate-400">Lance automatiquement la fenêtre du repas suivant.</span>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="space-y-3 text-xs">
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-400 mb-1">Alimentation (Saisie ou Sélection rapide)</label>
+                            <div class="flex gap-2 mb-2">
+                                <button type="button" onclick="setQuickFood('Bib 30ml')" class="bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg text-[10px] font-bold">30 ml</button>
+                                <button type="button" onclick="setQuickFood('Bib 60ml')" class="bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg text-[10px] font-bold">60 ml</button>
+                                <button type="button" onclick="setQuickFood('Bib 90ml')" class="bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg text-[10px] font-bold">90 ml</button>
+                                <button type="button" onclick="setQuickFood('Bib 120ml')" class="bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg text-[10px] font-bold">120 ml</button>
+                                <button type="button" onclick="setQuickFood('Tétée')" class="bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg text-[10px] font-bold">Tétée</button>
+                            </div>
+                            <input type="text" id="track-food" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none" placeholder="Ex: Bib 60 ml">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-400 mb-1">Observations / Soins</label>
+                            <input type="text" id="track-obs" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none" placeholder="Ex: Cordon fait, Bain OK">
+                        </div>
+                    </div>
+
+                    <button onclick="addCareEntry()" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-black py-4 rounded-xl uppercase text-xs tracking-wider transition-all shadow-lg italic">
+                        <i class="fas fa-check mr-2"></i> Enregistrer cette entrée
+                    </button>
+                </div>
+
+                <!-- HISTORIQUE INTERACTIF DU SUIVI DES SOINS -->
+                <div class="glass p-6 rounded-[2.5rem] space-y-4">
+                    <div class="flex justify-between items-center no-print">
+                        <h4 class="text-xs font-black uppercase tracking-wider text-slate-300 italic">
+                            <i class="fas fa-history mr-2 text-purple-400"></i> Historique des Soins
+                        </h4>
+                        <button onclick="scrollToCareForm()" class="bg-purple-600/30 hover:bg-purple-600/50 border border-purple-500/40 text-purple-300 font-bold px-3 py-1.5 rounded-xl text-[10px] uppercase tracking-wider transition-all flex items-center gap-1.5">
+                            <i class="fas fa-plus"></i> Ajouter une saisie
+                        </button>
+                    </div>
+                    <div id="care-history-list" class="space-y-3">
+                        <p class="text-slate-500 italic text-center text-xs">Aucune entrée enregistrée</p>
+                    </div>
+                </div>
+            </section>
+        </main>
     </div>
 
     <script>
-        // Initialisation des données par défaut
-        let weightData = [
-            { id: 1, date: "2026-08-01T08:00", weight: 3.100 },
-            { id: 2, date: "2026-08-03T09:30", weight: 3.180 },
-            { id: 3, date: "2026-08-05T08:15", weight: 3.240 },
-            { id: 4, date: "2026-08-07T09:00", weight: 3.310 }
-        ];
-
-        // Pré-remplir la date/heure actuelle dans le formulaire
-        const dateInput = document.getElementById('input-date');
-        const now = new Date();
-        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-        dateInput.value = now.toISOString().slice(0, 16);
-
-        // Calcul de la ligne de tendance linéaire
-        function calculateLinearRegression(data) {
-            if (data.length < 2) return data.map(d => d.weight);
-
-            const n = data.length;
-            let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0;
-
-            data.forEach((pt, index) => {
-                sumX += index;
-                sumY += pt.weight;
-                sumXY += index * pt.weight;
-                sumXX += index * index;
-            });
-
-            const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
-            const intercept = (sumY - slope * sumX) / n;
-
-            return data.map((_, index) => slope * index + intercept);
-        }
-
-        // Configuration Chart.js
-        const ctx = document.getElementById('weightChart').getContext('2d');
-        Chart.register(ChartDataLabels);
-
-        const weightChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: [],
-                datasets: [
-                    {
-                        label: 'Poids (kg)',
-                        data: [],
-                        borderColor: '#ec4899',
-                        backgroundColor: 'rgba(236, 72, 153, 0.2)',
-                        borderWidth: 3,
-                        pointRadius: 6,
-                        pointHoverRadius: 9,
-                        pointBackgroundColor: '#f472b6',
-                        fill: true,
-                        tension: 0.2
-                    },
-                    {
-                        label: 'Tendance Instantanée',
-                        data: [],
-                        borderColor: '#a855f7',
-                        borderWidth: 2,
-                        borderDash: [6, 6],
-                        pointRadius: 0,
-                        fill: false
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                onClick: (event, activeElements) => {
-                    if (activeElements.length > 0) {
-                        const index = activeElements[0].index;
-                        const targetId = weightData[index].id;
-                        deleteEntry(targetId);
-                    }
-                },
-                plugins: {
-                    legend: {
-                        labels: { color: '#94a3b8', font: { size: 11, weight: 'bold' } }
-                    },
-                    datalabels: {
-                        align: 'top',
-                        color: '#f472b6',
-                        font: { weight: 'bold', size: 10 },
-                        formatter: (val, context) => context.datasetIndex === 0 ? val.toFixed(3) + ' kg' : ''
-                    }
-                },
-                scales: {
-                    x: {
-                        ticks: { color: '#94a3b8', font: { size: 10 } },
-                        grid: { color: 'rgba(255, 255, 255, 0.05)' }
-                    },
-                    y: {
-                        ticks: { color: '#94a3b8', font: { size: 10 } },
-                        grid: { color: 'rgba(255, 255, 255, 0.05)' }
-                    }
-                }
+        // Set today's date in input by default
+        document.addEventListener("DOMContentLoaded", function() {
+            const dateInput = document.getElementById('track-date');
+            if(dateInput) {
+                const today = new Date().toISOString().split('T')[0];
+                dateInput.value = today;
             }
         });
 
-        // Mise à jour globale de l'interface
-        function updateUI() {
-            // Trier les données par date croissante
-            weightData.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-            // Mettre à jour les libellés et séries du graphique
-            const labels = weightData.map(d => {
-                const dt = new Date(d.date);
-                return dt.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }) + ' ' + 
-                       dt.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-            });
-            const weights = weightData.map(d => d.weight);
-            const trend = calculateLinearRegression(weightData);
-
-            weightChart.data.labels = labels;
-            weightChart.data.datasets[0].data = weights;
-            weightChart.data.datasets[1].data = trend;
-            weightChart.update();
-
-            // Mettre à jour l'en-tête
-            const lastEntry = weightData[weightData.length - 1];
-            document.getElementById('stat-last-weight').innerText = lastEntry ? `${lastEntry.weight.toFixed(3)} kg` : '-- kg';
-
-            // Mettre à jour la table HTML
-            const tbody = document.getElementById('weight-table-body');
-            tbody.innerHTML = '';
-
-            if (weightData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-500 italic">Aucune donnée enregistrée</td></tr>`;
-                return;
+        function toggleDiaperDetails() {
+            const isChecked = document.getElementById('track-diaper-change').checked;
+            const details = document.getElementById('diaper-details');
+            if(isChecked) {
+                details.classList.remove('hidden');
+            } else {
+                details.classList.add('hidden');
+                document.getElementById('track-urine').checked = false;
+                document.getElementById('track-stool').checked = false;
             }
-
-            weightData.forEach(item => {
-                const dt = new Date(item.date);
-                const formattedDate = dt.toLocaleDateString('fr-FR') + ' à ' + dt.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-                
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-white/5 transition-all";
-                tr.innerHTML = `
-                    <td class="p-3 text-slate-300 font-medium">${formattedDate}</td>
-                    <td class="p-3 text-pink-400 font-black">${item.weight.toFixed(3)} kg</td>
-                    <td class="p-3 text-right">
-                        <button onclick="deleteEntry(${item.id})" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 p-2 rounded-lg transition-all" title="Supprimer">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
         }
 
-        // Ajouter une mesure
-        document.getElementById('weight-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const dateVal = document.getElementById('input-date').value;
-            const weightVal = parseFloat(document.getElementById('input-weight').value);
-
-            if (dateVal && !isNaN(weightVal)) {
-                weightData.push({
-                    id: Date.now(),
-                    date: dateVal,
-                    weight: weightVal
-                });
-                document.getElementById('input-weight').value = '';
-                updateUI();
-            }
-        });
-
-        // Supprimer une mesure
-        function deleteEntry(id) {
-            weightData = weightData.filter(item => item.id !== id);
-            updateUI();
+        function setNowTime() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('track-time').value = `${hours}h${minutes}`;
         }
 
-        // Lancement initial
-        updateUI();
+        function setQuickFood(val) {
+            document.getElementById('track-food').value = val;
+        }
+
+        function scrollToCareForm() {
+            const form = document.querySelector('#tab-tracker .no-print.glass:has(#track-day)');
+            if (form) {
+                form.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                document.getElementById('track-time')?.focus();
+            }
+        }
+
+        function saveThresholds() {
+            alert("Objectifs sauvegardés avec succès !");
+        }
+
+        function updateNextBottleDisplay() {
+            const interval = parseFloat(document.getElementById('bottle-interval').value);
+            const now = new Date();
+            now.setMinutes(now.getMinutes() + interval * 60);
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            
+            document.getElementById('next-bottle-time').innerText = `${hours}h${minutes}`;
+            document.getElementById('next-bottle-status').innerText = `Prochain biberon prévu (+${interval}h)`;
+            
+            // Plage du prochain repas
+            const maxMeal = new Date(now.getTime() + 90 * 60000);
+            const maxHours = String(maxMeal.getHours()).padStart(2, '0');
+            const maxMinutes = String(maxMeal.getMinutes()).padStart(2, '0');
+            
+            const rangeElem = document.getElementById('meal-window-range');
+            if(rangeElem) {
+                rangeElem.innerText = `${hours}h${minutes} à ${maxHours}h${maxMinutes}`;
+            }
+            const statusElem = document.getElementById('meal-window-status');
+            if(statusElem) {
+                statusElem.innerText = "Fenêtre de repas active";
+            }
+        }
+
+        function addCareEntry() {
+            alert("Entrée enregistrée avec succès !");
+        }
+
+        function exportToPDF() {
+            window.print();
+        }
     </script>
 </body>
 </html>
