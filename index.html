@@ -33,7 +33,7 @@
     }
 
     /* Modal / Auth Screen */
-    #loginPage { position: fixed; inset: 0; z-index: 100; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); display: flex; items-center: center; justify-content: center; padding: 16px; }
+    #loginPage { position: fixed; inset: 0; z-index: 100; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; padding: 16px; }
     #loginPage.hidden { display: none; }
     .login-box { background: var(--white); border-radius: 24px; padding: 32px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
 
@@ -69,7 +69,6 @@
     .hidden { display: none !important; }
     .stat-val { font-size: 22px; font-weight: 800; color: var(--text); }
     .badge { display: inline-block; padding: 4px 8px; border-radius: 20px; font-size: 11px; font-weight: 700; background: #f1f5f9; color: var(--text-light); }
-    .badge-pink { background: #fce7f3; color: #db2777; }
     .list-item { display: flex; align-items: center; justify-content: space-between; background: var(--white); padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 8px; }
   </style>
 </head>
@@ -247,7 +246,7 @@
           <div class="table-responsive">
             <table>
               <thead>
-                <tr><th>Heure</th><th>T°</th><th>Couche</th><th>Repas</th><th>Observations</th><th>Auteur</th></tr>
+                <tr><th>Heure</th><th>T°</th><th>Couche</th><th>Repas</th><th>Observations</th><th>Auteur</th><th></th></tr>
               </thead>
               <tbody id="careTableBody"></tbody>
             </table>
@@ -263,16 +262,14 @@
     let currentUser = null;
     let isAdmin = false;
 
-    let predictions = [
-      { user: "Mamie Chantal", name: "Alice", gender: "Fille", weight: 3.200, height: 49.5, date: "2026-08-15" },
-      { user: "Papa & Maman", name: "Emma", gender: "Fille", weight: 3.350, height: 50.0, date: "2026-08-12" }
+    // CHARGEMENT DEPUIS LOCALSTORAGE
+    let predictions = JSON.parse(localStorage.getItem('bp_predictions')) || [
+      { user: "Mamie Chantal", name: "Alice", gender: "Fille", weight: 3.200, height: 49.5, date: "2026-08-15" }
     ];
 
-    let careEntries = [];
-    let weightHistory = [
-      { date: "2026-08-01", weight: 3.10 },
-      { date: "2026-08-03", weight: 3.12 },
-      { date: "2026-08-05", weight: 3.28 }
+    let careEntries = JSON.parse(localStorage.getItem('bp_careEntries')) || [];
+    let weightHistory = JSON.parse(localStorage.getItem('bp_weightHistory')) || [
+      { date: "2026-08-01", weight: 3.10 }
     ];
 
     let chartTempInstance = null;
@@ -289,7 +286,14 @@
       renderPredictions();
       initCharts();
       renderWeightList();
+      renderCareEntries();
     });
+
+    function saveAllToStorage() {
+      localStorage.setItem('bp_predictions', JSON.stringify(predictions));
+      localStorage.setItem('bp_careEntries', JSON.stringify(careEntries));
+      localStorage.setItem('bp_weightHistory', JSON.stringify(weightHistory));
+    }
 
     function handleLogin(e) {
       e.preventDefault();
@@ -333,6 +337,7 @@
         height: parseFloat(document.getElementById('predHeight').value),
         date: document.getElementById('predDate').value
       });
+      saveAllToStorage();
       renderPredictions();
     }
 
@@ -372,6 +377,7 @@
       weightHistory.push({ date, weight });
       weightHistory.sort((a, b) => new Date(a.date) - new Date(b.date));
       
+      saveAllToStorage();
       updateWeightChart();
       renderWeightList();
       document.getElementById('weightPointVal').value = '';
@@ -379,6 +385,7 @@
 
     function removeWeightPoint(index) {
       weightHistory.splice(index, 1);
+      saveAllToStorage();
       updateWeightChart();
       renderWeightList();
     }
@@ -414,13 +421,22 @@
       };
 
       careEntries.push(entry);
+      saveAllToStorage();
       renderCareEntries();
+      updateTempChart();
+    }
+
+    function removeCareEntry(index) {
+      careEntries.splice(index, 1);
+      saveAllToStorage();
+      renderCareEntries();
+      updateTempChart();
     }
 
     function renderCareEntries() {
       const tbody = document.getElementById('careTableBody');
       tbody.innerHTML = '';
-      careEntries.forEach(c => {
+      careEntries.forEach((c, idx) => {
         tbody.innerHTML += `<tr>
           <td><b>${c.time}</b></td>
           <td>${c.tempBaby ? c.tempBaby + '°C' : '--'}</td>
@@ -428,8 +444,17 @@
           <td><b>${c.feeding ? c.feeding + ' ml' : '--'}</b></td>
           <td style="font-size:12px;">${c.notes}</td>
           <td style="color:var(--text-light); font-size:11px;">${c.author}</td>
+          <td><button onclick="removeCareEntry(${idx})" class="btn-danger-icon">🗑️</button></td>
         </tr>`;
       });
+    }
+
+    function updateTempChart() {
+      if (!chartTempInstance) return;
+      const temps = careEntries.filter(c => c.tempBaby !== null);
+      chartTempInstance.data.labels = temps.map(c => c.time);
+      chartTempInstance.data.datasets[0].data = temps.map(c => c.tempBaby);
+      chartTempInstance.update();
     }
 
     function initCharts() {
@@ -443,10 +468,14 @@
         options: { responsive: true, maintainAspectRatio: false }
       });
 
+      const temps = careEntries.filter(c => c.tempBaby !== null);
       const ctxT = document.getElementById('chartTemp').getContext('2d');
       chartTempInstance = new Chart(ctxT, {
         type: 'line',
-        data: { labels: ['08:00', '12:00'], datasets: [{ label: 'Temp°C', data: [36.7, 36.8], borderColor: '#ef4444' }] },
+        data: { 
+          labels: temps.map(c => c.time), 
+          datasets: [{ label: 'Temp°C', data: temps.map(c => c.tempBaby), borderColor: '#ef4444' }] 
+        },
         options: { responsive: true, maintainAspectRatio: false }
       });
     }
