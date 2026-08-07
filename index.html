@@ -25,7 +25,6 @@
         .gender-btn.selected-pink { background: #db2777 !important; border-color: #f472b6; color: white; }
         .gender-btn.selected-blue { background: #2563eb !important; border-color: #60a5fa; color: white; }
 
-        /* OPTIMISATION DE L'IMPRESSION PDF */
         @media print {
             body, html { background: white !important; color: black !important; height: auto !important; overflow: visible !important; }
             nav, header, #push-alert, .page, .no-print, .tab-content:not(#tab-tracker):not(#tab-charts) { display: none !important; }
@@ -80,7 +79,7 @@
                 <h2 class="font-black italic text-xl uppercase tracking-tighter">Baby <span class="text-purple-400">Predict</span></h2>
                 <p id="role-tag" class="text-[8px] font-bold text-purple-400/50 uppercase tracking-widest"></p>
             </div>
-            <button id="logout-btn" class="w-10 h-10 glass rounded-full flex items-center justify-center text-red-400 hover:bg-red-500/10 transition-all"><i class="fas fa-power-off"></i></button>
+            <button id="logout-btn" onclick="location.reload()" class="w-10 h-10 glass rounded-full flex items-center justify-center text-red-400 hover:bg-red-500/10 transition-all"><i class="fas fa-power-off"></i></button>
         </header>
 
         <main class="p-4 max-w-2xl mx-auto">
@@ -169,7 +168,6 @@
                     </button>
                 </div>
 
-                <!-- CARTE ALERTE RAPPEL PROCHAIN BIBERON -->
                 <div id="next-bottle-card" class="no-print bg-gradient-to-r from-pink-900/40 via-purple-900/40 to-indigo-900/40 border border-pink-500/30 p-5 rounded-[2.5rem] flex items-center justify-between shadow-2xl relative overflow-hidden">
                     <div class="flex items-center gap-4">
                         <div class="w-12 h-12 rounded-2xl bg-pink-500/20 flex items-center justify-center text-pink-400 text-2xl border border-pink-500/30">
@@ -197,7 +195,6 @@
                     </div>
                 </div>
 
-                <!-- STATISTIQUES REPAS ET COUCHES -->
                 <div class="glass p-5 rounded-[2.5rem] border border-white/10 space-y-4 no-print">
                     <h4 class="text-xs font-black uppercase text-purple-400 italic flex items-center justify-between">
                         <span><i class="fas fa-chart-pie mr-2"></i> Statistiques Biberons & Couches</span>
@@ -221,7 +218,6 @@
                     </div>
                 </div>
 
-                <!-- CONFIGURATION SEUILS PARENTS -->
                 <div class="glass p-5 rounded-[2.5rem] border border-white/10 space-y-3 no-print">
                     <h4 class="text-xs font-black uppercase text-amber-400 italic flex items-center justify-between">
                         <span><i class="fas fa-sliders-h mr-2"></i> Configuration des Objectifs (Journalier)</span>
@@ -251,7 +247,6 @@
                     </button>
                 </div>
 
-                <!-- CARTE INTERVALLE REPAS -->
                 <div id="meal-window-card" class="no-print bg-gradient-to-r from-amber-900/30 via-orange-900/30 to-purple-900/30 border border-amber-500/30 p-5 rounded-[2.5rem] flex items-center justify-between shadow-2xl relative overflow-hidden">
                     <div class="flex items-center gap-4">
                         <div class="w-12 h-12 rounded-2xl bg-amber-500/20 flex items-center justify-center text-amber-400 text-2xl border border-amber-500/30">
@@ -265,7 +260,6 @@
                     </div>
                 </div>
 
-                <!-- ALERTE DE TEMPERATURE -->
                 <div id="temp-alert-box" class="hidden p-4 rounded-2xl border flex items-center gap-3 no-print">
                     <i id="temp-alert-icon" class="fas text-xl"></i>
                     <div>
@@ -274,7 +268,6 @@
                     </div>
                 </div>
 
-                <!-- CARTES RAPIDES "DERNIERS..." -->
                 <div class="grid grid-cols-2 gap-3 no-print">
                     <div class="glass p-4 rounded-2xl border border-white/5">
                         <span class="text-[9px] font-bold text-slate-400 uppercase block">🍼 Dernier Repas</span>
@@ -294,15 +287,13 @@
                     </div>
                 </div>
 
-                <!-- FORMULAIRE DE SAISIE FICHE SOINS -->
                 <div class="glass p-6 rounded-[2.5rem] space-y-4 border border-white/10 no-print">
                     <h4 class="text-xs font-black uppercase text-slate-300 italic"><i class="fas fa-plus-circle mr-2 text-purple-400"></i> Ajouter une saisie de soins</h4>
                     
                     <div class="grid grid-cols-2 gap-3 text-xs">
                         <div>
                             <label class="block text-[9px] font-bold text-slate-400 mb-1">Jour de suivi</label>
-                            <select id="track-day" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none">
-                            </select>
+                            <select id="track-day" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none"></select>
                         </div>
                         <div>
                             <div class="flex justify-between items-center mb-1">
@@ -321,7 +312,6 @@
                         </div>
                     </div>
 
-                    <!-- CASE COUCHES AMÉLIORÉE -->
                     <div class="bg-white/5 p-4 rounded-xl space-y-3">
                         <label class="flex items-center gap-2 cursor-pointer">
                             <input type="checkbox" id="track-diaper-change" onchange="toggleDiaperDetails()" class="rounded accent-blue-500 w-4 h-4">
@@ -377,7 +367,6 @@
                     </button>
                 </div>
 
-                <!-- TABLEAU RECAPITULATIF -->
                 <div class="glass p-5 rounded-[2.5rem] border border-white/10 overflow-x-auto space-y-3">
                     <h4 class="text-xs font-black uppercase text-slate-300 italic"><i class="fas fa-table mr-2 text-purple-400"></i> Historique Fiche de Soins Maternité</h4>
                     <table class="w-full text-left text-[11px] border-collapse min-w-[500px]">
@@ -399,7 +388,7 @@
                 </div>
             </section>
 
-            <!-- NOUVEL ONGLET : ANALYTICS & GRAPHIQUES -->
+            <!-- ANALYTICS & GRAPHIQUES -->
             <section id="tab-charts" class="tab-content space-y-6">
                 <div class="flex justify-between items-center mb-2 px-2">
                     <div>
@@ -409,7 +398,6 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- GRAPHIQUE ACTIVITÉ BIBERONS / COUCHES -->
                     <div class="glass p-5 rounded-[2.5rem] border border-white/10 space-y-3 md:col-span-2">
                         <h4 class="text-xs font-black uppercase text-purple-400 italic flex items-center justify-between">
                             <span><i class="fas fa-chart-bar mr-2"></i> Activité Biberons & Couches (7 derniers jours)</span>
@@ -419,7 +407,6 @@
                         </div>
                     </div>
 
-                    <!-- GRAPHIQUE TEMPÉRATURE -->
                     <div class="glass p-5 rounded-[2.5rem] border border-white/10 space-y-3">
                         <h4 class="text-xs font-black uppercase text-purple-400 italic flex items-center justify-between">
                             <span><i class="fas fa-chart-line mr-2"></i> Courbe de Température (°C)</span>
@@ -430,7 +417,6 @@
                         </div>
                     </div>
 
-                    <!-- GRAPHIQUE POIDS -->
                     <div class="glass p-5 rounded-[2.5rem] border border-white/10 space-y-3">
                         <h4 class="text-xs font-black uppercase text-purple-400 italic flex items-center justify-between">
                             <span><i class="fas fa-weight-hanging mr-2"></i> Courbe de Poids (kg)</span>
@@ -499,7 +485,7 @@
             <section id="tab-ranking" class="tab-content">
                 <div class="flex justify-between items-center mb-6 px-2">
                     <h3 class="text-2xl font-black italic uppercase">Les Pronostics</h3>
-                    <button id="btn-manual-add" class="admin-only bg-purple-600/20 border border-purple-500 text-purple-400 text-[10px] font-black uppercase px-4 py-2 rounded-xl"><i class="fas fa-plus mr-1"></i> Ajouter pour un proche</button>
+                    <button id="btn-manual-add" onclick="openAdminModal()" class="admin-only bg-purple-600/20 border border-purple-500 text-purple-400 text-[10px] font-black uppercase px-4 py-2 rounded-xl"><i class="fas fa-plus mr-1"></i> Ajouter pour un proche</button>
                 </div>
                 <div id="list-all-votes" class="space-y-4"></div>
             </section>
@@ -508,7 +494,7 @@
             <section id="tab-chat" class="tab-content">
                 <div class="flex justify-between items-center mb-6 px-2">
                     <h3 class="text-2xl font-black italic uppercase">Baby Chat</h3>
-                    <button id="btn-urgent" class="admin-only bg-red-600/20 border border-red-500 text-red-500 font-bold px-4 py-2 rounded-xl text-[10px] uppercase">Alerte Naissance !</button>
+                    <button id="btn-urgent" onclick="triggerBirthAlert()" class="admin-only bg-red-600/20 border border-red-500 text-red-500 font-bold px-4 py-2 rounded-xl text-[10px] uppercase">Alerte Naissance !</button>
                 </div>
                 <div id="chat-box" class="h-[52vh] overflow-y-auto mb-4 space-y-4 pr-2 flex flex-col"></div>
                 <div class="flex gap-2 p-2 glass rounded-[2.5rem] border border-white/10">
@@ -518,7 +504,7 @@
             </section>
         </main>
 
-        <!-- NAVIGATION INFÉRIEURE ERGONOMIQUE ET STRUCTURÉE -->
+        <!-- NAVIGATION INFÉRIEURE -->
         <nav class="fixed bottom-4 left-1/2 -translate-x-1/2 w-[95%] max-w-md z-50 no-print">
             <div class="glass rounded-[2rem] flex justify-between items-center p-2 border border-white/10 shadow-2xl px-3">
                 <button onclick="switchTab('home', this)" class="nav-btn text-purple-400 flex flex-col items-center gap-1 p-2 transition-all">
@@ -554,29 +540,26 @@
         <div class="glass p-8 rounded-[2.5rem] w-full max-w-sm border border-white/10 text-center shadow-2xl space-y-6">
             <div>
                 <span class="text-xs font-black uppercase text-purple-400 tracking-widest italic">Ajouter pour un proche</span>
-                <h3 class="text-xl font-bold text-white mt-1">Quel est le sexe estimé ?</h3>
+                <h3 class="text-xl font-bold text-white mt-1">Saisie manuelle rapide</h3>
             </div>
-            
-            <div class="grid grid-cols-2 gap-4">
-                <button id="admin-btn-girl" class="p-6 rounded-2xl glass border border-pink-500/30 hover:bg-pink-500/20 text-pink-400 font-black uppercase text-xs flex flex-col items-center gap-2 transition-all">
-                    <i class="fas fa-venus text-3xl"></i>
-                    Fille
-                </button>
-                <button id="admin-btn-boy" class="p-6 rounded-2xl glass border border-blue-500/30 hover:bg-blue-500/20 text-blue-400 font-black uppercase text-xs flex flex-col items-center gap-2 transition-all">
-                    <i class="fas fa-mars text-3xl"></i>
-                    Garçon
-                </button>
+            <div class="space-y-3 text-left">
+                <input type="text" id="admin-add-user" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white text-xs outline-none" placeholder="Nom du proche">
+                <select id="admin-add-gender" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white text-xs outline-none">
+                    <option value="Fille" class="bg-[#07070a]">Fille</option>
+                    <option value="Garçon" class="bg-[#07070a]">Garçon</option>
+                </select>
+                <input type="text" id="admin-add-name" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white text-xs outline-none" placeholder="Prénom pronostiqué">
+                <input type="number" step="0.001" id="admin-add-weight" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white text-xs outline-none" placeholder="Poids (kg)">
+                <input type="number" step="0.5" id="admin-add-height" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white text-xs outline-none" placeholder="Taille (cm)">
             </div>
-
-            <button id="admin-btn-cancel" class="w-full bg-white/5 border border-white/10 text-slate-400 hover:text-white py-3 rounded-xl uppercase text-[10px] font-bold tracking-wider transition-all">
-                Annuler
-            </button>
+            <button onclick="submitAdminManualAdd()" class="w-full bg-purple-600 text-white font-black py-3 rounded-xl uppercase text-xs">Enregistrer</button>
+            <button onclick="closeAdminModal()" class="w-full bg-white/5 text-slate-400 py-2 rounded-xl uppercase text-[10px]">Annuler</button>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp, setDoc, limit, getDocs, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp, setDoc, getDocs, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
 
         const VAPID_KEY = "KyCv3GvPMoavPSSZllmgVr5lLHpf-sohTDLhAMvW20w"; 
@@ -598,26 +581,19 @@
         try {
             enableIndexedDbPersistence(db);
         } catch (err) {
-            console.log("Persistence offline non supportée par le navigateur", err);
+            console.log("Persistence offline non supportée", err);
         }
 
         let userName = "";
         let selectedGender = "";
         let isAdmin = false;
-        let globalPredictions = [];
         let tempChartInstance = null;
         let weightChartInstance = null;
         let activityChartInstance = null;
         let lastMealRawTimeStr = null;
         let mealAlertSent = false;
 
-        // SEUILS CONFIGURÉS PAR LES PARENTS
-        let thresholds = {
-            bibMin: 5,
-            bibMax: 8,
-            diaperMin: 6,
-            diaperMax: 12
-        };
+        let thresholds = { bibMin: 5, bibMax: 8, diaperMin: 6, diaperMax: 12 };
 
         window.loadThresholds = () => {
             const saved = localStorage.getItem('baby_thresholds');
@@ -643,9 +619,8 @@
         window.toggleDiaperDetails = () => {
             const isChecked = document.getElementById('track-diaper-change').checked;
             const details = document.getElementById('diaper-details');
-            if (isChecked) {
-                details.classList.remove('hidden');
-            } else {
+            if (isChecked) details.classList.remove('hidden');
+            else {
                 details.classList.add('hidden');
                 document.getElementById('track-urine').checked = false;
                 document.getElementById('track-stool').checked = false;
@@ -655,14 +630,10 @@
         window.exportToPDF = () => {
             const trackerTab = document.getElementById('tab-tracker');
             const wasActive = trackerTab.classList.contains('active');
-            
             trackerTab.classList.add('active');
-            
             setTimeout(() => {
                 window.print();
-                if (!wasActive) {
-                    trackerTab.classList.remove('active');
-                }
+                if (!wasActive) trackerTab.classList.remove('active');
             }, 200);
         };
 
@@ -692,9 +663,7 @@
                 opt.textContent = labelStr;
                 opt.className = "bg-[#07070a]";
 
-                if (cur.toDateString() === now.toDateString()) {
-                    opt.selected = true;
-                }
+                if (cur.toDateString() === now.toDateString()) opt.selected = true;
 
                 selectEl.appendChild(opt);
                 cur.setDate(cur.getDate() + 1);
@@ -710,84 +679,24 @@
             document.getElementById('track-time').value = `${hh}h${mm}`;
         };
 
-        window.setQuickFood = (val) => {
-            document.getElementById('track-food').value = val;
-        };
-
-        const manualImports = [
-            { user: "Sandra P.", sexe: "Garçon", prenom: "Aloïs", taille: 51, poids: 3.300, passion: "Danse", date: "2026-08-10", heure: "--" },
-            { user: "Laura M.", sexe: "Fille", prenom: "Alice", taille: 51, poids: 3.450, passion: "Bouffe", date: "2026-07-23", heure: "--" },
-            { user: "Alison", sexe: "Garçon", prenom: "Louis", taille: 50.5, poids: 3.500, passion: "Musique", date: "2026-08-10", heure: "--" },
-            { user: "Charline", sexe: "Garçon", prenom: "Théo", taille: 51.2, poids: 3.505, passion: "Rire", date: "2026-08-09", heure: "--" },
-            { user: "Fanny", sexe: "Fille", prenom: "Lise", taille: 49.5, poids: 3.473, passion: "Aya", date: "2026-08-12", heure: "--" },
-            { user: "Emma", sexe: "Garçon", prenom: "Louison", taille: 50, poids: 3.550, passion: "Chat", date: "2026-08-07", heure: "--" },
-            { user: "Alicia", sexe: "Fille", prenom: "Enola", taille: 52, poids: 3.570, passion: "Apéros", date: "2026-08-08", heure: "--" },
-            { user: "Benjamin", sexe: "Garçon", prenom: "Nod junior", taille: 51.5, poids: 3.430, passion: "Salsa/Fifs", date: "2026-08-11", heure: "--" },
-            { user: "Sarah", sexe: "Fille", prenom: "Léo", taille: 51, poids: 3.260, passion: "Musique", date: "2026-08-02", heure: "--" },
-            { user: "Christine", sexe: "Fille", prenom: "Vanille", taille: 50, poids: 3.000, passion: "Sport", date: "2026-08-28", heure: "--" },
-            { user: "Maxime G.", sexe: "Garçon", prenom: "Jean", taille: 49.4, poids: 3.120, passion: "Escrime", date: "2026-08-10", heure: "--" },
-            { user: "Céline", sexe: "Garçon", prenom: "Marius", taille: 48.7, poids: 2.900, passion: "Voyages", date: "2026-08-09", heure: "--" },
-            { user: "Dominique (PAPA)", sexe: "Garçon", prenom: "Amour", taille: 50.2, poids: 3.060, passion: "Golfy", date: "2026-08-08", heure: "--" },
-            { user: "Béatrice (MAMAN)", sexe: "Garçon", prenom: "Anouk / Sébastien", taille: 50.5, poids: 3.280, passion: "Musique", date: "2026-08-08", heure: "--" },
-            { user: "Anaïs", sexe: "Garçon", prenom: "Fleur", taille: 51.3, poids: 3.500, passion: "Musique", date: "2026-08-08", heure: "--" },
-            { user: "Jérôme", sexe: "Garçon", prenom: "Jean-Claude", taille: 50.1, poids: 3.200, passion: "Sport", date: "2026-08-07", heure: "--" },
-            { user: "Henri", sexe: "Fille", prenom: "Teahorui / Perai", taille: 48, poids: 3.100, passion: "Sport", date: "2026-08-11", heure: "--" },
-            { user: "Valou", sexe: "Garçon", prenom: "Théo", taille: 50, poids: 2.800, passion: "Sport", date: "2026-08-12", heure: "--" },
-            { user: "Anna", sexe: "Fille", prenom: "Hélène", taille: 50, poids: 2.900, passion: "Danse", date: "2026-07-29", heure: "--" },
-            { user: "Sam", sexe: "Garçon", prenom: "Michael ou Killian", taille: 50, poids: 3.100, passion: "10 maths", date: "2026-08-01", heure: "--" },
-            { user: "Iris", sexe: "Fille", prenom: "Céanne", taille: 51, poids: 3.050, passion: "Gym", date: "2026-08-01", heure: "--" },
-            { user: "Katou", sexe: "Fille", prenom: "Zalia", taille: 51, poids: 3.210, passion: "FIFA", date: "2026-07-27", heure: "--" },
-            { user: "Issiaga", sexe: "Garçon", prenom: "Thomas", taille: 48, poids: 4.500, passion: "Danse", date: "2026-08-07", heure: "--" },
-            { user: "Wilson", sexe: "Fille", prenom: "Natalia", taille: 52, poids: 3.000, passion: "Wing Tsun", date: "2026-08-10", heure: "--" },
-            { user: "Chamsia", sexe: "Garçon", prenom: "Lali", taille: 55, poids: 3.200, passion: "Danse", date: "2026-08-08", heure: "--" },
-            { user: "Mamour", sexe: "Garçon", prenom: "Honey", taille: 51, poids: 3.300, passion: "Kind", date: "2026-08-31", heure: "--" },
-            { user: "Zalid", sexe: "Fille", prenom: "Inaya", taille: 45, poids: 5.000, passion: "Chanter/L'ART", date: "2026-08-04", heure: "--" },
-            { user: "Rahama", sexe: "Fille", prenom: "Myan", taille: 52, poids: 4.500, passion: "Mystère 🔮", date: "2026-08-03", heure: "--" },
-            { user: "Rita", sexe: "Fille", prenom: "Aucun", taille: 50, poids: 3.700, passion: "Basket", date: "2026-07-29", heure: "--" },
-            { user: "Kévin", sexe: "Garçon", prenom: "Nelson", taille: 48, poids: 3.400, passion: "Basket", date: "2026-08-05", heure: "--" },
-            { user: "Tani", sexe: "Garçon", prenom: "William", taille: 47, poids: 2.900, passion: "Foot", date: "2026-07-30", heure: "--" },
-            { user: "Ami de l'enfant", sexe: "Garçon", prenom: "Miguel", taille: 50, poids: 3.000, passion: "Dessin", date: "2026-07-31", heure: "--" },
-            { user: "Marlyse", sexe: "Fille", prenom: "Aucun", taille: 45, poids: 3.250, passion: "Danse", date: "2026-08-11", heure: "--" },
-            { user: "BADE", sexe: "Garçon", prenom: "KAïS", taille: 50, poids: 2.800, passion: "Football", date: "2026-08-05", heure: "--" },
-            { user: "Isaac", sexe: "Garçon", prenom: "Benjamin/Raphaël", taille: 52, poids: 3.700, passion: "Échecs", date: "2026-08-07", heure: "--" },
-            { user: "Loane", sexe: "Garçon", prenom: "Mathis", taille: 50, poids: 3.100, passion: "Football", date: "2026-08-08", heure: "--" }
-        ];
+        window.setQuickFood = (val) => { document.getElementById('track-food').value = val; };
 
         function getRecommendedBottleDose(day, weightKg, intervalHours) {
             const d = (day || "").toUpperCase();
-
             if (d.includes("NAISSANCE") || d.includes("JOUR 0")) return { dose: "10 - 15 ml", label: "Jour 0" };
             if (d.includes("1ER") || d.includes("JOUR 1")) return { dose: "10 - 30 ml", label: "Jour 1" };
             if (d.includes("2È") || d.includes("2E") || d.includes("JOUR 2")) return { dose: "20 - 40 ml", label: "Jour 2" };
             if (d.includes("3È") || d.includes("3E") || d.includes("JOUR 3")) return { dose: "30 - 50 ml", label: "Jour 3" };
             if (d.includes("4È") || d.includes("4E") || d.includes("JOUR 4")) return { dose: "40 - 60 ml", label: "Jour 4" };
             if (d.includes("5È") || d.includes("5E") || d.includes("JOUR 5")) return { dose: "50 - 70 ml", label: "Jour 5" };
-            if (d.includes("6È") || d.includes("6E") || d.includes("JOUR 6")) return { dose: "60 - 80 ml", label: "Jour 6" };
-            if (d.includes("7È") || d.includes("7E") || d.includes("JOUR 7")) return { dose: "70 - 90 ml", label: "Jour 7" };
-            if (d.includes("8È") || d.includes("8E") || d.includes("JOUR 8")) return { dose: "80 - 100 ml", label: "Jour 8" };
-            if (d.includes("9È") || d.includes("9E") || d.includes("JOUR 9")) return { dose: "90 - 110 ml", label: "Jour 9" };
-            if (d.includes("10È") || d.includes("10E") || d.includes("JOUR 10")) return { dose: "100 - 120 ml", label: "Jour 10" };
 
             if (weightKg && weightKg > 0) {
                 const bottlesPerDay = Math.round(24 / (intervalHours || 3.5));
-                const weightGrams = weightKg * 1000;
-                const totalDailyMl = (weightGrams / 10) + 250;
+                const totalDailyMl = ((weightKg * 1000) / 10) + 250;
                 const dosePerBottle = Math.round(totalDailyMl / bottlesPerDay);
                 return { dose: `~${dosePerBottle} ml`, label: d };
             }
-
             return { dose: "60 - 90 ml", label: d };
-        }
-
-        async function checkAndInjectPredictions() {
-            try {
-                const snap = await getDocs(collection(db, "predictions"));
-                if (snap.empty) {
-                    for (const docData of manualImports) {
-                        await setDoc(doc(db, "predictions", docData.user), { ...docData, timestamp: serverTimestamp() });
-                    }
-                }
-            } catch (err) { console.error(err); }
         }
 
         window.switchTab = (tabId, button) => {
@@ -801,20 +710,6 @@
             button.classList.add('text-purple-400');
         };
 
-        async function setupPushNotifications() {
-            if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
-            try {
-                const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-                const permission = await Notification.requestPermission();
-                if (permission === 'granted') {
-                    const currentToken = await getToken(messaging, { vapidKey: VAPID_KEY, serviceWorkerRegistration: registration });
-                    if (currentToken) {
-                        await setDoc(doc(db, "fcm_tokens", userName), { token: currentToken, user: userName, updatedAt: Date.now() });
-                    }
-                }
-            } catch (error) { console.error(error); }
-        }
-
         async function triggerPushNotification(title, body) {
             try {
                 const alertBanner = document.getElementById('push-alert');
@@ -822,8 +717,7 @@
                 document.getElementById('push-body').innerText = body;
                 alertBanner.classList.add('show');
                 setTimeout(() => alertBanner.classList.remove('show'), 6000);
-
-                await addDoc(collection(db, "triggered_alerts"), { title: title, body: body, timestamp: serverTimestamp() });
+                await addDoc(collection(db, "triggered_alerts"), { title, body, timestamp: serverTimestamp() });
             } catch (e) { console.error(e); }
         }
 
@@ -848,52 +742,18 @@
                 document.getElementById('display-name').innerText = userName;
                 
                 loadThresholds();
-
                 await setDoc(doc(db, "presence", userName), { name: userName, lastSeen: Date.now() });
                 setInterval(async () => { if(userName) await setDoc(doc(db, "presence", userName), { name: userName, lastSeen: Date.now() }); }, 30000);
                 
-                await checkAndInjectPredictions(); 
-                await setupPushNotifications();
-                setupUserVoteListener();
+                setupPredictionsListener();
                 setupChatListener();
                 setupPresenceListener();
                 setupBabyTrackerListener();
+                setupFinalResultListener();
 
                 setInterval(updateNextBottleDisplay, 60000);
             } else { alert("Entrez un nom valide"); }
         };
-
-        document.getElementById('track-day').addEventListener('change', (e) => {
-            const selectedDay = e.target.value;
-            const intervalHours = parseFloat(document.getElementById('bottle-interval').value) || 3.5;
-            const rawWeight = document.getElementById('last-weight').innerText.replace(' kg', '');
-            const lastWeight = parseFloat(rawWeight) || 0;
-
-            const doseInfo = getRecommendedBottleDose(selectedDay, lastWeight, intervalHours);
-            
-            const foodInput = document.getElementById('track-food');
-            foodInput.placeholder = `Ex: Bib ${doseInfo.dose}`;
-            
-            updateNextBottleDisplay();
-        });
-
-        function setupPresenceListener() {
-            onSnapshot(collection(db, "presence"), snapshot => {
-                const listContainer = document.getElementById('list-online');
-                listContainer.innerHTML = "";
-                const cutOff = Date.now() - 60000;
-                snapshot.forEach(docSnap => {
-                    const userPres = docSnap.data();
-                    if(userPres.lastSeen > cutOff) {
-                        listContainer.innerHTML += `
-                            <span class="bg-green-500/10 text-green-400 border border-green-500/20 px-2 py-0.5 rounded-full flex items-center gap-1">
-                                <span class="w-1.5 h-1.5 bg-green-400 rounded-full animate-ping"></span> ${userPres.name}
-                            </span>
-                        `;
-                    }
-                });
-            });
-        }
 
         window.selectGender = (gender) => {
             selectedGender = gender;
@@ -919,7 +779,7 @@
                 user: userName, sexe: selectedGender, prenom: nameProno, passion: passionProno, poids: weightProno, taille: heightProno, date: dateProno, heure: timeProno, timestamp: serverTimestamp()
             });
 
-            await triggerPushNotification("👶 Nouveau Pronostic !", `${userName} voit une ${selectedGender} nommée ${nameProno} (${weightProno}kg) !`);
+            await triggerPushNotification("👶 Nouveau Pronostic !", `${userName} voit une ${selectedGender} nommée ${nameProno} !`);
             alert("Pronostic enregistré avec succès ! 🎉");
         };
 
@@ -939,28 +799,21 @@
             if(!time) return alert("Veuillez saisir l'heure du soin !");
 
             if(!isNaN(tempBb)) {
-                if(tempBb < 36.5) await triggerPushNotification("⚠️ ALERTE TEMPÉRATURE BÉBÉ", `Température basse : ${tempBb}°C à ${time} !`);
-                else if(tempBb > 37.5) await triggerPushNotification("🔥 ALERTE FIÈVRE BÉBÉ", `Température élevée : ${tempBb}°C à ${time} !`);
+                if(tempBb < 36.5) await triggerPushNotification("⚠️ ALERTE TEMPÉRATURE", `Température basse : ${tempBb}°C !`);
+                else if(tempBb > 37.5) await triggerPushNotification("🔥 ALERTE FIÈVRE", `Température élevée : ${tempBb}°C !`);
             }
 
-            if(bottleOnTime && !food) {
-                food = "Bib validé à temps ✅";
-            }
-
-            if(food) {
-                mealAlertSent = false; 
-            }
+            if(bottleOnTime && !food) food = "Bib validé à temps ✅";
+            if(food) mealAlertSent = false; 
 
             await addDoc(collection(db, "baby_tracking"), {
                 day, time, tempBb: isNaN(tempBb) ? null : tempBb, tempInc: isNaN(tempInc) ? null : tempInc,
-                diaperChanged, urine, stool, food, obs, weight: isNaN(weight) ? null : weight, bottleOnTime: bottleOnTime, timestamp: serverTimestamp()
+                diaperChanged, urine, stool, food, obs, weight: isNaN(weight) ? null : weight, bottleOnTime, timestamp: serverTimestamp()
             });
 
             document.getElementById('track-temp-bb').value = "";
             document.getElementById('track-temp-inc').value = "";
             document.getElementById('track-diaper-change').checked = false;
-            document.getElementById('track-urine').checked = false;
-            document.getElementById('track-stool').checked = false;
             toggleDiaperDetails();
             document.getElementById('track-food').value = "";
             document.getElementById('track-obs').value = "";
@@ -978,102 +831,112 @@
             const doseInfo = getRecommendedBottleDose(currentDay, lastWeight, intervalHours);
             document.getElementById('next-bottle-dose').innerHTML = `🍼 Dose conseillée (${doseInfo.label}) : <b class="text-white">${doseInfo.dose}</b>`;
 
-            if(!lastMealRawTimeStr) {
-                document.getElementById('next-bottle-time').innerText = "--h--";
-                document.getElementById('next-bottle-status').innerText = "Aucun repas enregistré";
-                document.getElementById('meal-window-range').innerText = "--h-- à --h--";
-                document.getElementById('meal-window-status').innerText = "Aucun biberon programmé";
-                return;
-            }
+            if(!lastMealRawTimeStr) return;
 
             const cleanTime = lastMealRawTimeStr.replace('h', ':').replace('H', ':');
             const parts = cleanTime.split(':');
-            
-            if(parts.length < 2) {
-                document.getElementById('next-bottle-time').innerText = "--h--";
-                document.getElementById('next-bottle-status').innerText = "Heure invalide";
-                return;
-            }
+            if(parts.length < 2) return;
 
             const lastHours = parseInt(parts[0], 10);
             const lastMinutes = parseInt(parts[1], 10);
-
             if(isNaN(lastHours) || isNaN(lastMinutes)) return;
-
-            const intervalTotalMinutes = Math.round(intervalHours * 60);
 
             const now = new Date();
             const lastBottleDate = new Date();
             lastBottleDate.setHours(lastHours, lastMinutes, 0, 0);
+            if(lastBottleDate > now) lastBottleDate.setDate(lastBottleDate.getDate() - 1);
 
-            if(lastBottleDate > now) {
-                lastBottleDate.setDate(lastBottleDate.getDate() - 1);
-            }
-
-            const nextBottleDate = new Date(lastBottleDate.getTime() + intervalTotalMinutes * 60000);
-            
+            const nextBottleDate = new Date(lastBottleDate.getTime() + (intervalHours * 3600000));
             const nextH = String(nextBottleDate.getHours()).padStart(2, '0');
             const nextM = String(nextBottleDate.getMinutes()).padStart(2, '0');
             document.getElementById('next-bottle-time').innerText = `${nextH}h${nextM}`;
 
-            const diffMs = nextBottleDate - now;
-            const diffMinutes = Math.round(diffMs / 60000);
-
+            const diffMinutes = Math.round((nextBottleDate - now) / 60000);
             const statusEl = document.getElementById('next-bottle-status');
 
             if(diffMinutes > 0) {
-                const hoursLeft = Math.floor(diffMinutes / 60);
-                const minsLeft = diffMinutes % 60;
-                let text = "Dans ";
-                if(hoursLeft > 0) text += `${hoursLeft}h `;
-                text += `${minsLeft} min`;
-                statusEl.innerText = text;
+                statusEl.innerText = `Dans ${Math.floor(diffMinutes / 60)}h ${diffMinutes % 60} min`;
                 statusEl.className = "text-[10px] text-green-400 font-bold mt-0.5";
             } else {
-                const lateMins = Math.abs(diffMinutes);
-                statusEl.innerText = `⚠️ Retard de ${lateMins} min ! Préparez le biberon !`;
+                statusEl.innerText = `⚠️ Retard de ${Math.abs(diffMinutes)} min ! Préparez le biberon !`;
                 statusEl.className = "text-[10px] text-red-400 font-bold mt-0.5 animate-pulse";
             }
-
-            const nextMealMaxDate = new Date(nextBottleDate.getTime() + 90 * 60000);
-            const nextMealStartH = String(nextBottleDate.getHours()).padStart(2, '0');
-            const nextMealStartM = String(nextBottleDate.getMinutes()).padStart(2, '0');
-            const nextMealEndH = String(nextMealMaxDate.getHours()).padStart(2, '0');
-            const nextMealEndM = String(nextMealMaxDate.getMinutes()).padStart(2, '0');
-
-            document.getElementById('meal-window-range').innerText = `${nextMealStartH}h${nextMealStartM} à ${nextMealEndH}h${nextMealEndM}`;
-
-            const mealStatusEl = document.getElementById('meal-window-status');
-            const mealCard = document.getElementById('meal-window-card');
-
-            if (diffMinutes > 0) {
-                mealStatusEl.innerText = `⏳ Plage du prochain repas calculée automatique (${nextMealStartH}h${nextMealStartM} max ${nextMealEndH}h${nextMealEndM})`;
-                mealStatusEl.className = "text-[10px] text-amber-300 font-bold mt-0.5";
-                mealCard.className = "bg-gradient-to-r from-amber-900/30 via-orange-900/30 to-purple-900/30 border border-amber-500/30 p-5 rounded-[2.5rem] flex items-center justify-between shadow-2xl relative overflow-hidden";
-            } else {
-                const mealDiffMs = nextMealMaxDate - now;
-                const mealDiffMins = Math.round(mealDiffMs / 60000);
-
-                if (mealDiffMins >= 0) {
-                    mealStatusEl.innerText = `⏳ Repas en cours ! Bébé a encore ${mealDiffMins} min pour terminer son biberon.`;
-                    mealStatusEl.className = "text-[10px] text-amber-300 font-bold mt-0.5";
-                    mealCard.className = "bg-gradient-to-r from-amber-900/30 via-orange-900/30 to-purple-900/30 border border-amber-500/30 p-5 rounded-[2.5rem] flex items-center justify-between shadow-2xl relative overflow-hidden";
-                } else {
-                    const elapsedOver = Math.abs(mealDiffMins);
-                    mealStatusEl.innerText = `📢 DÉPASSÉ DE ${elapsedOver} MIN ! Limite de 1h30 dépassée ! Validez le biberon dès qu'il est fini.`;
-                    mealStatusEl.className = "text-[10px] text-red-400 font-black mt-0.5 animate-bounce";
-                    mealCard.className = "bg-gradient-to-r from-red-900/60 via-pink-900/60 to-purple-900/60 border border-red-500 p-5 rounded-[2.5rem] flex items-center justify-between shadow-2xl relative overflow-hidden";
-
-                    if (!mealAlertSent) {
-                        mealAlertSent = true;
-                        triggerPushNotification(
-                            "📢 TEMPS DE REPAS DÉPASSÉ !",
-                            `Heure prévue : ${nextMealStartH}h${nextMealStartM}. La limite de 1h30 (${nextMealEndH}h${nextMealEndM}) est dépassée !`
-                        );
-                    }
-                }
-            }
         };
+
+        function setupPresenceListener() {
+            onSnapshot(collection(db, "presence"), snapshot => {
+                const listContainer = document.getElementById('list-online');
+                listContainer.innerHTML = "";
+                const cutOff = Date.now() - 60000;
+                snapshot.forEach(docSnap => {
+                    const userPres = docSnap.data();
+                    if(userPres.lastSeen > cutOff) {
+                        listContainer.innerHTML += `
+                            <span class="bg-green-500/10 text-green-400 border border-green-500/20 px-2 py-0.5 rounded-full flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 bg-green-400 rounded-full animate-ping"></span> ${userPres.name}
+                            </span>
+                        `;
+                    }
+                });
+            });
+        }
+
+        function setupPredictionsListener() {
+            onSnapshot(collection(db, "predictions"), snapshot => {
+                let total = 0, girls = 0, boys = 0, weightSum = 0, heightSum = 0;
+                let nameVotes = {};
+                const listAll = document.getElementById('list-all-votes');
+                listAll.innerHTML = "";
+
+                snapshot.forEach(docSnap => {
+                    const p = docSnap.data();
+                    total++;
+                    if (p.sexe === 'Fille') girls++;
+                    if (p.sexe === 'Garçon') boys++;
+                    if (p.poids) weightSum += parseFloat(p.poids);
+                    if (p.taille) heightSum += parseFloat(p.taille);
+
+                    if (p.prenom) {
+                        const cleanName = p.prenom.trim();
+                        nameVotes[cleanName] = (nameVotes[cleanName] || 0) + 1;
+                    }
+
+                    listAll.innerHTML += `
+                        <div class="glass p-5 rounded-3xl border border-white/5 space-y-2">
+                            <div class="flex justify-between items-center">
+                                <b class="text-sm font-black text-white">${p.user}</b>
+                                <span class="px-2.5 py-1 rounded-full text-[9px] font-black uppercase ${p.sexe === 'Fille' ? 'bg-pink-500/20 text-pink-400 border border-pink-500/30' : 'bg-blue-500/20 text-blue-400 border border-blue-500/30'}">${p.sexe}</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 text-xs text-slate-300">
+                                <p>🍼 Prénom : <b>${p.prenom || '--'}</b></p>
+                                <p>🎨 Passion : <b>${p.passion || '--'}</b></p>
+                                <p>⚖️ Poids : <b>${p.poids || '--'} kg</b></p>
+                                <p>📏 Taille : <b>${p.taille || '--'} cm</b></p>
+                                <p class="col-span-2">📅 Date : <b>${p.date || '--'} à ${p.heure || '--'}</b></p>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                if (total > 0) {
+                    document.getElementById('pct-girl').innerText = Math.round((girls / total) * 100);
+                    document.getElementById('pct-boy').innerText = Math.round((boys / total) * 100);
+                    document.getElementById('bar-girl').style.width = `${(girls / total) * 100}%`;
+                    document.getElementById('bar-boy').style.width = `${(boys / total) * 100}%`;
+                    document.getElementById('avg-weight').innerText = (weightSum / total).toFixed(3);
+                    document.getElementById('avg-height').innerText = (heightSum / total).toFixed(1);
+
+                    const topNames = Object.entries(nameVotes).sort((a,b) => b[1] - a[1]).slice(0, 3);
+                    const topNamesContainer = document.getElementById('top-names-list');
+                    topNamesContainer.innerHTML = topNames.map(([name, count]) => `
+                        <div class="flex justify-between items-center bg-white/5 p-2 rounded-xl">
+                            <span class="font-bold text-white">${name}</span>
+                            <span class="bg-purple-500/20 text-purple-300 text-[10px] px-2 py-0.5 rounded-full">${count} vote(s)</span>
+                        </div>
+                    `).join('');
+                }
+            });
+        }
 
         function setupBabyTrackerListener() {
             const q = query(collection(db, "baby_tracking"), orderBy("timestamp", "asc"));
@@ -1081,127 +944,50 @@
                 const tableBody = document.getElementById('table-track-body');
                 tableBody.innerHTML = "";
 
-                let tempLabels = [];
-                let tempBbData = [];
-                let tempIncData = [];
-
-                let weightLabels = [];
-                let weightData = [];
-
-                let lastMealText = "Aucun";
-                let lastStoolText = "Aucune";
-                let lastUrineText = "Aucune";
-                let lastWeightText = "-- kg";
+                let tempLabels = [], tempBbData = [], tempIncData = [];
+                let weightLabels = [], weightData = [];
+                let lastMealText = "Aucun", lastStoolText = "Aucune", lastUrineText = "Aucune", lastWeightText = "-- kg";
                 let latestTempBb = null;
                 lastMealRawTimeStr = null;
 
-                let bibToday = 0, diaperToday = 0;
-                let bibWeek = 0, diaperWeek = 0;
-                let bibMonth = 0, diaperMonth = 0;
+                snapshot.forEach(docSnap => {
+                    const d = docSnap.data();
+                    const id = docSnap.id;
 
-                const now = new Date();
-                const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-                const startOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 6);
-                const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+                    if(d.tempBb) {
+                        tempLabels.push(`${d.day} ${d.time}`);
+                        tempBbData.push(d.tempBb);
+                        tempIncData.push(d.tempInc || null);
+                        latestTempBb = d.tempBb;
+                    }
 
-                let activityDays = {};
-                for (let i = 6; i >= 0; i--) {
-                    let d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
-                    let key = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
-                    activityDays[key] = { bibs: 0, diapers: 0 };
-                }
+                    if(d.weight) {
+                        weightLabels.push(`${d.day} ${d.time}`);
+                        weightData.push(d.weight);
+                        lastWeightText = `${d.weight} kg`;
+                    }
 
-                if(snapshot.empty) {
-                    tableBody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-500 italic">Aucune donnée enregistrée</td></tr>`;
-                } else {
-                    snapshot.forEach(docSnap => {
-                        const d = docSnap.data();
-                        const id = docSnap.id;
+                    if(d.food || d.bottleOnTime) {
+                        lastMealText = `${d.food || 'Validé'} (${d.time})`;
+                        lastMealRawTimeStr = d.time;
+                    }
+                    if(d.stool) lastStoolText = `Oui (${d.time})`;
+                    if(d.urine) lastUrineText = `Oui (${d.time})`;
 
-                        const itemDate = d.timestamp ? d.timestamp.toDate() : new Date();
-
-                        const isBib = (d.food && d.food.trim() !== '') || d.bottleOnTime;
-                        const isDiaper = d.diaperChanged || d.urine || d.stool;
-
-                        if (itemDate >= startOfToday) {
-                            if (isBib) bibToday++;
-                            if (isDiaper) diaperToday++;
-                        }
-                        if (itemDate >= startOfWeek) {
-                            if (isBib) bibWeek++;
-                            if (isDiaper) diaperWeek++;
-
-                            let key = `${String(itemDate.getDate()).padStart(2, '0')}/${String(itemDate.getMonth() + 1).padStart(2, '0')}`;
-                            if (activityDays[key]) {
-                                if (isBib) activityDays[key].bibs++;
-                                if (isDiaper) activityDays[key].diapers++;
-                            }
-                        }
-                        if (itemDate >= startOfMonth) {
-                            if (isBib) bibMonth++;
-                            if (isDiaper) diaperMonth++;
-                        }
-
-                        if(d.tempBb !== null && d.tempBb !== undefined) {
-                            tempLabels.push(`${d.day} ${d.time}`);
-                            tempBbData.push(d.tempBb);
-                            tempIncData.push(d.tempInc || null);
-                            latestTempBb = d.tempBb;
-                        }
-
-                        if(d.weight !== null && d.weight !== undefined && d.weight > 0) {
-                            weightLabels.push(`${d.day} ${d.time}`);
-                            weightData.push(d.weight);
-                            lastWeightText = `${d.weight} kg`;
-                        }
-
-                        if(d.food || d.bottleOnTime) {
-                            lastMealText = `${d.food || 'Validé'} (${d.time})`;
-                            lastMealRawTimeStr = d.time;
-                        }
-                        if(d.stool) lastStoolText = `Oui (${d.time})`;
-                        if(d.urine) lastUrineText = `Oui (${d.time})`;
-
-                        let diaperDisplay = [];
-                        if(d.diaperChanged) diaperDisplay.push("🧷 Change");
-                        if(d.urine) diaperDisplay.push("💧");
-                        if(d.stool) diaperDisplay.push("💩");
-                        let diaperStr = diaperDisplay.join(' ') || '--';
-
-                        tableBody.innerHTML += `
-                            <tr>
-                                <td class="p-2 font-bold">${d.day} <span class="text-purple-400 block text-[9px]">${d.time}</span></td>
-                                <td class="p-2">${diaperStr}</td>
-                                <td class="p-2 font-black ${d.tempBb < 36.5 ? 'text-blue-400' : d.tempBb > 37.5 ? 'text-red-400' : 'text-green-400'}">${d.tempBb ? d.tempBb + '°' : '--'}</td>
-                                <td class="p-2 text-slate-400">${d.tempInc ? d.tempInc + '°' : '--'}</td>
-                                <td class="p-2 font-semibold text-pink-300">${d.food || (d.bottleOnTime ? '✅ À temps' : '--')}</td>
-                                <td class="p-2 text-slate-300">${d.obs || '--'}</td>
-                                <td class="p-2 text-right no-print">
-                                    <button onclick="deleteTrackDoc('${id}')" class="admin-only text-red-400 hover:text-red-500 text-xs is-block"><i class="fas fa-trash"></i></button>
-                                </td>
-                            </tr>
-                        `;
-                    });
-                }
-
-                document.getElementById('stat-bib-day').innerText = bibToday;
-                document.getElementById('stat-diaper-day').innerText = diaperToday;
-                document.getElementById('stat-bib-week').innerText = bibWeek;
-                document.getElementById('stat-diaper-week').innerText = diaperWeek;
-                document.getElementById('stat-bib-month').innerText = bibMonth;
-                document.getElementById('stat-diaper-month').innerText = diaperMonth;
-
-                if (bibToday > thresholds.bibMax && thresholds.bibMax > 0) {
-                    triggerPushNotification("🍼 SEUIL MAXIMUM DE BIBERONS DÉPASSÉ", `Aujourd'hui : ${bibToday} biberons (Max configuré : ${thresholds.bibMax})`);
-                } else if (bibToday < thresholds.bibMin && thresholds.bibMin > 0 && now.getHours() >= 20) {
-                    triggerPushNotification("⚠️ SEUIL MINIMUM DE BIBERONS NON ATTEINT", `Aujourd'hui : seulement ${bibToday} biberons (Min configuré : ${thresholds.bibMin})`);
-                }
-
-                if (diaperToday > thresholds.diaperMax && thresholds.diaperMax > 0) {
-                    triggerPushNotification("🧷 SEUIL MAXIMUM DE COUCHES DÉPASSÉ", `Aujourd'hui : ${diaperToday} couches (Max configuré : ${thresholds.diaperMax})`);
-                } else if (diaperToday < thresholds.diaperMin && thresholds.diaperMin > 0 && now.getHours() >= 20) {
-                    triggerPushNotification("⚠️ SEUIL MINIMUM DE COUCHES NON ATTEINT", `Aujourd'hui : seulement ${diaperToday} couches (Min configuré : ${thresholds.diaperMin})`);
-                }
+                    tableBody.innerHTML += `
+                        <tr>
+                            <td class="p-2 font-bold">${d.day} <span class="text-purple-400 block text-[9px]">${d.time}</span></td>
+                            <td class="p-2">${d.diaperChanged ? '🧷' : ''} ${d.urine ? '💧' : ''} ${d.stool ? '💩' : ''}</td>
+                            <td class="p-2 font-black">${d.tempBb ? d.tempBb + '°' : '--'}</td>
+                            <td class="p-2 text-slate-400">${d.tempInc ? d.tempInc + '°' : '--'}</td>
+                            <td class="p-2 text-pink-300">${d.food || (d.bottleOnTime ? '✅ À temps' : '--')}</td>
+                            <td class="p-2 text-slate-300">${d.obs || '--'}</td>
+                            <td class="p-2 text-right no-print">
+                                <button onclick="deleteTrackDoc('${id}')" class="admin-only text-red-400 hover:text-red-500 text-xs is-block"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                });
 
                 document.getElementById('last-meal').innerText = lastMealText;
                 document.getElementById('last-stool').innerText = lastStoolText;
@@ -1209,395 +995,125 @@
                 document.getElementById('last-weight').innerText = lastWeightText;
 
                 updateNextBottleDisplay();
-
-                const alertBox = document.getElementById('temp-alert-box');
-                if(latestTempBb !== null) {
-                    if(latestTempBb < 36.5) {
-                        alertBox.className = "p-4 rounded-2xl border flex items-center gap-3 bg-blue-500/10 border-blue-500/30 text-blue-300";
-                        document.getElementById('temp-alert-icon').className = "fas fa-temperature-low text-2xl text-blue-400 animate-bounce";
-                        document.getElementById('temp-alert-title').innerText = "⚠️ Température basse (Hypothermie)";
-                        document.getElementById('temp-alert-msg').innerText = `Dernière mesure: ${latestTempBb}°C. Couvrir le bébé.`;
-                    } else if(latestTempBb > 37.5) {
-                        alertBox.className = "p-4 rounded-2xl border flex items-center gap-3 bg-red-500/10 border-red-500/30 text-red-300";
-                        document.getElementById('temp-alert-icon').className = "fas fa-temperature-high text-2xl text-red-400 animate-pulse";
-                        document.getElementById('temp-alert-title').innerText = "🔥 Alerte Fièvre";
-                        document.getElementById('temp-alert-msg').innerText = `Dernière mesure: ${latestTempBb}°C. Surveiller l'évolution.`;
-                    } else {
-                        alertBox.className = "p-4 rounded-2xl border flex items-center gap-3 bg-green-500/10 border-green-500/30 text-green-300";
-                        document.getElementById('temp-alert-icon').className = "fas fa-check-circle text-2xl text-green-400";
-                        document.getElementById('temp-alert-title').innerText = "✅ Température Normale";
-                        document.getElementById('temp-alert-msg').innerText = `Dernière mesure: ${latestTempBb}°C. Bébé est en zone de confort !`;
-                    }
-                } else alertBox.className = "hidden";
-
                 updateTempChart(tempLabels, tempBbData, tempIncData);
                 updateWeightChart(weightLabels, weightData);
-                updateActivityChart(Object.keys(activityDays), Object.values(activityDays).map(d => d.bibs), Object.values(activityDays).map(d => d.diapers));
+            });
+        }
+
+        function setupChatListener() {
+            const q = query(collection(db, "chat"), orderBy("timestamp", "asc"));
+            onSnapshot(q, snapshot => {
+                const box = document.getElementById('chat-box');
+                box.innerHTML = "";
+                snapshot.forEach(docSnap => {
+                    const m = docSnap.data();
+                    const isMe = m.user === userName;
+                    box.innerHTML += `
+                        <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'}">
+                            <span class="text-[9px] text-slate-500 mb-1">${m.user}</span>
+                            <div class="p-3 rounded-2xl max-w-[80%] text-xs ${isMe ? 'bg-purple-600 text-white' : 'glass border border-white/10 text-slate-200'}">
+                                ${m.text}
+                            </div>
+                        </div>
+                    `;
+                });
+                box.scrollTop = box.scrollHeight;
+            });
+        }
+
+        document.getElementById('btn-send').onclick = async () => {
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            if(text) {
+                await addDoc(collection(db, "chat"), { user: userName, text: text, timestamp: serverTimestamp() });
+                input.value = "";
+            }
+        };
+
+        document.getElementById('btn-save-final').onclick = async () => {
+            const gender = document.getElementById('final-gender').value;
+            const name = document.getElementById('final-name').value.trim();
+            const weight = parseFloat(document.getElementById('final-weight').value);
+            const height = parseFloat(document.getElementById('final-height').value);
+            const date = document.getElementById('final-date').value;
+            const time = document.getElementById('final-time').value;
+
+            if(!gender || !name) return alert("Remplis le sexe et prénom réels !");
+
+            await setDoc(doc(db, "final_result", "current"), { gender, name, weight, height, date, time });
+            alert("Résultat final publié ! 🥳");
+        };
+
+        function setupFinalResultListener() {
+            onSnapshot(doc(db, "final_result", "current"), docSnap => {
+                if(docSnap.exists()) {
+                    const res = docSnap.data();
+                    document.getElementById('res-final-name').innerText = res.name;
+                    document.getElementById('res-final-gender').innerText = res.gender;
+                    document.getElementById('res-final-weight').innerText = res.weight || '--';
+                    document.getElementById('res-final-height').innerText = res.height || '--';
+                    document.getElementById('res-final-date').innerText = res.date || '--';
+                    document.getElementById('res-final-time').innerText = res.time || '--';
+                    document.getElementById('panel-final-result').classList.remove('hidden');
+                }
             });
         }
 
         window.deleteTrackDoc = async (docId) => {
-            if(!isAdmin) return;
-            if(confirm("Supprimer cette ligne ?")) await deleteDoc(doc(db, "baby_tracking", docId));
+            if(isAdmin && confirm("Supprimer cette entrée ?")) await deleteDoc(doc(db, "baby_tracking", docId));
         };
 
-        function updateActivityChart(labels, bibsData, diapersData) {
-            const ctx = document.getElementById('activityChart').getContext('2d');
-            if(activityChartInstance) activityChartInstance.destroy();
+        window.openAdminModal = () => document.getElementById('admin-modal-gender').classList.remove('hidden');
+        window.closeAdminModal = () => document.getElementById('admin-modal-gender').classList.add('hidden');
+        
+        window.submitAdminManualAdd = async () => {
+            const u = document.getElementById('admin-add-user').value.trim();
+            const g = document.getElementById('admin-add-gender').value;
+            const n = document.getElementById('admin-add-name').value.trim();
+            const w = parseFloat(document.getElementById('admin-add-weight').value);
+            const h = parseFloat(document.getElementById('admin-add-height').value);
 
-            activityChartInstance = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'Biberons',
-                            data: bibsData,
-                            backgroundColor: '#ec4899',
-                            borderRadius: 6
-                        },
-                        {
-                            label: 'Couches',
-                            data: diapersData,
-                            backgroundColor: '#3b82f6',
-                            borderRadius: 6
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#94a3b8', stepSize: 1 } },
-                        x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 9 } } }
-                    },
-                    plugins: { legend: { labels: { color: '#e2e8f0', font: { size: 10 } } } }
-                }
-            });
-        }
+            if(u && n) {
+                await setDoc(doc(db, "predictions", u), { user: u, sexe: g, prenom: n, poids: w, taille: h, timestamp: serverTimestamp() });
+                closeAdminModal();
+                alert("Pronostic proche ajouté !");
+            }
+        };
+
+        window.triggerBirthAlert = async () => {
+            if(confirm("Lancer l'alerte de naissance générale ?")) {
+                await triggerPushNotification("🚨 ALERTE NAISSANCE", "Le travail à la maternité a commencé ! Restez connectés ! 👶✨");
+            }
+        };
 
         function updateTempChart(labels, bbData, incData) {
             const ctx = document.getElementById('tempChart').getContext('2d');
             if(tempChartInstance) tempChartInstance.destroy();
-
             tempChartInstance = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: labels,
+                    labels,
                     datasets: [
-                        {
-                            label: 'T° Bébé (°C)',
-                            data: bbData,
-                            borderColor: '#ec4899',
-                            backgroundColor: 'rgba(236, 72, 153, 0.1)',
-                            borderWidth: 2,
-                            tension: 0.3,
-                            fill: true,
-                            pointRadius: 4,
-                            pointBackgroundColor: '#f472b6'
-                        },
-                        {
-                            label: 'T° Incubateur (°C)',
-                            data: incData,
-                            borderColor: '#a855f7',
-                            borderDash: [5, 5],
-                            borderWidth: 1.5,
-                            tension: 0.3,
-                            pointRadius: 2
-                        }
+                        { label: 'T° BB (°C)', data: bbData, borderColor: '#ec4899', borderWidth: 2, tension: 0.3 },
+                        { label: 'T° INC (°C)', data: incData, borderColor: '#a855f7', borderDash: [5, 5], borderWidth: 1.5 }
                     ]
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: { min: 35.5, max: 38.5, grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#94a3b8' } },
-                        x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 9 } } }
-                    },
-                    plugins: { legend: { labels: { color: '#e2e8f0', font: { size: 10 } } } }
-                }
+                options: { responsive: true, maintainAspectRatio: false }
             });
         }
 
         function updateWeightChart(labels, weightData) {
             const ctx = document.getElementById('weightChart').getContext('2d');
             if(weightChartInstance) weightChartInstance.destroy();
-
             weightChartInstance = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'Poids (kg)',
-                            data: weightData,
-                            borderColor: '#3b82f6',
-                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                            borderWidth: 2,
-                            tension: 0.3,
-                            fill: true,
-                            pointRadius: 4,
-                            pointBackgroundColor: '#60a5fa'
-                        }
-                    ]
+                    labels,
+                    datasets: [{ label: 'Poids (kg)', data: weightData, borderColor: '#3b82f6', borderWidth: 2, tension: 0.3 }]
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#94a3b8' } },
-                        x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 9 } } }
-                    },
-                    plugins: { legend: { labels: { color: '#e2e8f0', font: { size: 10 } } } }
-                }
+                options: { responsive: true, maintainAspectRatio: false }
             });
         }
-
-        document.getElementById('btn-manual-add').onclick = () => {
-            if(!isAdmin) return;
-            const targetUser = prompt("Nom/Prénom du proche :");
-            if(!targetUser || targetUser.trim().length < 2) return alert("Nom invalide");
-
-            const modal = document.getElementById('admin-modal-gender');
-            modal.classList.remove('hidden');
-
-            const savePrediction = async (sexe) => {
-                modal.classList.add('hidden');
-                const prenom = prompt("Idée de prénom :");
-                const passion = prompt("Future passion estimée :") || "Mystère 🔮";
-                const poids = parseFloat(prompt("Poids estimé (kg) :"));
-                const taille = parseFloat(prompt("Taille estimée (cm) :"));
-                const date = prompt("Date estimée (AAAA-MM-JJ) :") || "--";
-                const heure = prompt("Heure estimée (HH:MM) :") || "--";
-
-                if(!prenom || isNaN(poids) || isNaN(taille)) return alert("Données incomplètes.");
-
-                await setDoc(doc(db, "predictions", targetUser.trim()), {
-                    user: targetUser.trim(), sexe: sexe, prenom: prenom, passion: passion, poids: poids, taille: taille, date: date, heure: heure, timestamp: serverTimestamp()
-                });
-
-                await triggerPushNotification("👶 Nouveau Pronostic (par Admin) !", `Un prono a été ajouté pour ${targetUser} !`);
-                alert(`Pronostic de ${targetUser} ajouté avec succès !`);
-            };
-
-            document.getElementById('admin-btn-girl').onclick = () => savePrediction("Fille");
-            document.getElementById('admin-btn-boy').onclick = () => savePrediction("Garçon");
-            document.getElementById('admin-btn-cancel').onclick = () => modal.classList.add('hidden');
-        };
-
-        function setupUserVoteListener() {
-            onSnapshot(doc(db, "predictions", userName), (docSnap) => {
-                if(docSnap.exists()) {
-                    const data = docSnap.get();
-                    selectGender(data.sexe);
-                    document.getElementById('vote-name').value = data.prenom || "";
-                    document.getElementById('vote-passion').value = data.passion || "";
-                    document.getElementById('vote-weight').value = data.poids || "";
-                    document.getElementById('vote-height').value = data.taille || "";
-                    document.getElementById('vote-date').value = data.date !== "--" ? data.date : "";
-                    document.getElementById('vote-time').value = data.heure !== "--" ? data.heure : "";
-                }
-            });
-        }
-
-        function setupChatListener() {
-            const chatBox = document.getElementById('chat-box');
-            const q = query(collection(db, "chat"), orderBy("timestamp", "asc"), limit(100));
-            onSnapshot(q, snapshot => {
-                chatBox.innerHTML = "";
-                snapshot.forEach(docSnap => {
-                    const msg = docSnap.data();
-                    const isMe = msg.user === userName;
-                    chatBox.innerHTML += `
-                        <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'} max-w-[85%] ${isMe ? 'self-end' : 'self-start'}">
-                            <span class="text-[9px] text-slate-500 mb-1 px-1">${msg.user}</span>
-                            <div class="p-3.5 rounded-2xl text-xs ${isMe ? 'bg-purple-600 text-white rounded-tr-none' : 'glass text-slate-200 rounded-tl-none'}">
-                                ${msg.message}
-                            </div>
-                        </div>
-                    `;
-                });
-                chatBox.scrollTop = chatBox.scrollHeight;
-            });
-        }
-
-        document.getElementById('btn-send').onclick = async () => {
-            const chatInput = document.getElementById('chat-input');
-            const msg = chatInput.value.trim();
-            if(msg.length > 0) {
-                await addDoc(collection(db, "chat"), { user: userName, message: msg, timestamp: serverTimestamp() });
-                chatInput.value = "";
-            }
-        };
-
-        onSnapshot(collection(db, "predictions"), snapshot => {
-            let totalVotes = snapshot.size;
-            let countGirl = 0; let countBoy = 0;
-            let sumWeight = 0; let sumHeight = 0;
-            let nameCounts = {};
-            globalPredictions = [];
-
-            const listAll = document.getElementById('list-all-votes');
-            listAll.innerHTML = "";
-
-            if(totalVotes === 0) {
-                updateStatsVisuals(0, 0, 0, 0, []);
-                listAll.innerHTML = `<p class="text-slate-500 italic text-center py-8">Aucun pronostic.</p>`;
-                return;
-            }
-
-            snapshot.forEach(d => {
-                const data = d.data();
-                globalPredictions.push(data);
-
-                if(data.sexe === 'Fille' || data.sexe === 'F') countGirl++;
-                if(data.sexe === 'Garçon' || data.sexe === 'G' || data.sexe === 'M' || data.sexe === 'Masculin') countBoy++;
-                sumWeight += data.poids || 0;
-                sumHeight += data.taille || 0;
-
-                let p = data.prenom ? data.prenom.trim().toLowerCase() : "aucun";
-                p = p.charAt(0).toUpperCase() + p.slice(1);
-                nameCounts[p] = (nameCounts[p] || 0) + 1;
-
-                const isFille = (data.sexe === 'Fille' || data.sexe === 'F');
-                const genderIcon = isFille ? 'fa-venus text-pink-400' : 'fa-mars text-blue-400';
-
-                listAll.innerHTML += `
-                    <div class="glass p-5 rounded-3xl border-l-4 ${isFille ? 'border-pink-500' : 'border-blue-500'} flex flex-col gap-2 relative">
-                        <div class="flex justify-between items-center">
-                            <span class="font-black text-xs uppercase tracking-wider text-purple-400">${data.user}</span>
-                            <div class="flex items-center gap-2">
-                                <button onclick="deleteProno('${data.user}')" class="admin-only text-red-400 hover:text-red-500 p-1 mr-2 text-sm transition-all is-block"><i class="fas fa-trash"></i></button>
-                                <i class="fas ${genderIcon} text-base"></i>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-y-1 text-[11px] text-slate-300">
-                            <p><b>Prénom :</b> ${data.prenom || "--"}</p>
-                            <p class="truncate"><b>Passion :</b> ${data.passion || "Mystère 🔮"}</p>
-                            <p><b>Poids :</b> ${data.poids} kg</p>
-                            <p><b>Taille :</b> ${data.taille} cm</p>
-                            <p class="col-span-2"><b>Le :</b> ${data.date} à ${data.heure}</p>
-                        </div>
-                    </div>
-                `;
-            });
-
-            let pctGirl = Math.round((countGirl / totalVotes) * 100) || 0;
-            let pctBoy = Math.round((countBoy / totalVotes) * 100) || 0;
-            let avgW = (sumWeight / totalVotes).toFixed(3);
-            let avgH = (sumHeight / totalVotes).toFixed(1);
-
-            let sortedNames = Object.entries(nameCounts).sort((a,b) => b[1] - a[1]).slice(0, 5);
-            updateStatsVisuals(pctGirl, pctBoy, avgW, avgH, sortedNames);
-            checkAndCalculateWinner();
-        });
-
-        function updateStatsVisuals(pGirl, pBoy, avgW, avgH, topNames) {
-            document.getElementById('pct-girl').innerText = pGirl;
-            document.getElementById('pct-boy').innerText = pBoy;
-            document.getElementById('bar-girl').style.width = pGirl + '%';
-            document.getElementById('bar-boy').style.width = pBoy + '%';
-            document.getElementById('avg-weight').innerText = avgW;
-            document.getElementById('avg-height').innerText = avgH;
-
-            const topList = document.getElementById('top-names-list');
-            if(topNames.length === 0) {
-                topList.innerHTML = `<p class="text-slate-500 italic text-center text-xs">Aucun vote</p>`;
-            } else {
-                topList.innerHTML = topNames.map(([name, count]) => `
-                    <div class="flex justify-between items-center bg-white/5 p-3 rounded-xl">
-                        <span class="font-bold">${name}</span>
-                        <span class="bg-purple-500/20 text-purple-400 px-2 py-0.5 rounded-lg text-[10px] font-black">${count} vote(s)</span>
-                    </div>
-                `).join('');
-            }
-        }
-
-        window.deleteProno = async (userId) => { 
-            if(!isAdmin) return;
-            if(confirm(`Supprimer le pronostic de "${userId}" ?`)) {
-                await deleteDoc(doc(db, "predictions", userId)); 
-            }
-        };
-
-        document.getElementById('btn-save-final').onclick = async () => {
-            if(!isAdmin) return;
-            const g = document.getElementById('final-gender').value;
-            const n = document.getElementById('final-name').value.trim();
-            const w = parseFloat(document.getElementById('final-weight').value);
-            const h = parseFloat(document.getElementById('final-height').value);
-            const d = document.getElementById('final-date').value;
-            const t = document.getElementById('final-time').value;
-
-            if(!g || !n || isNaN(w) || isNaN(h)) return alert("Saisie incomplète !");
-
-            await setDoc(doc(db, "resultat", "verdict"), { sexe: g, prenom: n, poids: w, taille: h, date: d || "--", heure: t || "--" });
-            await triggerPushNotification("🏁 LE VERDICT EST TOMBÉ !", `Le bébé est là ! Découvre le gagnant !`);
-            alert("Résultat final publié ! 🏁");
-        };
-
-        let finalResultData = null;
-        onSnapshot(doc(db, "resultat", "verdict"), docSnap => {
-            if(docSnap.exists()) {
-                finalResultData = docSnap.get();
-                document.getElementById('panel-final-result').classList.remove('hidden');
-                document.getElementById('res-final-name').innerText = finalResultData.prenom;
-                document.getElementById('res-final-gender').innerText = `👶 C'est une ${finalResultData.sexe} !`;
-                document.getElementById('res-final-weight').innerText = finalResultData.poids;
-                document.getElementById('res-final-height').innerText = finalResultData.taille;
-                document.getElementById('res-final-date').innerText = finalResultData.date;
-                document.getElementById('res-final-time').innerText = finalResultData.heure;
-                checkAndCalculateWinner();
-            }
-        });
-
-        function checkAndCalculateWinner() {
-            if(!finalResultData || globalPredictions.length === 0) return;
-            let bestScore = Infinity; 
-            let winner = "Aucun gagnant déterminé";
-
-            globalPredictions.forEach(p => {
-                let score = 0;
-                const pSexe = (p.sexe === 'Fille' || p.sexe === 'F') ? 'Fille' : 'Garçon';
-                const fSexe = (finalResultData.sexe === 'Fille' || finalResultData.sexe === 'F') ? 'Fille' : 'Garçon';
-                
-                if(pSexe !== fSexe) score += 100;
-                if(p.prenom && p.prenom.trim().toLowerCase() === finalResultData.prenom.trim().toLowerCase()) score -= 50;
-                score += Math.abs(p.poids - finalResultData.poids) * 100;
-                score += Math.abs(p.taille - finalResultData.taille) * 10;
-
-                if(p.date !== "--" && finalResultData.date !== "--") {
-                    const voteDate = new Date(p.date);
-                    const realDate = new Date(finalResultData.date);
-                    const diffDays = Math.ceil(Math.abs(realDate - voteDate) / (1000 * 60 * 60 * 24));
-                    score += diffDays * 20;
-                }
-
-                if(score < bestScore) {
-                    bestScore = score;
-                    winner = `${p.user} (${score.toFixed(1)} pts diff.)`;
-                }
-            });
-
-            document.getElementById('winner-name').innerText = winner;
-        }
-
-        document.getElementById('btn-urgent').onclick = async () => {
-            if(!isAdmin) return;
-            const message = prompt("Message d'alerte :", "Le travail a commencé ! 🏥");
-            if(message) {
-                await triggerPushNotification("🚨 ALERTE MATERNITÉ !", message);
-                alert("Alerte envoyée !");
-            }
-        };
-
-        document.getElementById('logout-btn').onclick = async () => {
-            if(confirm("Déconnexion ?")) {
-                if(userName) await deleteDoc(doc(db, "presence", userName));
-                window.location.reload();
-            }
-        };
-
     </script>
 </body>
 </html>
