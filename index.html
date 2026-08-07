@@ -3,318 +3,1601 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Suivi des Mesures & Graphique Interactif</title>
-    <!-- Inclusion de Chart.js pour le graphique -->
+    <title>BABY PREDICT 2026 - Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root {
-            --primary-color: #2c3e50;
-            --accent-color: #3498db;
-            --danger-color: #e74c3c;
-            --bg-color: #f8f9fa;
-        }
+        body { background: #07070a; color: #e2e8f0; font-family: 'Inter', sans-serif; margin: 0; min-height: 100vh; }
+        .glass { background: rgba(23, 23, 33, 0.75); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.08); }
+        .glass-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); }
+        
+        .admin-only { display: none !important; }
+        .is-admin .admin-only { display: flex !important; }
+        button.admin-only.is-block { display: block !important; }
+        
+        .tab-content { display: none; padding-bottom: 140px; }
+        .tab-content.active { display: block; }
+        .page { position: fixed; inset: 0; z-index: 100; background: #07070a; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .hidden { display: none !important; }
+        #push-alert { transform: translateY(-130%); transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 9999; }
+        #push-alert.show { transform: translateY(20px); }
+        .gender-btn.selected-pink { background: #db2777 !important; border-color: #f472b6; color: white; }
+        .gender-btn.selected-blue { background: #2563eb !important; border-color: #60a5fa; color: white; }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: #333;
-            margin: 0;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        }
-
-        h1, h2 {
-            color: var(--primary-color);
-            margin-top: 0;
-        }
-
-        .form-group {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
-        }
-
-        .input-control {
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-            min-width: 150px;
-        }
-
-        label {
-            font-size: 0.9em;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        input, select, button {
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 1em;
-        }
-
-        button.btn-add {
-            background-color: var(--accent-color);
-            color: white;
-            border: none;
-            cursor: pointer;
-            align-self: flex-end;
-            transition: background 0.2s;
-        }
-
-        button.btn-add:hover {
-            background-color: #2980b9;
-        }
-
-        .chart-container {
-            position: relative;
-            margin-bottom: 30px;
-            height: 350px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-
-        th, td {
-            text-align: left;
-            padding: 12px;
-            border-bottom: 1px solid #eee;
-        }
-
-        th {
-            background-color: #f1f3f5;
-        }
-
-        .btn-delete {
-            background-color: transparent;
-            color: var(--danger-color);
-            border: 1px solid var(--danger-color);
-            padding: 5px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .btn-delete:hover {
-            background-color: var(--danger-color);
-            color: white;
-        }
-
-        .empty-state {
-            text-align: center;
-            color: #888;
-            padding: 20px;
+        /* OPTIMISATION DE L'IMPRESSION PDF */
+        @media print {
+            body, html { background: white !important; color: black !important; height: auto !important; overflow: visible !important; }
+            nav, header, #push-alert, .page, .no-print, .tab-content:not(#tab-tracker):not(#tab-charts) { display: none !important; }
+            
+            #tab-tracker, #tab-charts { display: block !important; padding: 0 !important; width: 100% !important; margin: 0 !important; position: absolute !important; left: 0 !important; top: 0 !important; }
+            
+            .glass, .glass-card { background: none !important; border: 1px solid #ccc !important; backdrop-filter: none !important; box-shadow: none !important; color: black !important; border-radius: 8px !important; margin-bottom: 15px !important; }
+            table { width: 100% !important; border: 1px solid #000 !important; color: black !important; border-collapse: collapse !important; }
+            th, td { border: 1px solid #ccc !important; color: black !important; padding: 8px !important; }
+            th { background-color: #f0f0f0 !important; }
+            canvas { max-width: 100% !important; max-height: 250px !important; height: auto !important; }
+            h3, h4, p, span, td, th { color: black !important; }
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>Suivi des Mesures</h1>
-
-    <!-- Formulaire d'ajout -->
-    <div class="form-group">
-        <div class="input-control">
-            <label for="metricType">Type de mesure</label>
-            <select id="metricType">
-                <option value="poids">Poids (kg)</option>
-                <option value="temperature">Température (°C)</option>
-            </select>
+    <!-- ALERTES PUSH SATELLITE -->
+    <div id="push-alert" class="fixed top-0 left-1/2 -translate-x-1/2 w-[90%] max-w-sm glass p-4 rounded-3xl border-l-4 border-purple-500 shadow-2xl flex items-center gap-3">
+        <div class="bg-purple-500/20 w-10 h-10 rounded-full flex items-center justify-center text-purple-500"><i class="fas fa-baby"></i></div>
+        <div class="flex-1">
+            <p id="push-title" class="text-[10px] font-black uppercase text-purple-400 italic">Baby Predict</p>
+            <p id="push-body" class="text-xs text-white">Message...</p>
         </div>
-        <div class="input-control">
-            <label for="measureDate">Date</label>
-            <input type="date" id="measureDate">
-        </div>
-        <div class="input-control">
-            <label for="measureValue">Valeur</label>
-            <input type="number" step="0.1" id="measureValue" placeholder="ex: 72.5">
-        </div>
-        <button class="btn-add" onclick="addMeasure()">Ajouter</button>
     </div>
 
-    <!-- Zone Graphique -->
-    <h2>Tendance</h2>
-    <div class="chart-container">
-        <canvas id="metricsChart"></canvas>
+    <!-- PAGE DE LOGIN MULTI-ACCÈS -->
+    <div id="page-login" class="page">
+        <div class="glass p-10 rounded-[3rem] w-full max-w-sm border border-purple-500/20 text-center shadow-2xl">
+            <div class="text-4xl mb-4">👶✨</div>
+            <h1 class="text-3xl font-black italic text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-blue-400 mb-2">BABY PREDICT</h1>
+            <p class="text-[10px] uppercase tracking-widest text-slate-500 mb-8 font-bold">Pronostics & Suivi Maternité</p>
+            <input type="tel" id="input-pass" class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-center text-2xl mb-5 text-white outline-none focus:border-purple-500 transition-all" placeholder="Code d'accès">
+            <button id="btn-to-name" class="w-full bg-gradient-to-r from-pink-600 to-blue-600 text-white font-black py-5 rounded-2xl uppercase text-xs transition-all shadow-lg italic tracking-wider">Vérifier le code</button>
+            <p class="text-[9px] text-slate-500 mt-4 italic">Demandez le code d'accès (Admin ou Proche) aux parents.</p>
+        </div>
     </div>
 
-    <!-- Historique / Liste des points -->
-    <h2>Historique des données</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Type</th>
-                <th>Date</th>
-                <th>Valeur</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody id="dataTableBody">
-            <!-- Rempli dynamiquement -->
-        </tbody>
-    </table>
-</div>
+    <!-- PAGE DE NOM -->
+    <div id="page-name" class="page hidden text-center">
+        <div class="glass p-10 rounded-[3rem] w-full max-w-sm border border-white/10 shadow-2xl">
+            <p class="text-[10px] uppercase font-bold text-purple-400 mb-4 tracking-widest italic">Qui es-tu ?</p>
+            <input type="text" id="input-name" class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-center text-xl mb-5 text-white outline-none focus:border-white/30 transition-all" placeholder="Ton Prénom / Pseudo">
+            <button id="btn-to-app" class="w-full bg-white text-black font-black py-5 rounded-2xl uppercase text-xs hover:bg-slate-200 transition-all shadow-lg italic">Rejoindre l'application</button>
+        </div>
+    </div>
 
-<script>
-    // Données initiales d'exemple
-    let measures = [
-        { id: 1, type: 'poids', date: '2026-08-01', value: 75.0 },
-        { id: 2, type: 'poids', date: '2026-08-03', value: 74.2 },
-        { id: 3, type: 'poids', date: '2026-08-05', value: 74.5 },
-        { id: 4, type: 'poids', date: '2026-08-07', value: 73.8 }
-    ];
+    <!-- APPLICATION PRINCIPALE -->
+    <div id="main-app" class="hidden min-h-screen">
+        <header class="p-6 flex justify-between items-center sticky top-0 bg-[#07070a]/90 backdrop-blur-xl z-40 border-b border-white/5">
+            <div>
+                <h2 class="font-black italic text-xl uppercase tracking-tighter">Baby <span class="text-purple-400">Predict</span></h2>
+                <p id="role-tag" class="text-[8px] font-bold text-purple-400/50 uppercase tracking-widest"></p>
+            </div>
+            <button id="logout-btn" class="w-10 h-10 glass rounded-full flex items-center justify-center text-red-400 hover:bg-red-500/10 transition-all"><i class="fas fa-power-off"></i></button>
+        </header>
 
-    let chartInstance = null;
+        <main class="p-4 max-w-2xl mx-auto">
+            
+            <!-- VUE GENERALE & STATS -->
+            <section id="tab-home" class="tab-content active space-y-6">
+                
+                <div id="panel-final-result" class="hidden bg-gradient-to-br from-yellow-600/20 to-amber-600/20 border border-yellow-500/30 p-6 rounded-[2.5rem] text-center shadow-2xl">
+                    <span class="text-[10px] font-black uppercase text-yellow-400 tracking-widest bg-yellow-500/10 px-3 py-1 rounded-full border border-yellow-500/20"><i class="fas fa-trophy mr-1"></i> Le Bébé est là ! <i class="fas fa-trophy ml-1"></i></span>
+                    <h3 class="text-3xl font-black mt-4 text-white uppercase tracking-tight" id="res-final-name">---</h3>
+                    <p class="text-sm font-bold text-slate-300 mt-1" id="res-final-gender">---</p>
+                    <div class="grid grid-cols-2 gap-4 mt-4 text-xs bg-black/40 p-4 rounded-2xl">
+                        <p>👶 <b>Poids :</b> <span id="res-final-weight">0</span> kg</p>
+                        <p>📏 <b>Taille :</b> <span id="res-final-height">0</span> cm</p>
+                        <p class="col-span-2 border-t border-white/5 pt-2 mt-1">📅 <b>Né le :</b> <span id="res-final-date">--</span> à <span id="res-final-time">--</span></p>
+                    </div>
+                    <div class="mt-4 p-3 bg-purple-500/20 rounded-xl border border-purple-500/30">
+                        <p class="text-[10px] uppercase font-black text-purple-300">🏆 Meilleur Pronostic 🏆</p>
+                        <p class="font-black text-lg text-white mt-1" id="winner-name">Calcul en cours...</p>
+                    </div>
+                </div>
 
-    // Initialisation au chargement de la page
-    window.onload = () => {
-        document.getElementById('measureDate').valueAsDate = new Date();
-        initChart();
-        updateUI();
-    };
+                <div class="admin-only glass p-6 rounded-[2.5rem] border border-yellow-500/20 space-y-4">
+                    <h4 class="text-xs font-black uppercase tracking-wider text-yellow-500 italic"><i class="fas fa-edit mr-2"></i>[ADMIN] Clôturer & Entrer les vraies infos</h4>
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <select id="final-gender" class="bg-white/5 border border-white/10 p-2 rounded-xl text-white outline-none">
+                            <option value="" class="bg-[#07070a]">Sexe...</option>
+                            <option value="Fille" class="bg-[#07070a]">Fille</option>
+                            <option value="Garçon" class="bg-[#07070a]">Garçon</option>
+                        </select>
+                        <input type="text" id="final-name" class="bg-white/5 border border-white/10 p-2 rounded-xl text-white outline-none" placeholder="Vrai Prénom">
+                        <input type="number" step="0.001" id="final-weight" class="bg-white/5 border border-white/10 p-2 rounded-xl text-white outline-none" placeholder="Poids (kg)">
+                        <input type="number" step="0.5" id="final-height" class="bg-white/5 border border-white/10 p-2 rounded-xl text-white outline-none" placeholder="Taille (cm)">
+                        <input type="date" id="final-date" class="bg-white/5 border border-white/10 p-2 rounded-xl text-white outline-none">
+                        <input type="time" id="final-time" class="bg-white/5 border border-white/10 p-2 rounded-xl text-white outline-none">
+                    </div>
+                    <button id="btn-save-final" class="w-full bg-yellow-600 text-white font-black py-3 rounded-xl uppercase text-[10px] tracking-wider shadow-lg">Publier le résultat final</button>
+                </div>
 
-    // Initialisation du graphique Chart.js
-    function initChart() {
-        const ctx = document.getElementById('metricsChart').getContext('2d');
-        chartInstance = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: [],
-                datasets: [{
-                    label: 'Poids (kg)',
-                    data: [],
-                    borderColor: '#3498db',
-                    backgroundColor: 'rgba(52, 152, 219, 0.1)',
-                    borderWidth: 2,
-                    fill: true,
-                    tension: 0.3, // Rend la courbe fluide
-                    pointRadius: 6,
-                    pointHoverRadius: 8
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    tooltip: {
-                        callbacks: {
-                            afterBody: () => 'Cliquez sur un point du graphique pour le supprimer.'
-                        }
+                <div class="glass p-8 rounded-[3rem] text-center shadow-2xl relative overflow-hidden">
+                    <p class="text-[10px] uppercase font-black text-purple-400 tracking-widest mb-1">Bienvenue</p>
+                    <h3 class="text-3xl font-black italic uppercase mb-4 tracking-tighter" id="display-name">---</h3>
+                    <div id="list-online" class="flex flex-wrap justify-center gap-2 text-[10px]"></div>
+                </div>
+
+                <div class="glass p-6 rounded-[2.5rem] space-y-4">
+                    <h4 class="text-xs font-black uppercase tracking-wider text-slate-400 italic text-center">Tendance Sexe</h4>
+                    <div class="flex items-center justify-between text-xs font-bold px-2">
+                        <span class="text-pink-400"><i class="fas fa-venus mr-1"></i> Fille : <span id="pct-girl">0</span>%</span>
+                        <span class="text-blue-400">Garçon : <span id="pct-boy">0</span>% <i class="fas fa-mars ml-1"></i></span>
+                    </div>
+                    <div class="w-full bg-white/5 h-4 rounded-full overflow-hidden flex">
+                        <div id="bar-girl" class="bg-pink-500 h-full transition-all duration-500" style="width: 50%"></div>
+                        <div id="bar-boy" class="bg-blue-500 h-full transition-all duration-500" style="width: 50%"></div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="glass p-6 rounded-3xl text-center">
+                        <span class="text-[9px] text-slate-500 block uppercase font-bold mb-1 italic">Poids Moyen</span>
+                        <b id="avg-weight" class="text-2xl font-black text-purple-400">0.000</b> <span class="text-[10px] font-bold text-slate-400">kg</span>
+                    </div>
+                    <div class="glass p-6 rounded-3xl text-center">
+                        <span class="text-[9px] text-slate-500 block uppercase font-bold mb-1 italic">Taille Moyenne</span>
+                        <b id="avg-height" class="text-2xl font-black text-purple-400">0.0</b> <span class="text-[10px] font-bold text-slate-400">cm</span>
+                    </div>
+                </div>
+
+                <div class="glass p-6 rounded-[2.5rem]">
+                    <h4 class="text-xs font-black uppercase tracking-wider text-slate-400 italic mb-4"><i class="fas fa-star mr-2 text-yellow-400"></i>Prénoms les plus votés</h4>
+                    <div id="top-names-list" class="space-y-2 text-xs">
+                        <p class="text-slate-500 italic text-center text-xs">Aucun vote pour le moment</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ONGLET : SUIVI BÉBÉ & FEUILLE DE SOINS MATERNITÉ -->
+            <section id="tab-tracker" class="tab-content space-y-6">
+                <div class="flex justify-between items-center mb-2 px-2 no-print">
+                    <div>
+                        <h3 class="text-2xl font-black italic uppercase">Suivi Maternité</h3>
+                        <p class="text-[10px] text-slate-400">Santé & Fiche de Soins</p>
+                    </div>
+                    <button onclick="exportToPDF()" class="glass text-purple-400 hover:bg-purple-500/20 p-3 rounded-2xl text-xs font-bold border border-purple-500/30 flex items-center gap-2 cursor-pointer">
+                        <i class="fas fa-print"></i> Export PDF / Pédiatre
+                    </button>
+                </div>
+
+                <!-- CARTE ALERTE RAPPEL PROCHAIN BIBERON -->
+                <div id="next-bottle-card" class="no-print bg-gradient-to-r from-pink-900/40 via-purple-900/40 to-indigo-900/40 border border-pink-500/30 p-5 rounded-[2.5rem] flex items-center justify-between shadow-2xl relative overflow-hidden">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-2xl bg-pink-500/20 flex items-center justify-center text-pink-400 text-2xl border border-pink-500/30">
+                            <i class="fas fa-baby-bottle animate-bounce"></i>
+                        </div>
+                        <div>
+                            <span class="text-[9px] font-black uppercase text-pink-300 tracking-widest block">⏰ Prochain Biberon</span>
+                            <h4 id="next-bottle-time" class="text-2xl font-black text-white">--h--</h4>
+                            <p id="next-bottle-status" class="text-[10px] text-slate-300 font-bold mt-0.5">En attente de données...</p>
+                            <span id="next-bottle-dose" class="inline-block mt-2 bg-pink-500/20 text-pink-300 border border-pink-500/30 text-[9px] font-bold px-2.5 py-0.5 rounded-full">
+                                🍼 Dose conseillée : -- ml
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="text-right">
+                        <label class="text-[8px] uppercase font-bold text-slate-400 block mb-1">Fréquence</label>
+                        <select id="bottle-interval" onchange="updateNextBottleDisplay()" class="bg-black/50 border border-white/10 text-xs font-bold text-pink-300 p-2 rounded-xl outline-none">
+                            <option value="2.5" class="bg-[#07070a]">2h30</option>
+                            <option value="3.0" class="bg-[#07070a]">3h00</option>
+                            <option value="3.5" class="bg-[#07070a]" selected>3h30</option>
+                            <option value="4.0" class="bg-[#07070a]">4h00</option>
+                            <option value="4.5" class="bg-[#07070a]">4h30</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- STATISTIQUES REPAS ET COUCHES -->
+                <div class="glass p-5 rounded-[2.5rem] border border-white/10 space-y-4 no-print">
+                    <h4 class="text-xs font-black uppercase text-purple-400 italic flex items-center justify-between">
+                        <span><i class="fas fa-chart-pie mr-2"></i> Statistiques Biberons & Couches</span>
+                    </h4>
+                    <div class="grid grid-cols-3 gap-2 text-center text-xs">
+                        <div class="glass-card p-3 rounded-2xl">
+                            <span class="text-[8px] font-bold text-slate-400 uppercase block">Aujourd'hui</span>
+                            <p class="font-black text-pink-400 mt-1">🍼 <span id="stat-bib-day">0</span></p>
+                            <p class="font-black text-blue-400 mt-0.5">🧷 <span id="stat-diaper-day">0</span></p>
+                        </div>
+                        <div class="glass-card p-3 rounded-2xl">
+                            <span class="text-[8px] font-bold text-slate-400 uppercase block">7 Derniers jours</span>
+                            <p class="font-black text-pink-400 mt-1">🍼 <span id="stat-bib-week">0</span></p>
+                            <p class="font-black text-blue-400 mt-0.5">🧷 <span id="stat-diaper-week">0</span></p>
+                        </div>
+                        <div class="glass-card p-3 rounded-2xl">
+                            <span class="text-[8px] font-bold text-slate-400 uppercase block">Ce mois-ci</span>
+                            <p class="font-black text-pink-400 mt-1">🍼 <span id="stat-bib-month">0</span></p>
+                            <p class="font-black text-blue-400 mt-0.5">🧷 <span id="stat-diaper-month">0</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CONFIGURATION SEUILS PARENTS -->
+                <div class="glass p-5 rounded-[2.5rem] border border-white/10 space-y-3 no-print">
+                    <h4 class="text-xs font-black uppercase text-amber-400 italic flex items-center justify-between">
+                        <span><i class="fas fa-sliders-h mr-2"></i> Configuration des Objectifs (Journalier)</span>
+                    </h4>
+                    <div class="grid grid-cols-2 gap-3 text-xs">
+                        <div class="space-y-2 glass-card p-3 rounded-2xl">
+                            <span class="text-[9px] font-bold text-pink-300 uppercase block">🍼 Biberons par jour</span>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[9px] text-slate-400">Min:</span>
+                                <input type="number" id="limit-bib-min" class="w-full bg-black/40 border border-white/10 p-1.5 rounded-lg text-center font-bold text-white" value="5">
+                                <span class="text-[9px] text-slate-400">Max:</span>
+                                <input type="number" id="limit-bib-max" class="w-full bg-black/40 border border-white/10 p-1.5 rounded-lg text-center font-bold text-white" value="8">
+                            </div>
+                        </div>
+                        <div class="space-y-2 glass-card p-3 rounded-2xl">
+                            <span class="text-[9px] font-bold text-blue-300 uppercase block">🧷 Couches par jour</span>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[9px] text-slate-400">Min:</span>
+                                <input type="number" id="limit-diaper-min" class="w-full bg-black/40 border border-white/10 p-1.5 rounded-lg text-center font-bold text-white" value="6">
+                                <span class="text-[9px] text-slate-400">Max:</span>
+                                <input type="number" id="limit-diaper-max" class="w-full bg-black/40 border border-white/10 p-1.5 rounded-lg text-center font-bold text-white" value="12">
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="saveThresholds()" class="w-full bg-amber-600/30 hover:bg-amber-600/50 border border-amber-500/40 text-amber-300 font-bold py-2 rounded-xl text-[10px] uppercase tracking-wider transition-all">
+                        <i class="fas fa-save mr-1"></i> Sauvegarder les objectifs
+                    </button>
+                </div>
+
+                <!-- CARTE INTERVALLE REPAS -->
+                <div id="meal-window-card" class="no-print bg-gradient-to-r from-amber-900/30 via-orange-900/30 to-purple-900/30 border border-amber-500/30 p-5 rounded-[2.5rem] flex items-center justify-between shadow-2xl relative overflow-hidden">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-2xl bg-amber-500/20 flex items-center justify-center text-amber-400 text-2xl border border-amber-500/30">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div>
+                            <span class="text-[9px] font-black uppercase text-amber-300 tracking-widest block">⏳ Plage Prochain Repas (1h30 Max)</span>
+                            <h4 id="meal-window-range" class="text-xl font-black text-white">--h-- à --h--</h4>
+                            <p id="meal-window-status" class="text-[10px] text-slate-300 font-bold mt-0.5">Aucun biberon programmé</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ALERTE DE TEMPERATURE -->
+                <div id="temp-alert-box" class="hidden p-4 rounded-2xl border flex items-center gap-3 no-print">
+                    <i id="temp-alert-icon" class="fas text-xl"></i>
+                    <div>
+                        <h5 id="temp-alert-title" class="font-bold text-xs uppercase"></h5>
+                        <p id="temp-alert-msg" class="text-[11px]"></p>
+                    </div>
+                </div>
+
+                <!-- CARTES RAPIDES "DERNIERS..." -->
+                <div class="grid grid-cols-2 gap-3 no-print">
+                    <div class="glass p-4 rounded-2xl border border-white/5">
+                        <span class="text-[9px] font-bold text-slate-400 uppercase block">🍼 Dernier Repas</span>
+                        <p id="last-meal" class="text-sm font-black text-pink-400 mt-1">Aucun</p>
+                    </div>
+                    <div class="glass p-4 rounded-2xl border border-white/5">
+                        <span class="text-[9px] font-bold text-slate-400 uppercase block">💩 Dernière Selle</span>
+                        <p id="last-stool" class="text-sm font-black text-amber-400 mt-1">Aucune</p>
+                    </div>
+                    <div class="glass p-4 rounded-2xl border border-white/5">
+                        <span class="text-[9px] font-bold text-slate-400 uppercase block">💧 Dernière Urine</span>
+                        <p id="last-urine" class="text-sm font-black text-blue-400 mt-1">Aucune</p>
+                    </div>
+                    <div class="glass p-4 rounded-2xl border border-white/5">
+                        <span class="text-[9px] font-bold text-slate-400 uppercase block">⚖️ Dernier Poids</span>
+                        <p id="last-weight" class="text-sm font-black text-purple-400 mt-1">-- kg</p>
+                    </div>
+                </div>
+
+                <!-- FORMULAIRE DE SAISIE FICHE SOINS -->
+                <div class="glass p-6 rounded-[2.5rem] space-y-4 border border-white/10 no-print">
+                    <h4 class="text-xs font-black uppercase text-slate-300 italic"><i class="fas fa-plus-circle mr-2 text-purple-400"></i> Ajouter une saisie de soins</h4>
+                    
+                    <div class="grid grid-cols-2 gap-3 text-xs">
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-400 mb-1">Jour de suivi</label>
+                            <select id="track-day" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none">
+                            </select>
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="block text-[9px] font-bold text-slate-400">Heure (ex: 14h30)</label>
+                                <button type="button" onclick="setNowTime()" class="text-[8px] bg-purple-500/20 text-purple-300 px-1.5 py-0.5 rounded font-bold">Maintenant</button>
+                            </div>
+                            <input type="text" id="track-time" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none" placeholder="Ex: 14h30">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-400 mb-1">T° Bébé (°C)</label>
+                            <input type="number" step="0.1" id="track-temp-bb" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none" placeholder="Ex: 36.8">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-400 mb-1">T° LC/INC (°C)</label>
+                            <input type="number" step="0.1" id="track-temp-inc" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none" placeholder="Ex: 37.0">
+                        </div>
+                    </div>
+
+                    <!-- CASE COUCHES AMÉLIORÉE -->
+                    <div class="bg-white/5 p-4 rounded-xl space-y-3">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" id="track-diaper-change" onchange="toggleDiaperDetails()" class="rounded accent-blue-500 w-4 h-4">
+                            <span class="text-slate-200 font-bold text-xs">🧷 Changement de couche effectué</span>
+                        </label>
+                        
+                        <div id="diaper-details" class="hidden grid grid-cols-2 gap-3 text-xs pl-6 pt-1 border-t border-white/5">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" id="track-urine" class="rounded accent-blue-500 w-4 h-4">
+                                <span class="text-slate-300 font-bold">💧 Urine</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" id="track-stool" class="rounded accent-amber-500 w-4 h-4">
+                                <span class="text-slate-300 font-bold">💩 Selle</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="bg-pink-500/10 border border-pink-500/20 p-3 rounded-xl">
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" id="track-bottle-ontime" class="rounded accent-pink-500 w-5 h-5">
+                            <div>
+                                <span class="text-pink-300 font-black text-xs block">✅ Biberon pris & validé à temps</span>
+                                <span class="text-[9px] text-slate-400">Lance automatiquement la fenêtre du repas suivant.</span>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="space-y-3 text-xs">
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-400 mb-1">Alimentation (Saisie ou Sélection rapide)</label>
+                            <div class="flex flex-wrap gap-2 mb-2">
+                                <button type="button" onclick="setQuickFood('Bib 30ml')" class="bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg text-[10px] font-bold">30 ml</button>
+                                <button type="button" onclick="setQuickFood('Bib 60ml')" class="bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg text-[10px] font-bold">60 ml</button>
+                                <button type="button" onclick="setQuickFood('Bib 90ml')" class="bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg text-[10px] font-bold">90 ml</button>
+                                <button type="button" onclick="setQuickFood('Bib 120ml')" class="bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg text-[10px] font-bold">120 ml</button>
+                                <button type="button" onclick="setQuickFood('Tétée')" class="bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg text-[10px] font-bold">Tétée</button>
+                            </div>
+                            <input type="text" id="track-food" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none" placeholder="Ex: Bib 60 ml">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-400 mb-1">Observations / Soins</label>
+                            <input type="text" id="track-obs" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none" placeholder="Ex: Cordon fait, Bain OK">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-400 mb-1">Poids du jour (kg)</label>
+                            <input type="number" step="0.001" id="track-weight" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none" placeholder="Ex: 2.650">
+                        </div>
+                    </div>
+
+                    <button id="btn-add-track" class="w-full bg-gradient-to-r from-pink-600 to-purple-600 text-white font-black py-4 rounded-xl uppercase text-xs tracking-wider shadow-lg">
+                        <i class="fas fa-save mr-2"></i> Enregistrer la saisie
+                    </button>
+                </div>
+
+                <!-- TABLEAU RECAPITULATIF -->
+                <div class="glass p-5 rounded-[2.5rem] border border-white/10 overflow-x-auto space-y-3">
+                    <h4 class="text-xs font-black uppercase text-slate-300 italic"><i class="fas fa-table mr-2 text-purple-400"></i> Historique Fiche de Soins Maternité</h4>
+                    <table class="w-full text-left text-[11px] border-collapse min-w-[500px]">
+                        <thead>
+                            <tr class="border-b border-white/10 text-slate-400 uppercase text-[9px]">
+                                <th class="p-2">Jour/Heure</th>
+                                <th class="p-2">Couche / U/S</th>
+                                <th class="p-2">T° BB</th>
+                                <th class="p-2">T° LC</th>
+                                <th class="p-2">Alimentation</th>
+                                <th class="p-2">Observations</th>
+                                <th class="p-2 text-right no-print">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-track-body" class="divide-y divide-white/5 text-slate-200">
+                            <tr><td colspan="7" class="p-4 text-center text-slate-500 italic">Aucune donnée enregistrée</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- NOUVEL ONGLET : ANALYTICS & GRAPHIQUES -->
+            <section id="tab-charts" class="tab-content space-y-6">
+                <div class="flex justify-between items-center mb-2 px-2">
+                    <div>
+                        <h3 class="text-2xl font-black italic uppercase">Analytics</h3>
+                        <p class="text-[10px] text-slate-400">Courbes de santé & Rapports</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- GRAPHIQUE ACTIVITÉ BIBERONS / COUCHES -->
+                    <div class="glass p-5 rounded-[2.5rem] border border-white/10 space-y-3 md:col-span-2">
+                        <h4 class="text-xs font-black uppercase text-purple-400 italic flex items-center justify-between">
+                            <span><i class="fas fa-chart-bar mr-2"></i> Activité Biberons & Couches (7 derniers jours)</span>
+                        </h4>
+                        <div class="w-full h-56">
+                            <canvas id="activityChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- GRAPHIQUE TEMPÉRATURE -->
+                    <div class="glass p-5 rounded-[2.5rem] border border-white/10 space-y-3">
+                        <h4 class="text-xs font-black uppercase text-purple-400 italic flex items-center justify-between">
+                            <span><i class="fas fa-chart-line mr-2"></i> Courbe de Température (°C)</span>
+                        </h4>
+                        <p class="text-[9px] text-slate-500 font-normal">Min conseillé: 36.5°C | Max: 37.5°C</p>
+                        <div class="w-full h-52">
+                            <canvas id="tempChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- GRAPHIQUE POIDS -->
+                    <div class="glass p-5 rounded-[2.5rem] border border-white/10 space-y-3">
+                        <h4 class="text-xs font-black uppercase text-purple-400 italic flex items-center justify-between">
+                            <span><i class="fas fa-weight-hanging mr-2"></i> Courbe de Poids (kg)</span>
+                        </h4>
+                        <p class="text-[9px] text-slate-500 font-normal">Suivi de la prise de poids</p>
+                        <div class="w-full h-52">
+                            <canvas id="weightChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- FORMULAIRE DE VOTE -->
+            <section id="tab-vote" class="tab-content">
+                <div class="flex justify-between items-center mb-6 px-2">
+                    <h3 class="text-2xl font-black italic uppercase">Mon Pronostic</h3>
+                </div>
+
+                <div class="glass p-6 rounded-[2.5rem] space-y-6">
+                    <div>
+                        <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Fille ou Garçon ?</label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button onclick="selectGender('Fille')" id="vote-girl" class="gender-btn glass p-4 rounded-2xl font-bold uppercase text-xs flex items-center justify-center gap-2 border border-white/5 text-pink-400"><i class="fas fa-venus"></i> Fille</button>
+                            <button onclick="selectGender('Garçon')" id="vote-boy" class="gender-btn glass p-4 rounded-2xl font-bold uppercase text-xs flex items-center justify-center gap-2 border border-white/5 text-blue-400"><i class="fas fa-mars"></i> Garçon</button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Idée de Prénom</label>
+                            <input type="text" id="vote-name" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-purple-500 text-sm" placeholder="Ex: Lucas, Léa...">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Sa future passion 🎨⚽</label>
+                            <input type="text" id="vote-passion" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-purple-500 text-sm" placeholder="Ex: Dessin, Foot, Musique...">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Poids (en kg)</label>
+                            <input type="number" step="0.001" id="vote-weight" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-purple-500" placeholder="Ex: 3.450">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Taille (en cm)</label>
+                            <input type="number" step="0.5" id="vote-height" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-purple-500" placeholder="Ex: 50.5">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Date estimée</label>
+                            <input type="date" id="vote-date" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-purple-500 text-xs">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Heure estimée</label>
+                            <input type="time" id="vote-time" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-purple-500 text-xs">
+                        </div>
+                    </div>
+
+                    <button id="btn-submit-vote" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-black py-4 rounded-xl uppercase text-xs italic tracking-wider shadow-lg">Enregistrer mon prono</button>
+                </div>
+            </section>
+
+            <!-- TOUS LES PRONOS -->
+            <section id="tab-ranking" class="tab-content">
+                <div class="flex justify-between items-center mb-6 px-2">
+                    <h3 class="text-2xl font-black italic uppercase">Les Pronostics</h3>
+                    <button id="btn-manual-add" class="admin-only bg-purple-600/20 border border-purple-500 text-purple-400 text-[10px] font-black uppercase px-4 py-2 rounded-xl"><i class="fas fa-plus mr-1"></i> Ajouter pour un proche</button>
+                </div>
+                <div id="list-all-votes" class="space-y-4"></div>
+            </section>
+
+            <!-- CHAT -->
+            <section id="tab-chat" class="tab-content">
+                <div class="flex justify-between items-center mb-6 px-2">
+                    <h3 class="text-2xl font-black italic uppercase">Baby Chat</h3>
+                    <button id="btn-urgent" class="admin-only bg-red-600/20 border border-red-500 text-red-500 font-bold px-4 py-2 rounded-xl text-[10px] uppercase">Alerte Naissance !</button>
+                </div>
+                <div id="chat-box" class="h-[52vh] overflow-y-auto mb-4 space-y-4 pr-2 flex flex-col"></div>
+                <div class="flex gap-2 p-2 glass rounded-[2.5rem] border border-white/10">
+                    <input type="text" id="chat-input" class="flex-1 bg-transparent px-4 outline-none text-sm text-white" placeholder="Un mot pour les futurs parents...">
+                    <button id="btn-send" class="bg-purple-600 w-12 h-12 rounded-full flex items-center justify-center shadow-lg"><i class="fas fa-paper-plane text-[10px]"></i></button>
+                </div>
+            </section>
+        </main>
+
+        <!-- NAVIGATION INFÉRIEURE ERGONOMIQUE ET STRUCTURÉE -->
+        <nav class="fixed bottom-4 left-1/2 -translate-x-1/2 w-[95%] max-w-md z-50 no-print">
+            <div class="glass rounded-[2rem] flex justify-between items-center p-2 border border-white/10 shadow-2xl px-3">
+                <button onclick="switchTab('home', this)" class="nav-btn text-purple-400 flex flex-col items-center gap-1 p-2 transition-all">
+                    <i class="fas fa-chart-pie text-base"></i>
+                    <span class="text-[8px] font-bold uppercase tracking-wider">Accueil</span>
+                </button>
+                <button onclick="switchTab('tracker', this)" class="nav-btn text-slate-500 flex flex-col items-center gap-1 p-2 transition-all">
+                    <i class="fas fa-baby-carriage text-base"></i>
+                    <span class="text-[8px] font-bold uppercase tracking-wider">Suivi</span>
+                </button>
+                <button onclick="switchTab('charts', this)" class="nav-btn text-slate-500 flex flex-col items-center gap-1 p-2 transition-all">
+                    <i class="fas fa-chart-line text-base"></i>
+                    <span class="text-[8px] font-bold uppercase tracking-wider">Analytics</span>
+                </button>
+                <button onclick="switchTab('vote', this)" class="nav-btn text-slate-500 flex flex-col items-center gap-1 p-2 transition-all">
+                    <i class="fas fa-vote-yea text-base"></i>
+                    <span class="text-[8px] font-bold uppercase tracking-wider">Vote</span>
+                </button>
+                <button onclick="switchTab('ranking', this)" class="nav-btn text-slate-500 flex flex-col items-center gap-1 p-2 transition-all">
+                    <i class="fas fa-list-ol text-base"></i>
+                    <span class="text-[8px] font-bold uppercase tracking-wider">Pronos</span>
+                </button>
+                <button onclick="switchTab('chat', this)" class="nav-btn text-slate-500 flex flex-col items-center gap-1 p-2 transition-all">
+                    <i class="fas fa-comments text-base"></i>
+                    <span class="text-[8px] font-bold uppercase tracking-wider">Chat</span>
+                </button>
+            </div>
+        </nav>
+    </div>
+
+    <!-- MODALE ADMIN -->
+    <div id="admin-modal-gender" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[9999] flex items-center justify-center p-4 hidden">
+        <div class="glass p-8 rounded-[2.5rem] w-full max-w-sm border border-white/10 text-center shadow-2xl space-y-6">
+            <div>
+                <span class="text-xs font-black uppercase text-purple-400 tracking-widest italic">Ajouter pour un proche</span>
+                <h3 class="text-xl font-bold text-white mt-1">Quel est le sexe estimé ?</h3>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <button id="admin-btn-girl" class="p-6 rounded-2xl glass border border-pink-500/30 hover:bg-pink-500/20 text-pink-400 font-black uppercase text-xs flex flex-col items-center gap-2 transition-all">
+                    <i class="fas fa-venus text-3xl"></i>
+                    Fille
+                </button>
+                <button id="admin-btn-boy" class="p-6 rounded-2xl glass border border-blue-500/30 hover:bg-blue-500/20 text-blue-400 font-black uppercase text-xs flex flex-col items-center gap-2 transition-all">
+                    <i class="fas fa-mars text-3xl"></i>
+                    Garçon
+                </button>
+            </div>
+
+            <button id="admin-btn-cancel" class="w-full bg-white/5 border border-white/10 text-slate-400 hover:text-white py-3 rounded-xl uppercase text-[10px] font-bold tracking-wider transition-all">
+                Annuler
+            </button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp, setDoc, limit, getDocs, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
+
+        const VAPID_KEY = "KyCv3GvPMoavPSSZllmgVr5lLHpf-sohTDLhAMvW20w"; 
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyCozjk7u0rgP1iK7cR-5x_WDVYg7SJWVt0",
+          authDomain: "baby-predict-292f1.firebaseapp.com",
+          projectId: "baby-predict-292f1",
+          storageBucket: "baby-predict-292f1.firebasestorage.app",
+          messagingSenderId: "1000428556931",
+          appId: "1:1000428556931:web:9cf6b2d306ec3114a381b6",
+          measurementId: "G-5WHQLHH4C8"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const messaging = getMessaging(app);
+
+        try {
+            enableIndexedDbPersistence(db);
+        } catch (err) {
+            console.log("Persistence offline non supportée par le navigateur", err);
+        }
+
+        let userName = "";
+        let selectedGender = "";
+        let isAdmin = false;
+        let globalPredictions = [];
+        let tempChartInstance = null;
+        let weightChartInstance = null;
+        let activityChartInstance = null;
+        let lastMealRawTimeStr = null;
+        let mealAlertSent = false;
+
+        // SEUILS CONFIGURÉS PAR LES PARENTS
+        let thresholds = {
+            bibMin: 5,
+            bibMax: 8,
+            diaperMin: 6,
+            diaperMax: 12
+        };
+
+        window.loadThresholds = () => {
+            const saved = localStorage.getItem('baby_thresholds');
+            if (saved) {
+                thresholds = JSON.parse(saved);
+                document.getElementById('limit-bib-min').value = thresholds.bibMin;
+                document.getElementById('limit-bib-max').value = thresholds.bibMax;
+                document.getElementById('limit-diaper-min').value = thresholds.diaperMin;
+                document.getElementById('limit-diaper-max').value = thresholds.diaperMax;
+            }
+        };
+
+        window.saveThresholds = () => {
+            thresholds.bibMin = parseInt(document.getElementById('limit-bib-min').value) || 0;
+            thresholds.bibMax = parseInt(document.getElementById('limit-bib-max').value) || 0;
+            thresholds.diaperMin = parseInt(document.getElementById('limit-diaper-min').value) || 0;
+            thresholds.diaperMax = parseInt(document.getElementById('limit-diaper-max').value) || 0;
+            localStorage.setItem('baby_thresholds', JSON.stringify(thresholds));
+            alert("Objectifs mis à jour avec succès !");
+            setupBabyTrackerListener(); 
+        };
+
+        window.toggleDiaperDetails = () => {
+            const isChecked = document.getElementById('track-diaper-change').checked;
+            const details = document.getElementById('diaper-details');
+            if (isChecked) {
+                details.classList.remove('hidden');
+            } else {
+                details.classList.add('hidden');
+                document.getElementById('track-urine').checked = false;
+                document.getElementById('track-stool').checked = false;
+            }
+        };
+
+        window.exportToPDF = () => {
+            const trackerTab = document.getElementById('tab-tracker');
+            const wasActive = trackerTab.classList.contains('active');
+            
+            trackerTab.classList.add('active');
+            
+            setTimeout(() => {
+                window.print();
+                if (!wasActive) {
+                    trackerTab.classList.remove('active');
+                }
+            }, 200);
+        };
+
+        function initDynamicDaysSelect() {
+            const birthDate = new Date(2026, 6, 23); 
+            const endDate = new Date(2026, 7, 31);   
+            const selectEl = document.getElementById('track-day');
+            const now = new Date();
+
+            selectEl.innerHTML = "";
+            let cur = new Date(birthDate);
+            let dayIndex = 0;
+            const daysShort = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
+
+            while (cur <= endDate) {
+                const dayNum = String(cur.getDate()).padStart(2, '0');
+                const monthNum = String(cur.getMonth() + 1).padStart(2, '0');
+                const dayName = daysShort[cur.getDay()];
+                
+                let valueStr = dayIndex === 0 ? "Naissance" : `${dayIndex}ème JOUR`;
+                let labelStr = dayIndex === 0 
+                    ? `Jour 0 - Naissance (${dayNum}/${monthNum} - ${dayName})`
+                    : `Jour ${dayIndex} (${dayNum}/${monthNum} - ${dayName})`;
+
+                const opt = document.createElement('option');
+                opt.value = valueStr;
+                opt.textContent = labelStr;
+                opt.className = "bg-[#07070a]";
+
+                if (cur.toDateString() === now.toDateString()) {
+                    opt.selected = true;
+                }
+
+                selectEl.appendChild(opt);
+                cur.setDate(cur.getDate() + 1);
+                dayIndex++;
+            }
+        }
+        initDynamicDaysSelect();
+
+        window.setNowTime = () => {
+            const now = new Date();
+            const hh = String(now.getHours()).padStart(2, '0');
+            const mm = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('track-time').value = `${hh}h${mm}`;
+        };
+
+        window.setQuickFood = (val) => {
+            document.getElementById('track-food').value = val;
+        };
+
+        const manualImports = [
+            { user: "Sandra P.", sexe: "Garçon", prenom: "Aloïs", taille: 51, poids: 3.300, passion: "Danse", date: "2026-08-10", heure: "--" },
+            { user: "Laura M.", sexe: "Fille", prenom: "Alice", taille: 51, poids: 3.450, passion: "Bouffe", date: "2026-07-23", heure: "--" },
+            { user: "Alison", sexe: "Garçon", prenom: "Louis", taille: 50.5, poids: 3.500, passion: "Musique", date: "2026-08-10", heure: "--" },
+            { user: "Charline", sexe: "Garçon", prenom: "Théo", taille: 51.2, poids: 3.505, passion: "Rire", date: "2026-08-09", heure: "--" },
+            { user: "Fanny", sexe: "Fille", prenom: "Lise", taille: 49.5, poids: 3.473, passion: "Aya", date: "2026-08-12", heure: "--" },
+            { user: "Emma", sexe: "Garçon", prenom: "Louison", taille: 50, poids: 3.550, passion: "Chat", date: "2026-08-07", heure: "--" },
+            { user: "Alicia", sexe: "Fille", prenom: "Enola", taille: 52, poids: 3.570, passion: "Apéros", date: "2026-08-08", heure: "--" },
+            { user: "Benjamin", sexe: "Garçon", prenom: "Nod junior", taille: 51.5, poids: 3.430, passion: "Salsa/Fifs", date: "2026-08-11", heure: "--" },
+            { user: "Sarah", sexe: "Fille", prenom: "Léo", taille: 51, poids: 3.260, passion: "Musique", date: "2026-08-02", heure: "--" },
+            { user: "Christine", sexe: "Fille", prenom: "Vanille", taille: 50, poids: 3.000, passion: "Sport", date: "2026-08-28", heure: "--" },
+            { user: "Maxime G.", sexe: "Garçon", prenom: "Jean", taille: 49.4, poids: 3.120, passion: "Escrime", date: "2026-08-10", heure: "--" },
+            { user: "Céline", sexe: "Garçon", prenom: "Marius", taille: 48.7, poids: 2.900, passion: "Voyages", date: "2026-08-09", heure: "--" },
+            { user: "Dominique (PAPA)", sexe: "Garçon", prenom: "Amour", taille: 50.2, poids: 3.060, passion: "Golfy", date: "2026-08-08", heure: "--" },
+            { user: "Béatrice (MAMAN)", sexe: "Garçon", prenom: "Anouk / Sébastien", taille: 50.5, poids: 3.280, passion: "Musique", date: "2026-08-08", heure: "--" },
+            { user: "Anaïs", sexe: "Garçon", prenom: "Fleur", taille: 51.3, poids: 3.500, passion: "Musique", date: "2026-08-08", heure: "--" },
+            { user: "Jérôme", sexe: "Garçon", prenom: "Jean-Claude", taille: 50.1, poids: 3.200, passion: "Sport", date: "2026-08-07", heure: "--" },
+            { user: "Henri", sexe: "Fille", prenom: "Teahorui / Perai", taille: 48, poids: 3.100, passion: "Sport", date: "2026-08-11", heure: "--" },
+            { user: "Valou", sexe: "Garçon", prenom: "Théo", taille: 50, poids: 2.800, passion: "Sport", date: "2026-08-12", heure: "--" },
+            { user: "Anna", sexe: "Fille", prenom: "Hélène", taille: 50, poids: 2.900, passion: "Danse", date: "2026-07-29", heure: "--" },
+            { user: "Sam", sexe: "Garçon", prenom: "Michael ou Killian", taille: 50, poids: 3.100, passion: "10 maths", date: "2026-08-01", heure: "--" },
+            { user: "Iris", sexe: "Fille", prenom: "Céanne", taille: 51, poids: 3.050, passion: "Gym", date: "2026-08-01", heure: "--" },
+            { user: "Katou", sexe: "Fille", prenom: "Zalia", taille: 51, poids: 3.210, passion: "FIFA", date: "2026-07-27", heure: "--" },
+            { user: "Issiaga", sexe: "Garçon", prenom: "Thomas", taille: 48, poids: 4.500, passion: "Danse", date: "2026-08-07", heure: "--" },
+            { user: "Wilson", sexe: "Fille", prenom: "Natalia", taille: 52, poids: 3.000, passion: "Wing Tsun", date: "2026-08-10", heure: "--" },
+            { user: "Chamsia", sexe: "Garçon", prenom: "Lali", taille: 55, poids: 3.200, passion: "Danse", date: "2026-08-08", heure: "--" },
+            { user: "Mamour", sexe: "Garçon", prenom: "Honey", taille: 51, poids: 3.300, passion: "Kind", date: "2026-08-31", heure: "--" },
+            { user: "Zalid", sexe: "Fille", prenom: "Inaya", taille: 45, poids: 5.000, passion: "Chanter/L'ART", date: "2026-08-04", heure: "--" },
+            { user: "Rahama", sexe: "Fille", prenom: "Myan", taille: 52, poids: 4.500, passion: "Mystère 🔮", date: "2026-08-03", heure: "--" },
+            { user: "Rita", sexe: "Fille", prenom: "Aucun", taille: 50, poids: 3.700, passion: "Basket", date: "2026-07-29", heure: "--" },
+            { user: "Kévin", sexe: "Garçon", prenom: "Nelson", taille: 48, poids: 3.400, passion: "Basket", date: "2026-08-05", heure: "--" },
+            { user: "Tani", sexe: "Garçon", prenom: "William", taille: 47, poids: 2.900, passion: "Foot", date: "2026-07-30", heure: "--" },
+            { user: "Ami de l'enfant", sexe: "Garçon", prenom: "Miguel", taille: 50, poids: 3.000, passion: "Dessin", date: "2026-07-31", heure: "--" },
+            { user: "Marlyse", sexe: "Fille", prenom: "Aucun", taille: 45, poids: 3.250, passion: "Danse", date: "2026-08-11", heure: "--" },
+            { user: "BADE", sexe: "Garçon", prenom: "KAïS", taille: 50, poids: 2.800, passion: "Football", date: "2026-08-05", heure: "--" },
+            { user: "Isaac", sexe: "Garçon", prenom: "Benjamin/Raphaël", taille: 52, poids: 3.700, passion: "Échecs", date: "2026-08-07", heure: "--" },
+            { user: "Loane", sexe: "Garçon", prenom: "Mathis", taille: 50, poids: 3.100, passion: "Football", date: "2026-08-08", heure: "--" }
+        ];
+
+        function getRecommendedBottleDose(day, weightKg, intervalHours) {
+            const d = (day || "").toUpperCase();
+
+            if (d.includes("NAISSANCE") || d.includes("JOUR 0")) return { dose: "10 - 15 ml", label: "Jour 0" };
+            if (d.includes("1ER") || d.includes("JOUR 1")) return { dose: "10 - 30 ml", label: "Jour 1" };
+            if (d.includes("2È") || d.includes("2E") || d.includes("JOUR 2")) return { dose: "20 - 40 ml", label: "Jour 2" };
+            if (d.includes("3È") || d.includes("3E") || d.includes("JOUR 3")) return { dose: "30 - 50 ml", label: "Jour 3" };
+            if (d.includes("4È") || d.includes("4E") || d.includes("JOUR 4")) return { dose: "40 - 60 ml", label: "Jour 4" };
+            if (d.includes("5È") || d.includes("5E") || d.includes("JOUR 5")) return { dose: "50 - 70 ml", label: "Jour 5" };
+            if (d.includes("6È") || d.includes("6E") || d.includes("JOUR 6")) return { dose: "60 - 80 ml", label: "Jour 6" };
+            if (d.includes("7È") || d.includes("7E") || d.includes("JOUR 7")) return { dose: "70 - 90 ml", label: "Jour 7" };
+            if (d.includes("8È") || d.includes("8E") || d.includes("JOUR 8")) return { dose: "80 - 100 ml", label: "Jour 8" };
+            if (d.includes("9È") || d.includes("9E") || d.includes("JOUR 9")) return { dose: "90 - 110 ml", label: "Jour 9" };
+            if (d.includes("10È") || d.includes("10E") || d.includes("JOUR 10")) return { dose: "100 - 120 ml", label: "Jour 10" };
+
+            if (weightKg && weightKg > 0) {
+                const bottlesPerDay = Math.round(24 / (intervalHours || 3.5));
+                const weightGrams = weightKg * 1000;
+                const totalDailyMl = (weightGrams / 10) + 250;
+                const dosePerBottle = Math.round(totalDailyMl / bottlesPerDay);
+                return { dose: `~${dosePerBottle} ml`, label: d };
+            }
+
+            return { dose: "60 - 90 ml", label: d };
+        }
+
+        async function checkAndInjectPredictions() {
+            try {
+                const snap = await getDocs(collection(db, "predictions"));
+                if (snap.empty) {
+                    for (const docData of manualImports) {
+                        await setDoc(doc(db, "predictions", docData.user), { ...docData, timestamp: serverTimestamp() });
                     }
-                },
-                // Action au clic direct sur un point du graphique
-                onClick: (e, elements) => {
-                    if (elements.length > 0) {
-                        const index = elements[0].index;
-                        const currentType = document.getElementById('metricType').value;
-                        const filteredMeasures = getFilteredMeasures(currentType);
-                        const targetItem = filteredMeasures[index];
+                }
+            } catch (err) { console.error(err); }
+        }
 
-                        if (targetItem) {
-                            deleteMeasure(targetItem.id);
-                        }
+        window.switchTab = (tabId, button) => {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-purple-400');
+                btn.classList.add('text-slate-500');
+            });
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            button.classList.remove('text-slate-500');
+            button.classList.add('text-purple-400');
+        };
+
+        async function setupPushNotifications() {
+            if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+            try {
+                const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+                const permission = await Notification.requestPermission();
+                if (permission === 'granted') {
+                    const currentToken = await getToken(messaging, { vapidKey: VAPID_KEY, serviceWorkerRegistration: registration });
+                    if (currentToken) {
+                        await setDoc(doc(db, "fcm_tokens", userName), { token: currentToken, user: userName, updatedAt: Date.now() });
                     }
-                },
-                scales: {
-                    x: {
-                        title: { display: true, text: 'Date' }
-                    },
-                    y: {
-                        title: { display: true, text: 'Valeur' },
-                        beginAtZero: false
+                }
+            } catch (error) { console.error(error); }
+        }
+
+        async function triggerPushNotification(title, body) {
+            try {
+                const alertBanner = document.getElementById('push-alert');
+                document.getElementById('push-title').innerText = title;
+                document.getElementById('push-body').innerText = body;
+                alertBanner.classList.add('show');
+                setTimeout(() => alertBanner.classList.remove('show'), 6000);
+
+                await addDoc(collection(db, "triggered_alerts"), { title: title, body: body, timestamp: serverTimestamp() });
+            } catch (e) { console.error(e); }
+        }
+
+        document.getElementById('btn-to-name').onclick = () => {
+            const code = document.getElementById('input-pass').value.trim();
+            if(code === "1993" || code === "2026") {
+                isAdmin = (code === "1993");
+                if(isAdmin) document.body.classList.add('is-admin');
+                else document.body.classList.remove('is-admin');
+                document.getElementById('page-login').classList.add('hidden');
+                document.getElementById('page-name').classList.remove('hidden');
+                document.getElementById('role-tag').innerText = isAdmin ? "MODE ADMIN" : "MODE INVITÉ";
+            } else { alert("Code d'accès invalide !"); }
+        };
+
+        document.getElementById('btn-to-app').onclick = async () => {
+            const name = document.getElementById('input-name').value.trim();
+            if(name.length >= 2) {
+                userName = name;
+                document.getElementById('page-name').classList.add('hidden');
+                document.getElementById('main-app').classList.remove('hidden');
+                document.getElementById('display-name').innerText = userName;
+                
+                loadThresholds();
+
+                await setDoc(doc(db, "presence", userName), { name: userName, lastSeen: Date.now() });
+                setInterval(async () => { if(userName) await setDoc(doc(db, "presence", userName), { name: userName, lastSeen: Date.now() }); }, 30000);
+                
+                await checkAndInjectPredictions(); 
+                await setupPushNotifications();
+                setupUserVoteListener();
+                setupChatListener();
+                setupPresenceListener();
+                setupBabyTrackerListener();
+
+                setInterval(updateNextBottleDisplay, 60000);
+            } else { alert("Entrez un nom valide"); }
+        };
+
+        document.getElementById('track-day').addEventListener('change', (e) => {
+            const selectedDay = e.target.value;
+            const intervalHours = parseFloat(document.getElementById('bottle-interval').value) || 3.5;
+            const rawWeight = document.getElementById('last-weight').innerText.replace(' kg', '');
+            const lastWeight = parseFloat(rawWeight) || 0;
+
+            const doseInfo = getRecommendedBottleDose(selectedDay, lastWeight, intervalHours);
+            
+            const foodInput = document.getElementById('track-food');
+            foodInput.placeholder = `Ex: Bib ${doseInfo.dose}`;
+            
+            updateNextBottleDisplay();
+        });
+
+        function setupPresenceListener() {
+            onSnapshot(collection(db, "presence"), snapshot => {
+                const listContainer = document.getElementById('list-online');
+                listContainer.innerHTML = "";
+                const cutOff = Date.now() - 60000;
+                snapshot.forEach(docSnap => {
+                    const userPres = docSnap.data();
+                    if(userPres.lastSeen > cutOff) {
+                        listContainer.innerHTML += `
+                            <span class="bg-green-500/10 text-green-400 border border-green-500/20 px-2 py-0.5 rounded-full flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 bg-green-400 rounded-full animate-ping"></span> ${userPres.name}
+                            </span>
+                        `;
+                    }
+                });
+            });
+        }
+
+        window.selectGender = (gender) => {
+            selectedGender = gender;
+            document.getElementById('vote-girl').classList.remove('selected-pink');
+            document.getElementById('vote-boy').classList.remove('selected-blue');
+            if(gender === 'Fille') document.getElementById('vote-girl').classList.add('selected-pink');
+            if(gender === 'Garçon') document.getElementById('vote-boy').classList.add('selected-blue');
+        };
+
+        document.getElementById('btn-submit-vote').onclick = async () => {
+            const nameProno = document.getElementById('vote-name').value.trim();
+            const passionProno = document.getElementById('vote-passion').value.trim() || "Mystère 🔮";
+            const weightProno = parseFloat(document.getElementById('vote-weight').value);
+            const heightProno = parseFloat(document.getElementById('vote-height').value);
+            const dateProno = document.getElementById('vote-date').value || "--";
+            const timeProno = document.getElementById('vote-time').value || "--";
+
+            if(!selectedGender || !nameProno || !weightProno || !heightProno) {
+                return alert("Remplis le Sexe, Prénom, Poids et Taille !");
+            }
+
+            await setDoc(doc(db, "predictions", userName), {
+                user: userName, sexe: selectedGender, prenom: nameProno, passion: passionProno, poids: weightProno, taille: heightProno, date: dateProno, heure: timeProno, timestamp: serverTimestamp()
+            });
+
+            await triggerPushNotification("👶 Nouveau Pronostic !", `${userName} voit une ${selectedGender} nommée ${nameProno} (${weightProno}kg) !`);
+            alert("Pronostic enregistré avec succès ! 🎉");
+        };
+
+        document.getElementById('btn-add-track').onclick = async () => {
+            const day = document.getElementById('track-day').value;
+            const time = document.getElementById('track-time').value.trim();
+            const tempBb = parseFloat(document.getElementById('track-temp-bb').value);
+            const tempInc = parseFloat(document.getElementById('track-temp-inc').value);
+            const diaperChanged = document.getElementById('track-diaper-change').checked;
+            const urine = document.getElementById('track-urine').checked;
+            const stool = document.getElementById('track-stool').checked;
+            let food = document.getElementById('track-food').value.trim();
+            const obs = document.getElementById('track-obs').value.trim();
+            const weight = parseFloat(document.getElementById('track-weight').value);
+            const bottleOnTime = document.getElementById('track-bottle-ontime').checked;
+
+            if(!time) return alert("Veuillez saisir l'heure du soin !");
+
+            if(!isNaN(tempBb)) {
+                if(tempBb < 36.5) await triggerPushNotification("⚠️ ALERTE TEMPÉRATURE BÉBÉ", `Température basse : ${tempBb}°C à ${time} !`);
+                else if(tempBb > 37.5) await triggerPushNotification("🔥 ALERTE FIÈVRE BÉBÉ", `Température élevée : ${tempBb}°C à ${time} !`);
+            }
+
+            if(bottleOnTime && !food) {
+                food = "Bib validé à temps ✅";
+            }
+
+            if(food) {
+                mealAlertSent = false; 
+            }
+
+            await addDoc(collection(db, "baby_tracking"), {
+                day, time, tempBb: isNaN(tempBb) ? null : tempBb, tempInc: isNaN(tempInc) ? null : tempInc,
+                diaperChanged, urine, stool, food, obs, weight: isNaN(weight) ? null : weight, bottleOnTime: bottleOnTime, timestamp: serverTimestamp()
+            });
+
+            document.getElementById('track-temp-bb').value = "";
+            document.getElementById('track-temp-inc').value = "";
+            document.getElementById('track-diaper-change').checked = false;
+            document.getElementById('track-urine').checked = false;
+            document.getElementById('track-stool').checked = false;
+            toggleDiaperDetails();
+            document.getElementById('track-food').value = "";
+            document.getElementById('track-obs').value = "";
+            document.getElementById('track-bottle-ontime').checked = false;
+
+            alert("Saisie enregistrée !");
+        };
+
+        window.updateNextBottleDisplay = () => {
+            const intervalHours = parseFloat(document.getElementById('bottle-interval').value);
+            const currentDay = document.getElementById('track-day').value;
+            const rawWeight = document.getElementById('last-weight').innerText.replace(' kg', '');
+            const lastWeight = parseFloat(rawWeight) || 0;
+
+            const doseInfo = getRecommendedBottleDose(currentDay, lastWeight, intervalHours);
+            document.getElementById('next-bottle-dose').innerHTML = `🍼 Dose conseillée (${doseInfo.label}) : <b class="text-white">${doseInfo.dose}</b>`;
+
+            if(!lastMealRawTimeStr) {
+                document.getElementById('next-bottle-time').innerText = "--h--";
+                document.getElementById('next-bottle-status').innerText = "Aucun repas enregistré";
+                document.getElementById('meal-window-range').innerText = "--h-- à --h--";
+                document.getElementById('meal-window-status').innerText = "Aucun biberon programmé";
+                return;
+            }
+
+            const cleanTime = lastMealRawTimeStr.replace('h', ':').replace('H', ':');
+            const parts = cleanTime.split(':');
+            
+            if(parts.length < 2) {
+                document.getElementById('next-bottle-time').innerText = "--h--";
+                document.getElementById('next-bottle-status').innerText = "Heure invalide";
+                return;
+            }
+
+            const lastHours = parseInt(parts[0], 10);
+            const lastMinutes = parseInt(parts[1], 10);
+
+            if(isNaN(lastHours) || isNaN(lastMinutes)) return;
+
+            const intervalTotalMinutes = Math.round(intervalHours * 60);
+
+            const now = new Date();
+            const lastBottleDate = new Date();
+            lastBottleDate.setHours(lastHours, lastMinutes, 0, 0);
+
+            if(lastBottleDate > now) {
+                lastBottleDate.setDate(lastBottleDate.getDate() - 1);
+            }
+
+            const nextBottleDate = new Date(lastBottleDate.getTime() + intervalTotalMinutes * 60000);
+            
+            const nextH = String(nextBottleDate.getHours()).padStart(2, '0');
+            const nextM = String(nextBottleDate.getMinutes()).padStart(2, '0');
+            document.getElementById('next-bottle-time').innerText = `${nextH}h${nextM}`;
+
+            const diffMs = nextBottleDate - now;
+            const diffMinutes = Math.round(diffMs / 60000);
+
+            const statusEl = document.getElementById('next-bottle-status');
+
+            if(diffMinutes > 0) {
+                const hoursLeft = Math.floor(diffMinutes / 60);
+                const minsLeft = diffMinutes % 60;
+                let text = "Dans ";
+                if(hoursLeft > 0) text += `${hoursLeft}h `;
+                text += `${minsLeft} min`;
+                statusEl.innerText = text;
+                statusEl.className = "text-[10px] text-green-400 font-bold mt-0.5";
+            } else {
+                const lateMins = Math.abs(diffMinutes);
+                statusEl.innerText = `⚠️ Retard de ${lateMins} min ! Préparez le biberon !`;
+                statusEl.className = "text-[10px] text-red-400 font-bold mt-0.5 animate-pulse";
+            }
+
+            const nextMealMaxDate = new Date(nextBottleDate.getTime() + 90 * 60000);
+            const nextMealStartH = String(nextBottleDate.getHours()).padStart(2, '0');
+            const nextMealStartM = String(nextBottleDate.getMinutes()).padStart(2, '0');
+            const nextMealEndH = String(nextMealMaxDate.getHours()).padStart(2, '0');
+            const nextMealEndM = String(nextMealMaxDate.getMinutes()).padStart(2, '0');
+
+            document.getElementById('meal-window-range').innerText = `${nextMealStartH}h${nextMealStartM} à ${nextMealEndH}h${nextMealEndM}`;
+
+            const mealStatusEl = document.getElementById('meal-window-status');
+            const mealCard = document.getElementById('meal-window-card');
+
+            if (diffMinutes > 0) {
+                mealStatusEl.innerText = `⏳ Plage du prochain repas calculée automatique (${nextMealStartH}h${nextMealStartM} max ${nextMealEndH}h${nextMealEndM})`;
+                mealStatusEl.className = "text-[10px] text-amber-300 font-bold mt-0.5";
+                mealCard.className = "bg-gradient-to-r from-amber-900/30 via-orange-900/30 to-purple-900/30 border border-amber-500/30 p-5 rounded-[2.5rem] flex items-center justify-between shadow-2xl relative overflow-hidden";
+            } else {
+                const mealDiffMs = nextMealMaxDate - now;
+                const mealDiffMins = Math.round(mealDiffMs / 60000);
+
+                if (mealDiffMins >= 0) {
+                    mealStatusEl.innerText = `⏳ Repas en cours ! Bébé a encore ${mealDiffMins} min pour terminer son biberon.`;
+                    mealStatusEl.className = "text-[10px] text-amber-300 font-bold mt-0.5";
+                    mealCard.className = "bg-gradient-to-r from-amber-900/30 via-orange-900/30 to-purple-900/30 border border-amber-500/30 p-5 rounded-[2.5rem] flex items-center justify-between shadow-2xl relative overflow-hidden";
+                } else {
+                    const elapsedOver = Math.abs(mealDiffMins);
+                    mealStatusEl.innerText = `📢 DÉPASSÉ DE ${elapsedOver} MIN ! Limite de 1h30 dépassée ! Validez le biberon dès qu'il est fini.`;
+                    mealStatusEl.className = "text-[10px] text-red-400 font-black mt-0.5 animate-bounce";
+                    mealCard.className = "bg-gradient-to-r from-red-900/60 via-pink-900/60 to-purple-900/60 border border-red-500 p-5 rounded-[2.5rem] flex items-center justify-between shadow-2xl relative overflow-hidden";
+
+                    if (!mealAlertSent) {
+                        mealAlertSent = true;
+                        triggerPushNotification(
+                            "📢 TEMPS DE REPAS DÉPASSÉ !",
+                            `Heure prévue : ${nextMealStartH}h${nextMealStartM}. La limite de 1h30 (${nextMealEndH}h${nextMealEndM}) est dépassée !`
+                        );
                     }
                 }
             }
-        });
-
-        // Écouteur pour changer le type de métrique affichée
-        document.getElementById('metricType').addEventListener('change', updateUI);
-    }
-
-    // Récupère les mesures filtrées et triées par date
-    function getFilteredMeasures(type) {
-        return measures
-            .filter(m => m.type === type)
-            .sort((a, b) => new Date(a.date) - new Date(b.date));
-    }
-
-    // Ajouter une nouvelle mesure
-    function addMeasure() {
-        const type = document.getElementById('metricType').value;
-        const date = document.getElementById('measureDate').value;
-        const value = parseFloat(document.getElementById('measureValue').value);
-
-        if (!date || isNaN(value)) {
-            alert("Veuillez remplir correctement la date et la valeur.");
-            return;
-        }
-
-        const newMeasure = {
-            id: Date.now(), // Identifiant unique
-            type: type,
-            date: date,
-            value: value
         };
 
-        measures.push(newMeasure);
-        document.getElementById('measureValue').value = '';
-        
-        updateUI();
-    }
+        function setupBabyTrackerListener() {
+            const q = query(collection(db, "baby_tracking"), orderBy("timestamp", "asc"));
+            onSnapshot(q, snapshot => {
+                const tableBody = document.getElementById('table-track-body');
+                tableBody.innerHTML = "";
 
-    // Supprimer une mesure via son ID
-    function deleteMeasure(id) {
-        measures = measures.filter(m => m.id !== id);
-        updateUI();
-    }
+                let tempLabels = [];
+                let tempBbData = [];
+                let tempIncData = [];
 
-    // Mettre à jour l'interface (Tableau + Graphique)
-    function updateUI() {
-        const currentType = document.getElementById('metricType').value;
-        const filteredData = getFilteredMeasures(currentType);
+                let weightLabels = [];
+                let weightData = [];
 
-        // 1. Mise à jour du Graphique
-        chartInstance.data.labels = filteredData.map(m => m.date);
-        chartInstance.data.datasets[0].data = filteredData.map(m => m.value);
-        chartInstance.data.datasets[0].label = currentType === 'poids' ? 'Poids (kg)' : 'Température (°C)';
-        chartInstance.update();
+                let lastMealText = "Aucun";
+                let lastStoolText = "Aucune";
+                let lastUrineText = "Aucune";
+                let lastWeightText = "-- kg";
+                let latestTempBb = null;
+                lastMealRawTimeStr = null;
 
-        // 2. Mise à jour de la liste / tableau
-        const tbody = document.getElementById('dataTableBody');
-        tbody.innerHTML = '';
+                let bibToday = 0, diaperToday = 0;
+                let bibWeek = 0, diaperWeek = 0;
+                let bibMonth = 0, diaperMonth = 0;
 
-        if (filteredData.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4" class="empty-state">Aucune donnée enregistrée pour ce type.</td></tr>';
-            return;
+                const now = new Date();
+                const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                const startOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 6);
+                const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+                let activityDays = {};
+                for (let i = 6; i >= 0; i--) {
+                    let d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
+                    let key = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
+                    activityDays[key] = { bibs: 0, diapers: 0 };
+                }
+
+                if(snapshot.empty) {
+                    tableBody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-500 italic">Aucune donnée enregistrée</td></tr>`;
+                } else {
+                    snapshot.forEach(docSnap => {
+                        const d = docSnap.data();
+                        const id = docSnap.id;
+
+                        const itemDate = d.timestamp ? d.timestamp.toDate() : new Date();
+
+                        const isBib = (d.food && d.food.trim() !== '') || d.bottleOnTime;
+                        const isDiaper = d.diaperChanged || d.urine || d.stool;
+
+                        if (itemDate >= startOfToday) {
+                            if (isBib) bibToday++;
+                            if (isDiaper) diaperToday++;
+                        }
+                        if (itemDate >= startOfWeek) {
+                            if (isBib) bibWeek++;
+                            if (isDiaper) diaperWeek++;
+
+                            let key = `${String(itemDate.getDate()).padStart(2, '0')}/${String(itemDate.getMonth() + 1).padStart(2, '0')}`;
+                            if (activityDays[key]) {
+                                if (isBib) activityDays[key].bibs++;
+                                if (isDiaper) activityDays[key].diapers++;
+                            }
+                        }
+                        if (itemDate >= startOfMonth) {
+                            if (isBib) bibMonth++;
+                            if (isDiaper) diaperMonth++;
+                        }
+
+                        if(d.tempBb !== null && d.tempBb !== undefined) {
+                            tempLabels.push(`${d.day} ${d.time}`);
+                            tempBbData.push(d.tempBb);
+                            tempIncData.push(d.tempInc || null);
+                            latestTempBb = d.tempBb;
+                        }
+
+                        if(d.weight !== null && d.weight !== undefined && d.weight > 0) {
+                            weightLabels.push(`${d.day} ${d.time}`);
+                            weightData.push(d.weight);
+                            lastWeightText = `${d.weight} kg`;
+                        }
+
+                        if(d.food || d.bottleOnTime) {
+                            lastMealText = `${d.food || 'Validé'} (${d.time})`;
+                            lastMealRawTimeStr = d.time;
+                        }
+                        if(d.stool) lastStoolText = `Oui (${d.time})`;
+                        if(d.urine) lastUrineText = `Oui (${d.time})`;
+
+                        let diaperDisplay = [];
+                        if(d.diaperChanged) diaperDisplay.push("🧷 Change");
+                        if(d.urine) diaperDisplay.push("💧");
+                        if(d.stool) diaperDisplay.push("💩");
+                        let diaperStr = diaperDisplay.join(' ') || '--';
+
+                        tableBody.innerHTML += `
+                            <tr>
+                                <td class="p-2 font-bold">${d.day} <span class="text-purple-400 block text-[9px]">${d.time}</span></td>
+                                <td class="p-2">${diaperStr}</td>
+                                <td class="p-2 font-black ${d.tempBb < 36.5 ? 'text-blue-400' : d.tempBb > 37.5 ? 'text-red-400' : 'text-green-400'}">${d.tempBb ? d.tempBb + '°' : '--'}</td>
+                                <td class="p-2 text-slate-400">${d.tempInc ? d.tempInc + '°' : '--'}</td>
+                                <td class="p-2 font-semibold text-pink-300">${d.food || (d.bottleOnTime ? '✅ À temps' : '--')}</td>
+                                <td class="p-2 text-slate-300">${d.obs || '--'}</td>
+                                <td class="p-2 text-right no-print">
+                                    <button onclick="deleteTrackDoc('${id}')" class="admin-only text-red-400 hover:text-red-500 text-xs is-block"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                }
+
+                document.getElementById('stat-bib-day').innerText = bibToday;
+                document.getElementById('stat-diaper-day').innerText = diaperToday;
+                document.getElementById('stat-bib-week').innerText = bibWeek;
+                document.getElementById('stat-diaper-week').innerText = diaperWeek;
+                document.getElementById('stat-bib-month').innerText = bibMonth;
+                document.getElementById('stat-diaper-month').innerText = diaperMonth;
+
+                if (bibToday > thresholds.bibMax && thresholds.bibMax > 0) {
+                    triggerPushNotification("🍼 SEUIL MAXIMUM DE BIBERONS DÉPASSÉ", `Aujourd'hui : ${bibToday} biberons (Max configuré : ${thresholds.bibMax})`);
+                } else if (bibToday < thresholds.bibMin && thresholds.bibMin > 0 && now.getHours() >= 20) {
+                    triggerPushNotification("⚠️ SEUIL MINIMUM DE BIBERONS NON ATTEINT", `Aujourd'hui : seulement ${bibToday} biberons (Min configuré : ${thresholds.bibMin})`);
+                }
+
+                if (diaperToday > thresholds.diaperMax && thresholds.diaperMax > 0) {
+                    triggerPushNotification("🧷 SEUIL MAXIMUM DE COUCHES DÉPASSÉ", `Aujourd'hui : ${diaperToday} couches (Max configuré : ${thresholds.diaperMax})`);
+                } else if (diaperToday < thresholds.diaperMin && thresholds.diaperMin > 0 && now.getHours() >= 20) {
+                    triggerPushNotification("⚠️ SEUIL MINIMUM DE COUCHES NON ATTEINT", `Aujourd'hui : seulement ${diaperToday} couches (Min configuré : ${thresholds.diaperMin})`);
+                }
+
+                document.getElementById('last-meal').innerText = lastMealText;
+                document.getElementById('last-stool').innerText = lastStoolText;
+                document.getElementById('last-urine').innerText = lastUrineText;
+                document.getElementById('last-weight').innerText = lastWeightText;
+
+                updateNextBottleDisplay();
+
+                const alertBox = document.getElementById('temp-alert-box');
+                if(latestTempBb !== null) {
+                    if(latestTempBb < 36.5) {
+                        alertBox.className = "p-4 rounded-2xl border flex items-center gap-3 bg-blue-500/10 border-blue-500/30 text-blue-300";
+                        document.getElementById('temp-alert-icon').className = "fas fa-temperature-low text-2xl text-blue-400 animate-bounce";
+                        document.getElementById('temp-alert-title').innerText = "⚠️ Température basse (Hypothermie)";
+                        document.getElementById('temp-alert-msg').innerText = `Dernière mesure: ${latestTempBb}°C. Couvrir le bébé.`;
+                    } else if(latestTempBb > 37.5) {
+                        alertBox.className = "p-4 rounded-2xl border flex items-center gap-3 bg-red-500/10 border-red-500/30 text-red-300";
+                        document.getElementById('temp-alert-icon').className = "fas fa-temperature-high text-2xl text-red-400 animate-pulse";
+                        document.getElementById('temp-alert-title').innerText = "🔥 Alerte Fièvre";
+                        document.getElementById('temp-alert-msg').innerText = `Dernière mesure: ${latestTempBb}°C. Surveiller l'évolution.`;
+                    } else {
+                        alertBox.className = "p-4 rounded-2xl border flex items-center gap-3 bg-green-500/10 border-green-500/30 text-green-300";
+                        document.getElementById('temp-alert-icon').className = "fas fa-check-circle text-2xl text-green-400";
+                        document.getElementById('temp-alert-title').innerText = "✅ Température Normale";
+                        document.getElementById('temp-alert-msg').innerText = `Dernière mesure: ${latestTempBb}°C. Bébé est en zone de confort !`;
+                    }
+                } else alertBox.className = "hidden";
+
+                updateTempChart(tempLabels, tempBbData, tempIncData);
+                updateWeightChart(weightLabels, weightData);
+                updateActivityChart(Object.keys(activityDays), Object.values(activityDays).map(d => d.bibs), Object.values(activityDays).map(d => d.diapers));
+            });
         }
 
-        filteredData.forEach(item => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td><strong>${item.type === 'poids' ? 'Poids' : 'Température'}</strong></td>
-                <td>${item.date}</td>
-                <td>${item.value} ${item.type === 'poids' ? 'kg' : '°C'}</td>
-                <td>
-                    <button class="btn-delete" onclick="deleteMeasure(${item.id})">Supprimer</button>
-                </td>
-            `;
-            tbody.appendChild(tr);
-        });
-    }
-</script>
+        window.deleteTrackDoc = async (docId) => {
+            if(!isAdmin) return;
+            if(confirm("Supprimer cette ligne ?")) await deleteDoc(doc(db, "baby_tracking", docId));
+        };
 
+        function updateActivityChart(labels, bibsData, diapersData) {
+            const ctx = document.getElementById('activityChart').getContext('2d');
+            if(activityChartInstance) activityChartInstance.destroy();
+
+            activityChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Biberons',
+                            data: bibsData,
+                            backgroundColor: '#ec4899',
+                            borderRadius: 6
+                        },
+                        {
+                            label: 'Couches',
+                            data: diapersData,
+                            backgroundColor: '#3b82f6',
+                            borderRadius: 6
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#94a3b8', stepSize: 1 } },
+                        x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 9 } } }
+                    },
+                    plugins: { legend: { labels: { color: '#e2e8f0', font: { size: 10 } } } }
+                }
+            });
+        }
+
+        function updateTempChart(labels, bbData, incData) {
+            const ctx = document.getElementById('tempChart').getContext('2d');
+            if(tempChartInstance) tempChartInstance.destroy();
+
+            tempChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'T° Bébé (°C)',
+                            data: bbData,
+                            borderColor: '#ec4899',
+                            backgroundColor: 'rgba(236, 72, 153, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            fill: true,
+                            pointRadius: 4,
+                            pointBackgroundColor: '#f472b6'
+                        },
+                        {
+                            label: 'T° Incubateur (°C)',
+                            data: incData,
+                            borderColor: '#a855f7',
+                            borderDash: [5, 5],
+                            borderWidth: 1.5,
+                            tension: 0.3,
+                            pointRadius: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { min: 35.5, max: 38.5, grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#94a3b8' } },
+                        x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 9 } } }
+                    },
+                    plugins: { legend: { labels: { color: '#e2e8f0', font: { size: 10 } } } }
+                }
+            });
+        }
+
+        function updateWeightChart(labels, weightData) {
+            const ctx = document.getElementById('weightChart').getContext('2d');
+            if(weightChartInstance) weightChartInstance.destroy();
+
+            weightChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Poids (kg)',
+                            data: weightData,
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            fill: true,
+                            pointRadius: 4,
+                            pointBackgroundColor: '#60a5fa'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#94a3b8' } },
+                        x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 9 } } }
+                    },
+                    plugins: { legend: { labels: { color: '#e2e8f0', font: { size: 10 } } } }
+                }
+            });
+        }
+
+        document.getElementById('btn-manual-add').onclick = () => {
+            if(!isAdmin) return;
+            const targetUser = prompt("Nom/Prénom du proche :");
+            if(!targetUser || targetUser.trim().length < 2) return alert("Nom invalide");
+
+            const modal = document.getElementById('admin-modal-gender');
+            modal.classList.remove('hidden');
+
+            const savePrediction = async (sexe) => {
+                modal.classList.add('hidden');
+                const prenom = prompt("Idée de prénom :");
+                const passion = prompt("Future passion estimée :") || "Mystère 🔮";
+                const poids = parseFloat(prompt("Poids estimé (kg) :"));
+                const taille = parseFloat(prompt("Taille estimée (cm) :"));
+                const date = prompt("Date estimée (AAAA-MM-JJ) :") || "--";
+                const heure = prompt("Heure estimée (HH:MM) :") || "--";
+
+                if(!prenom || isNaN(poids) || isNaN(taille)) return alert("Données incomplètes.");
+
+                await setDoc(doc(db, "predictions", targetUser.trim()), {
+                    user: targetUser.trim(), sexe: sexe, prenom: prenom, passion: passion, poids: poids, taille: taille, date: date, heure: heure, timestamp: serverTimestamp()
+                });
+
+                await triggerPushNotification("👶 Nouveau Pronostic (par Admin) !", `Un prono a été ajouté pour ${targetUser} !`);
+                alert(`Pronostic de ${targetUser} ajouté avec succès !`);
+            };
+
+            document.getElementById('admin-btn-girl').onclick = () => savePrediction("Fille");
+            document.getElementById('admin-btn-boy').onclick = () => savePrediction("Garçon");
+            document.getElementById('admin-btn-cancel').onclick = () => modal.classList.add('hidden');
+        };
+
+        function setupUserVoteListener() {
+            onSnapshot(doc(db, "predictions", userName), (docSnap) => {
+                if(docSnap.exists()) {
+                    const data = docSnap.get();
+                    selectGender(data.sexe);
+                    document.getElementById('vote-name').value = data.prenom || "";
+                    document.getElementById('vote-passion').value = data.passion || "";
+                    document.getElementById('vote-weight').value = data.poids || "";
+                    document.getElementById('vote-height').value = data.taille || "";
+                    document.getElementById('vote-date').value = data.date !== "--" ? data.date : "";
+                    document.getElementById('vote-time').value = data.heure !== "--" ? data.heure : "";
+                }
+            });
+        }
+
+        function setupChatListener() {
+            const chatBox = document.getElementById('chat-box');
+            const q = query(collection(db, "chat"), orderBy("timestamp", "asc"), limit(100));
+            onSnapshot(q, snapshot => {
+                chatBox.innerHTML = "";
+                snapshot.forEach(docSnap => {
+                    const msg = docSnap.data();
+                    const isMe = msg.user === userName;
+                    chatBox.innerHTML += `
+                        <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'} max-w-[85%] ${isMe ? 'self-end' : 'self-start'}">
+                            <span class="text-[9px] text-slate-500 mb-1 px-1">${msg.user}</span>
+                            <div class="p-3.5 rounded-2xl text-xs ${isMe ? 'bg-purple-600 text-white rounded-tr-none' : 'glass text-slate-200 rounded-tl-none'}">
+                                ${msg.message}
+                            </div>
+                        </div>
+                    `;
+                });
+                chatBox.scrollTop = chatBox.scrollHeight;
+            });
+        }
+
+        document.getElementById('btn-send').onclick = async () => {
+            const chatInput = document.getElementById('chat-input');
+            const msg = chatInput.value.trim();
+            if(msg.length > 0) {
+                await addDoc(collection(db, "chat"), { user: userName, message: msg, timestamp: serverTimestamp() });
+                chatInput.value = "";
+            }
+        };
+
+        onSnapshot(collection(db, "predictions"), snapshot => {
+            let totalVotes = snapshot.size;
+            let countGirl = 0; let countBoy = 0;
+            let sumWeight = 0; let sumHeight = 0;
+            let nameCounts = {};
+            globalPredictions = [];
+
+            const listAll = document.getElementById('list-all-votes');
+            listAll.innerHTML = "";
+
+            if(totalVotes === 0) {
+                updateStatsVisuals(0, 0, 0, 0, []);
+                listAll.innerHTML = `<p class="text-slate-500 italic text-center py-8">Aucun pronostic.</p>`;
+                return;
+            }
+
+            snapshot.forEach(d => {
+                const data = d.data();
+                globalPredictions.push(data);
+
+                if(data.sexe === 'Fille' || data.sexe === 'F') countGirl++;
+                if(data.sexe === 'Garçon' || data.sexe === 'G' || data.sexe === 'M' || data.sexe === 'Masculin') countBoy++;
+                sumWeight += data.poids || 0;
+                sumHeight += data.taille || 0;
+
+                let p = data.prenom ? data.prenom.trim().toLowerCase() : "aucun";
+                p = p.charAt(0).toUpperCase() + p.slice(1);
+                nameCounts[p] = (nameCounts[p] || 0) + 1;
+
+                const isFille = (data.sexe === 'Fille' || data.sexe === 'F');
+                const genderIcon = isFille ? 'fa-venus text-pink-400' : 'fa-mars text-blue-400';
+
+                listAll.innerHTML += `
+                    <div class="glass p-5 rounded-3xl border-l-4 ${isFille ? 'border-pink-500' : 'border-blue-500'} flex flex-col gap-2 relative">
+                        <div class="flex justify-between items-center">
+                            <span class="font-black text-xs uppercase tracking-wider text-purple-400">${data.user}</span>
+                            <div class="flex items-center gap-2">
+                                <button onclick="deleteProno('${data.user}')" class="admin-only text-red-400 hover:text-red-500 p-1 mr-2 text-sm transition-all is-block"><i class="fas fa-trash"></i></button>
+                                <i class="fas ${genderIcon} text-base"></i>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-y-1 text-[11px] text-slate-300">
+                            <p><b>Prénom :</b> ${data.prenom || "--"}</p>
+                            <p class="truncate"><b>Passion :</b> ${data.passion || "Mystère 🔮"}</p>
+                            <p><b>Poids :</b> ${data.poids} kg</p>
+                            <p><b>Taille :</b> ${data.taille} cm</p>
+                            <p class="col-span-2"><b>Le :</b> ${data.date} à ${data.heure}</p>
+                        </div>
+                    </div>
+                `;
+            });
+
+            let pctGirl = Math.round((countGirl / totalVotes) * 100) || 0;
+            let pctBoy = Math.round((countBoy / totalVotes) * 100) || 0;
+            let avgW = (sumWeight / totalVotes).toFixed(3);
+            let avgH = (sumHeight / totalVotes).toFixed(1);
+
+            let sortedNames = Object.entries(nameCounts).sort((a,b) => b[1] - a[1]).slice(0, 5);
+            updateStatsVisuals(pctGirl, pctBoy, avgW, avgH, sortedNames);
+            checkAndCalculateWinner();
+        });
+
+        function updateStatsVisuals(pGirl, pBoy, avgW, avgH, topNames) {
+            document.getElementById('pct-girl').innerText = pGirl;
+            document.getElementById('pct-boy').innerText = pBoy;
+            document.getElementById('bar-girl').style.width = pGirl + '%';
+            document.getElementById('bar-boy').style.width = pBoy + '%';
+            document.getElementById('avg-weight').innerText = avgW;
+            document.getElementById('avg-height').innerText = avgH;
+
+            const topList = document.getElementById('top-names-list');
+            if(topNames.length === 0) {
+                topList.innerHTML = `<p class="text-slate-500 italic text-center text-xs">Aucun vote</p>`;
+            } else {
+                topList.innerHTML = topNames.map(([name, count]) => `
+                    <div class="flex justify-between items-center bg-white/5 p-3 rounded-xl">
+                        <span class="font-bold">${name}</span>
+                        <span class="bg-purple-500/20 text-purple-400 px-2 py-0.5 rounded-lg text-[10px] font-black">${count} vote(s)</span>
+                    </div>
+                `).join('');
+            }
+        }
+
+        window.deleteProno = async (userId) => { 
+            if(!isAdmin) return;
+            if(confirm(`Supprimer le pronostic de "${userId}" ?`)) {
+                await deleteDoc(doc(db, "predictions", userId)); 
+            }
+        };
+
+        document.getElementById('btn-save-final').onclick = async () => {
+            if(!isAdmin) return;
+            const g = document.getElementById('final-gender').value;
+            const n = document.getElementById('final-name').value.trim();
+            const w = parseFloat(document.getElementById('final-weight').value);
+            const h = parseFloat(document.getElementById('final-height').value);
+            const d = document.getElementById('final-date').value;
+            const t = document.getElementById('final-time').value;
+
+            if(!g || !n || isNaN(w) || isNaN(h)) return alert("Saisie incomplète !");
+
+            await setDoc(doc(db, "resultat", "verdict"), { sexe: g, prenom: n, poids: w, taille: h, date: d || "--", heure: t || "--" });
+            await triggerPushNotification("🏁 LE VERDICT EST TOMBÉ !", `Le bébé est là ! Découvre le gagnant !`);
+            alert("Résultat final publié ! 🏁");
+        };
+
+        let finalResultData = null;
+        onSnapshot(doc(db, "resultat", "verdict"), docSnap => {
+            if(docSnap.exists()) {
+                finalResultData = docSnap.get();
+                document.getElementById('panel-final-result').classList.remove('hidden');
+                document.getElementById('res-final-name').innerText = finalResultData.prenom;
+                document.getElementById('res-final-gender').innerText = `👶 C'est une ${finalResultData.sexe} !`;
+                document.getElementById('res-final-weight').innerText = finalResultData.poids;
+                document.getElementById('res-final-height').innerText = finalResultData.taille;
+                document.getElementById('res-final-date').innerText = finalResultData.date;
+                document.getElementById('res-final-time').innerText = finalResultData.heure;
+                checkAndCalculateWinner();
+            }
+        });
+
+        function checkAndCalculateWinner() {
+            if(!finalResultData || globalPredictions.length === 0) return;
+            let bestScore = Infinity; 
+            let winner = "Aucun gagnant déterminé";
+
+            globalPredictions.forEach(p => {
+                let score = 0;
+                const pSexe = (p.sexe === 'Fille' || p.sexe === 'F') ? 'Fille' : 'Garçon';
+                const fSexe = (finalResultData.sexe === 'Fille' || finalResultData.sexe === 'F') ? 'Fille' : 'Garçon';
+                
+                if(pSexe !== fSexe) score += 100;
+                if(p.prenom && p.prenom.trim().toLowerCase() === finalResultData.prenom.trim().toLowerCase()) score -= 50;
+                score += Math.abs(p.poids - finalResultData.poids) * 100;
+                score += Math.abs(p.taille - finalResultData.taille) * 10;
+
+                if(p.date !== "--" && finalResultData.date !== "--") {
+                    const voteDate = new Date(p.date);
+                    const realDate = new Date(finalResultData.date);
+                    const diffDays = Math.ceil(Math.abs(realDate - voteDate) / (1000 * 60 * 60 * 24));
+                    score += diffDays * 20;
+                }
+
+                if(score < bestScore) {
+                    bestScore = score;
+                    winner = `${p.user} (${score.toFixed(1)} pts diff.)`;
+                }
+            });
+
+            document.getElementById('winner-name').innerText = winner;
+        }
+
+        document.getElementById('btn-urgent').onclick = async () => {
+            if(!isAdmin) return;
+            const message = prompt("Message d'alerte :", "Le travail a commencé ! 🏥");
+            if(message) {
+                await triggerPushNotification("🚨 ALERTE MATERNITÉ !", message);
+                alert("Alerte envoyée !");
+            }
+        };
+
+        document.getElementById('logout-btn').onclick = async () => {
+            if(confirm("Déconnexion ?")) {
+                if(userName) await deleteDoc(doc(db, "presence", userName));
+                window.location.reload();
+            }
+        };
+
+    </script>
 </body>
 </html>
