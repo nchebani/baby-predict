@@ -3,410 +3,168 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Suivi & Courbe de Poids Bébé 2026</title>
-  <!-- Chart.js pour le graphique interactif -->
+  <title>BABY PREDICT - Suivi de poids</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- Chart.js Adapter pour les dates (Luxon) -->
-  <script src="https://cdn.jsdelivr.net/npm/luxon@3/build/global/luxon.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1/dist/chartjs-adapter-luxon.umd.min.js"></script>
-  
-  <style>
-    :root {
-      --primary: #4a90e2;
-      --primary-hover: #357abd;
-      --danger: #e74c3c;
-      --danger-hover: #c0392b;
-      --bg: #f8f9fa;
-      --card-bg: #ffffff;
-      --text: #2c3e50;
-      --border: #e2e8f0;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    }
-
-    body {
-      background-color: var(--bg);
-      color: var(--text);
-      padding: 20px;
-      display: flex;
-      justify-content: center;
-    }
-
-    .container {
-      max-width: 900px;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    header {
-      text-align: center;
-      margin-bottom: 10px;
-    }
-
-    header h1 {
-      font-size: 1.8rem;
-      color: var(--primary);
-    }
-
-    .card {
-      background: var(--card-bg);
-      border-radius: 12px;
-      padding: 24px;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-      border: 1px solid var(--border);
-    }
-
-    .card h2 {
-      font-size: 1.2rem;
-      margin-bottom: 16px;
-      color: var(--text);
-    }
-
-    /* Formulaire */
-    .form-group-inline {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .input-field {
-      flex: 1;
-      min-width: 180px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .input-field label {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: #64748b;
-    }
-
-    .input-field input {
-      padding: 10px 14px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 1rem;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-
-    .input-field input:focus {
-      border-color: var(--primary);
-    }
-
-    button.btn-add {
-      align-self: flex-end;
-      padding: 10px 20px;
-      background-color: var(--primary);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color 0.2s, transform 0.1s;
-    }
-
-    button.btn-add:hover {
-      background-color: var(--primary-hover);
-    }
-
-    button.btn-add:active {
-      transform: scale(0.98);
-    }
-
-    /* Graphique */
-    .chart-container {
-      position: relative;
-      width: 100%;
-      height: 350px;
-    }
-
-    /* Table / Liste des mesures */
-    .table-container {
-      overflow-x: auto;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: left;
-    }
-
-    th, td {
-      padding: 12px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    th {
-      font-size: 0.85rem;
-      color: #64748b;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    tr:hover {
-      background-color: #f1f5f9;
-    }
-
-    .btn-delete {
-      background-color: transparent;
-      color: var(--danger);
-      border: 1px solid var(--danger);
-      padding: 4px 10px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.85rem;
-      transition: all 0.2s;
-    }
-
-    .btn-delete:hover {
-      background-color: var(--danger);
-      color: white;
-    }
-
-    .empty-state {
-      text-align: center;
-      color: #94a3b8;
-      padding: 20px;
-    }
-  </style>
 </head>
-<body>
-
-  <div class="container">
-    <header>
-      <h1>Suivi & Courbe de Poids Bébé</h1>
+<body class="bg-slate-50 text-slate-800 p-4 md:p-8 font-sans">
+  <div class="max-w-4xl mx-auto space-y-6">
+    
+    <!-- Titre -->
+    <header class="text-center">
+      <h1 class="text-2xl md:text-3xl font-bold text-indigo-600">BABY PREDICT</h1>
+      <p class="text-sm text-slate-500">Suivi et courbe de poids</p>
     </header>
 
     <!-- Formulaire d'ajout -->
-    <section class="card">
-      <h2>Ajouter une nouvelle mesure</h2>
-      <form id="weightForm">
-        <div class="form-group-inline">
-          <div class="input-field">
-            <label for="measureDate">Date de mesure</label>
-            <input type="date" id="measureDate" required>
-          </div>
-          <div class="input-field">
-            <label for="measureWeight">Poids (kg)</label>
-            <input type="number" id="measureWeight" step="0.01" min="0" placeholder="ex: 3.45" required>
-          </div>
-          <button type="submit" class="btn-add">Ajouter</button>
-        </div>
-      </form>
-    </section>
+    <form id="weightForm" class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col sm:flex-row gap-3 items-end">
+      <div class="w-full sm:flex-1">
+        <label for="dateInput" class="block text-xs font-semibold text-slate-600 mb-1">Date</label>
+        <input type="date" id="dateInput" required class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+      </div>
+      <div class="w-full sm:flex-1">
+        <label for="weightInput" class="block text-xs font-semibold text-slate-600 mb-1">Poids (kg)</label>
+        <input type="number" id="weightInput" step="0.01" min="0" placeholder="ex: 3.45" required class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+      </div>
+      <button type="submit" class="w-full sm:w-auto px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg text-sm transition">
+        Ajouter
+      </button>
+    </form>
 
-    <!-- Graphique -->
-    <section class="card">
-      <h2>Courbe de tendance (Cliquer sur un point pour le supprimer)</h2>
-      <div class="chart-container">
+    <!-- Graphique & Liste -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      
+      <!-- Graphique -->
+      <div class="lg:col-span-2 bg-white p-4 rounded-xl shadow-sm border border-slate-100 min-h-[300px]">
         <canvas id="weightChart"></canvas>
       </div>
-    </section>
 
-    <!-- Historique -->
-    <section class="card">
-      <h2>Historique des mesures</h2>
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Poids (kg)</th>
-              <th style="text-align: right;">Action</th>
-            </tr>
-          </thead>
-          <tbody id="measuresTableBody">
-            <!-- Les lignes seront insérées dynamiquement via JS -->
-          </tbody>
-        </table>
-        <div id="emptyMessage" class="empty-state">Aucune mesure enregistrée pour le moment.</div>
+      <!-- Historique -->
+      <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col h-[320px]">
+        <h2 class="text-sm font-bold text-slate-700 mb-3">Historique des mesures</h2>
+        <ul id="weightList" class="overflow-y-auto space-y-2 pr-1 flex-1 text-sm">
+          <!-- Les points s'affichent ici -->
+        </ul>
       </div>
-    </section>
+
+    </div>
   </div>
 
   <script>
-    // Données initiales d'exemple (triées par date)
+    // Données initiales
     let weightData = [
-      { id: 1, date: '2026-07-01', weight: 3.20 },
-      { id: 2, date: '2026-07-15', weight: 3.65 },
-      { id: 3, date: '2026-08-01', weight: 4.10 }
+      { id: 1, date: "2026-08-01", weight: 3.20 },
+      { id: 2, date: "2026-08-03", weight: 3.28 },
+      { id: 3, date: "2026-08-05", weight: 3.35 }
     ];
 
-    let chartInstance = null;
+    // Initialisation du formulaire avec la date du jour
+    document.getElementById('dateInput').value = new Date().toISOString().split('T')[0];
 
-    // Initialisation
-    document.addEventListener('DOMContentLoaded', () => {
-      // Définir la date d'aujourd'hui par défaut dans le formulaire
-      document.getElementById('measureDate').valueAsDate = new Date();
-
-      initChart();
-      updateUI();
-
-      // Gestionnaire de soumission de formulaire
-      document.getElementById('weightForm').addEventListener('submit', (e) => {
-        e.preventDefault();
-        addMeasurement();
-      });
-    });
-
-    // Initialisation de Chart.js
-    function initChart() {
-      const ctx = document.getElementById('weightChart').getContext('2d');
-      chartInstance = new Chart(ctx, {
-        type: 'line',
-        data: {
-          datasets: [{
-            label: 'Poids (kg)',
-            data: [],
-            borderColor: '#4a90e2',
-            backgroundColor: 'rgba(74, 144, 226, 0.1)',
-            fill: true,
-            tension: 0.3, // Courbe fluide
-            pointRadius: 6,
-            pointHoverRadius: 9,
-            pointBackgroundColor: '#4a90e2',
-            pointBorderColor: '#ffffff',
-            pointBorderWidth: 2
-          }]
+    // Configuration Chart.js
+    const ctx = document.getElementById('weightChart').getContext('2d');
+    const chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'Poids (kg)',
+          data: [],
+          borderColor: '#4f46e5',
+          backgroundColor: 'rgba(79, 70, 229, 0.1)',
+          borderWidth: 2,
+          fill: true,
+          tension: 0.3,
+          pointRadius: 5,
+          pointHoverRadius: 7
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        onClick: (evt, activeElements) => {
+          // Suppression au clic direct sur un point du graphique
+          if (activeElements.length > 0) {
+            const index = activeElements[0].index;
+            const targetId = weightData[index].id;
+            deleteMeasure(targetId);
+          }
         },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          parsing: {
-            xAxisKey: 'date',
-            yAxisKey: 'weight'
-          },
-          scales: {
-            x: {
-              type: 'time',
-              time: {
-                unit: 'day',
-                displayFormats: {
-                  day: 'dd/MM'
-                },
-                tooltipFormat: 'dd/MM/yyyy'
-              },
-              title: {
-                display: true,
-                text: 'Date'
-              }
-            },
-            y: {
-              title: {
-                display: true,
-                text: 'Poids (kg)'
-              },
-              suggestedMin: 2.5
-            }
-          },
-          plugins: {
-            tooltip: {
-              callbacks: {
-                label: function(context) {
-                  return `Poids : ${context.parsed.y} kg (Cliquer pour supprimer)`;
-                }
-              }
-            }
-          },
-          // Supprimer un point directement en cliquant dessus dans le graphique
-          onClick: (evt, activeElements) => {
-            if (activeElements.length > 0) {
-              const index = activeElements[0].index;
-              const itemToDelete = weightData[index];
-              
-              if (confirm(`Voulez-vous supprimer la mesure du ${formatDateFR(itemToDelete.date)} (${itemToDelete.weight} kg) ?`)) {
-                removeMeasurement(itemToDelete.id);
-              }
+        plugins: {
+          tooltip: {
+            callbacks: {
+              footer: () => 'Cliquez sur le point pour supprimer'
             }
           }
+        },
+        scales: {
+          y: { beginAtZero: false, title: { display: true, text: 'kg' } }
         }
+      }
+    });
+
+    // Tri par date + mise à jour UI
+    function updateUI() {
+      weightData.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+      // Mise à jour du graphique
+      chart.data.labels = weightData.map(d => formatDate(d.date));
+      chart.data.datasets[0].data = weightData.map(d => d.weight);
+      chart.update();
+
+      // Mise à jour de la liste
+      const listContainer = document.getElementById('weightList');
+      listContainer.innerHTML = '';
+
+      if (weightData.length === 0) {
+        listContainer.innerHTML = '<li class="text-xs text-slate-400 text-center py-4">Aucune mesure enregistrée.</li>';
+        return;
+      }
+
+      weightData.slice().reverse().forEach(item => {
+        const li = document.createElement('li');
+        li.className = 'flex justify-between items-center bg-slate-50 p-2.5 rounded-lg border border-slate-100';
+        li.innerHTML = `
+          <div>
+            <span class="font-medium text-slate-700">${item.weight} kg</span>
+            <span class="text-xs text-slate-400 block">${formatDate(item.date)}</span>
+          </div>
+          <button onclick="deleteMeasure(${item.id})" class="text-rose-500 hover:text-rose-700 hover:bg-rose-50 p-1 rounded transition text-xs">
+            Supprimer
+          </button>
+        `;
+        listContainer.appendChild(li);
       });
     }
 
-    // Ajouter une mesure
-    function addMeasurement() {
-      const dateInput = document.getElementById('measureDate').value;
-      const weightInput = parseFloat(document.getElementById('measureWeight').value);
-
-      if (!dateInput || isNaN(weightInput)) return;
-
-      const newEntry = {
-        id: Date.now(), // Identifiant unique basé sur le timestamp
-        date: dateInput,
-        weight: weightInput
-      };
-
-      weightData.push(newEntry);
-      
-      // Trier par date croissante
-      weightData.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-      // Reset du champ poids
-      document.getElementById('measureWeight').value = '';
-
+    function addMeasure(date, weight) {
+      weightData.push({ id: Date.now(), date, weight: parseFloat(weight) });
       updateUI();
     }
 
-    // Supprimer une mesure
-    function removeMeasurement(id) {
+    function deleteMeasure(id) {
       weightData = weightData.filter(item => item.id !== id);
       updateUI();
     }
 
-    // Mettre à jour l'ensemble de l'interface (Graphique + Tableau)
-    function updateUI() {
-      // 1. Mettre à jour la table
-      const tbody = document.getElementById('measuresTableBody');
-      const emptyMsg = document.getElementById('emptyMessage');
-      tbody.innerHTML = '';
-
-      if (weightData.length === 0) {
-        emptyMsg.style.display = 'block';
-      } else {
-        emptyMsg.style.display = 'none';
-
-        // Inverser l'affichage pour la liste (plus récents en haut)
-        const sortedForTable = [...weightData].reverse();
-
-        sortedForTable.forEach(item => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td>${formatDateFR(item.date)}</td>
-            <td><strong>${item.weight.toFixed(2)} kg</strong></td>
-            <td style="text-align: right;">
-              <button class="btn-delete" onclick="removeMeasurement(${item.id})">Supprimer</button>
-            </td>
-          `;
-          tbody.appendChild(tr);
-        });
-      }
-
-      // 2. Mettre à jour le graphique
-      if (chartInstance) {
-        chartInstance.data.datasets[0].data = weightData;
-        chartInstance.update();
-      }
+    function formatDate(dateStr) {
+      const [year, month, day] = dateStr.split('-');
+      return `${day}/${month}/${year}`;
     }
 
-    // Fonction utilitaire de formatage de date
-    function formatDateFR(dateString) {
-      const parts = dateString.split('-');
-      if (parts.length === 3) {
-        return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    // Événement formulaire
+    document.getElementById('weightForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const date = document.getElementById('dateInput').value;
+      const weight = document.getElementById('weightInput').value;
+      if (date && weight) {
+        addMeasure(date, weight);
+        document.getElementById('weightInput').value = '';
       }
-      return dateString;
-    }
+    });
+
+    // Lancement initial
+    updateUI();
   </script>
 </body>
 </html>
