@@ -399,13 +399,45 @@
                 </div>
             </section>
 
-            <!-- NOUVEL ONGLET : ANALYTICS & GRAPHIQUES -->
+            <!-- NOUVEL ONGLET : ANALYTICS & GRAPHIQUES INTERACTIFS -->
             <section id="tab-charts" class="tab-content space-y-6">
                 <div class="flex justify-between items-center mb-2 px-2">
                     <div>
-                        <h3 class="text-2xl font-black italic uppercase">Analytics</h3>
-                        <p class="text-[10px] text-slate-400">Courbes de santé & Rapports</p>
+                        <h3 class="text-2xl font-black italic uppercase">Analytics & Édition Courbes</h3>
+                        <p class="text-[10px] text-slate-400">Gestion interactive, ajustement dynamique & suivi direct</p>
                     </div>
+                </div>
+
+                <!-- FORMULAIRE AJOUT RAPIDE MESURE POUR LES COURBES -->
+                <div class="glass p-5 rounded-[2.5rem] border border-white/10 space-y-3">
+                    <h4 class="text-xs font-black uppercase text-purple-400 italic flex items-center gap-2">
+                        <i class="fas fa-plus-circle"></i> Ajouter une mesure directe sur le graphique
+                    </h4>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-400 mb-1">Type de courbe</label>
+                            <select id="chart-add-type" class="w-full bg-white/5 border border-white/10 p-2 rounded-xl text-white outline-none">
+                                <option value="weight" class="bg-[#07070a]">Poids (kg)</option>
+                                <option value="temp" class="bg-[#07070a]">Température (°C)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-400 mb-1">Jour</label>
+                            <select id="chart-add-day" class="w-full bg-white/5 border border-white/10 p-2 rounded-xl text-white outline-none">
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-400 mb-1">Heure (ex: 08h00)</label>
+                            <input type="text" id="chart-add-time" class="w-full bg-white/5 border border-white/10 p-2 rounded-xl text-white outline-none" placeholder="Ex: 08h00">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-400 mb-1">Valeur Mesurée</label>
+                            <input type="number" step="0.01" id="chart-add-val" class="w-full bg-white/5 border border-white/10 p-2 rounded-xl text-white outline-none" placeholder="Ex: 3.250 ou 36.8">
+                        </div>
+                    </div>
+                    <button onclick="addMeasureFromChart()" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-black py-2.5 rounded-xl uppercase text-[10px] tracking-wider transition-all shadow-lg">
+                        <i class="fas fa-chart-line mr-1"></i> Ajouter à la courbe & Recalculer la tendance
+                    </button>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -424,7 +456,7 @@
                         <h4 class="text-xs font-black uppercase text-purple-400 italic flex items-center justify-between">
                             <span><i class="fas fa-chart-line mr-2"></i> Courbe de Température (°C)</span>
                         </h4>
-                        <p class="text-[9px] text-slate-500 font-normal">Min conseillé: 36.5°C | Max: 37.5°C</p>
+                        <p class="text-[9px] text-slate-500 font-normal">Min conseillé: 36.5°C | Max: 37.5°C — <i>Cliquez sur un point pour le supprimer</i></p>
                         <div class="w-full h-52">
                             <canvas id="tempChart"></canvas>
                         </div>
@@ -435,10 +467,34 @@
                         <h4 class="text-xs font-black uppercase text-purple-400 italic flex items-center justify-between">
                             <span><i class="fas fa-weight-hanging mr-2"></i> Courbe de Poids (kg)</span>
                         </h4>
-                        <p class="text-[9px] text-slate-500 font-normal">Suivi de la prise de poids</p>
+                        <p class="text-[9px] text-slate-500 font-normal">Suivi & tendance instantanée — <i>Cliquez sur un point pour le supprimer</i></p>
                         <div class="w-full h-52">
                             <canvas id="weightChart"></canvas>
                         </div>
+                    </div>
+                </div>
+
+                <!-- LISTE INTERACTIVE D'ÉDITION DES POINTS DE MESURES -->
+                <div class="glass p-5 rounded-[2.5rem] border border-white/10 space-y-3">
+                    <h4 class="text-xs font-black uppercase text-slate-300 italic flex items-center justify-between">
+                        <span><i class="fas fa-list-check mr-2 text-purple-400"></i> Points de Mesures Existants (Suppression directe)</span>
+                    </h4>
+                    <p class="text-[10px] text-slate-400">Toute suppression réajuste la tendance et la courbe instantanément sur l'ensemble de l'interface.</p>
+                    
+                    <div class="max-h-60 overflow-y-auto pr-1">
+                        <table class="w-full text-left text-[11px] border-collapse">
+                            <thead>
+                                <tr class="border-b border-white/10 text-slate-400 uppercase text-[9px]">
+                                    <th class="p-2">Date / Heure</th>
+                                    <th class="p-2">Poids (kg)</th>
+                                    <th class="p-2">T° BB (°C)</th>
+                                    <th class="p-2 text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="chart-points-list" class="divide-y divide-white/5 text-slate-200">
+                                <tr><td colspan="4" class="p-4 text-center text-slate-500 italic">Chargement des données de courbes...</td></tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </section>
@@ -576,7 +632,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp, setDoc, limit, getDocs, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp, setDoc, limit, getDocs, updateDoc, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
 
         const VAPID_KEY = "KyCv3GvPMoavPSSZllmgVr5lLHpf-sohTDLhAMvW20w"; 
@@ -610,6 +666,7 @@
         let activityChartInstance = null;
         let lastMealRawTimeStr = null;
         let mealAlertSent = false;
+        let trackingDataCache = [];
 
         // SEUILS CONFIGURÉS PAR LES PARENTS
         let thresholds = {
@@ -670,9 +727,12 @@
             const birthDate = new Date(2026, 6, 23); 
             const endDate = new Date(2026, 7, 31);   
             const selectEl = document.getElementById('track-day');
+            const selectChartEl = document.getElementById('chart-add-day');
             const now = new Date();
 
             selectEl.innerHTML = "";
+            if (selectChartEl) selectChartEl.innerHTML = "";
+            
             let cur = new Date(birthDate);
             let dayIndex = 0;
             const daysShort = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
@@ -697,6 +757,7 @@
                 }
 
                 selectEl.appendChild(opt);
+                if (selectChartEl) selectChartEl.appendChild(opt.cloneNode(true));
                 cur.setDate(cur.getDate() + 1);
                 dayIndex++;
             }
@@ -964,9 +1025,59 @@
             toggleDiaperDetails();
             document.getElementById('track-food').value = "";
             document.getElementById('track-obs').value = "";
+            document.getElementById('track-weight').value = "";
             document.getElementById('track-bottle-ontime').checked = false;
 
             alert("Saisie enregistrée !");
+        };
+
+        // AJOUT MESURE DIRECTE VIA SECTION ANALYTICS
+        window.addMeasureFromChart = async () => {
+            const type = document.getElementById('chart-add-type').value;
+            const day = document.getElementById('chart-add-day').value;
+            const time = document.getElementById('chart-add-time').value.trim() || "12h00";
+            const val = parseFloat(document.getElementById('chart-add-val').value);
+
+            if(isNaN(val)) return alert("Veuillez renseigner une valeur numérique valide.");
+
+            let docObj = {
+                day,
+                time,
+                timestamp: serverTimestamp()
+            };
+
+            if(type === 'weight') {
+                docObj.weight = val;
+            } else {
+                docObj.tempBb = val;
+            }
+
+            await addDoc(collection(db, "baby_tracking"), docObj);
+            document.getElementById('chart-add-val').value = "";
+            alert("Mesure ajoutée ! La courbe s'ajuste instantanément.");
+        };
+
+        window.removeMeasureMetric = async (docId, metricType) => {
+            if(!confirm("Supprimer cette mesure de la courbe ?")) return;
+
+            const docItem = trackingDataCache.find(item => item.id === docId);
+            if(!docItem) return;
+
+            if(metricType === 'weight') {
+                if(docItem.tempBb !== null || docItem.food || docItem.obs || docItem.diaperChanged) {
+                    await updateDoc(doc(db, "baby_tracking", docId), { weight: null });
+                } else {
+                    await deleteDoc(doc(db, "baby_tracking", docId));
+                }
+            } else if(metricType === 'temp') {
+                if(docItem.weight !== null || docItem.food || docItem.obs || docItem.diaperChanged) {
+                    await updateDoc(doc(db, "baby_tracking", docId), { tempBb: null });
+                } else {
+                    await deleteDoc(doc(db, "baby_tracking", docId));
+                }
+            } else if(metricType === 'all') {
+                await deleteDoc(doc(db, "baby_tracking", docId));
+            }
         };
 
         window.updateNextBottleDisplay = () => {
@@ -1075,18 +1186,53 @@
             }
         };
 
+        function renderChartPointsList(data) {
+            const listEl = document.getElementById('chart-points-list');
+            if(!listEl) return;
+
+            const chartItems = data.filter(d => (d.weight !== null && d.weight !== undefined) || (d.tempBb !== null && d.tempBb !== undefined));
+
+            if(chartItems.length === 0) {
+                listEl.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-500 italic">Aucune donnée de courbe actuellement</td></tr>`;
+                return;
+            }
+
+            listEl.innerHTML = "";
+            chartItems.forEach(item => {
+                const weightTxt = (item.weight !== null && item.weight !== undefined) ? `${item.weight} kg` : '--';
+                const tempTxt = (item.tempBb !== null && item.tempBb !== undefined) ? `${item.tempBb} °C` : '--';
+
+                listEl.innerHTML += `
+                    <tr>
+                        <td class="p-2 font-bold">${item.day} <span class="text-purple-400 block text-[9px]">${item.time}</span></td>
+                        <td class="p-2 font-black text-blue-400">${weightTxt}</td>
+                        <td class="p-2 font-black text-pink-400">${tempTxt}</td>
+                        <td class="p-2 text-right">
+                            <button onclick="removeMeasureMetric('${item.id}', 'all')" class="text-red-400 hover:text-red-300 font-bold text-xs bg-red-500/10 p-1.5 rounded-lg border border-red-500/20">
+                                <i class="fas fa-trash-alt mr-1"></i> Supprimer
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
         function setupBabyTrackerListener() {
             const q = query(collection(db, "baby_tracking"), orderBy("timestamp", "asc"));
             onSnapshot(q, snapshot => {
                 const tableBody = document.getElementById('table-track-body');
                 tableBody.innerHTML = "";
 
+                trackingDataCache = [];
+
                 let tempLabels = [];
                 let tempBbData = [];
                 let tempIncData = [];
+                let tempMetaDocs = [];
 
                 let weightLabels = [];
                 let weightData = [];
+                let weightMetaDocs = [];
 
                 let lastMealText = "Aucun";
                 let lastStoolText = "Aucune";
@@ -1118,6 +1264,8 @@
                         const d = docSnap.data();
                         const id = docSnap.id;
 
+                        trackingDataCache.push({ id, ...d });
+
                         const itemDate = d.timestamp ? d.timestamp.toDate() : new Date();
 
                         const isBib = (d.food && d.food.trim() !== '') || d.bottleOnTime;
@@ -1146,12 +1294,14 @@
                             tempLabels.push(`${d.day} ${d.time}`);
                             tempBbData.push(d.tempBb);
                             tempIncData.push(d.tempInc || null);
+                            tempMetaDocs.push(id);
                             latestTempBb = d.tempBb;
                         }
 
                         if(d.weight !== null && d.weight !== undefined && d.weight > 0) {
                             weightLabels.push(`${d.day} ${d.time}`);
                             weightData.push(d.weight);
+                            weightMetaDocs.push(id);
                             lastWeightText = `${d.weight} kg`;
                         }
 
@@ -1230,8 +1380,9 @@
                     }
                 } else alertBox.className = "hidden";
 
-                updateTempChart(tempLabels, tempBbData, tempIncData);
-                updateWeightChart(weightLabels, weightData);
+                renderChartPointsList(trackingDataCache);
+                updateTempChart(tempLabels, tempBbData, tempIncData, tempMetaDocs);
+                updateWeightChart(weightLabels, weightData, weightMetaDocs);
                 updateActivityChart(Object.keys(activityDays), Object.values(activityDays).map(d => d.bibs), Object.values(activityDays).map(d => d.diapers));
             });
         }
@@ -1276,7 +1427,7 @@
             });
         }
 
-        function updateTempChart(labels, bbData, incData) {
+        function updateTempChart(labels, bbData, incData, metaDocIds) {
             const ctx = document.getElementById('tempChart').getContext('2d');
             if(tempChartInstance) tempChartInstance.destroy();
 
@@ -1293,7 +1444,8 @@
                             borderWidth: 2,
                             tension: 0.3,
                             fill: true,
-                            pointRadius: 4,
+                            pointRadius: 5,
+                            pointHoverRadius: 8,
                             pointBackgroundColor: '#f472b6'
                         },
                         {
@@ -1310,6 +1462,15 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    onClick: (e, elements) => {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            const targetDocId = metaDocIds[index];
+                            if(targetDocId) {
+                                removeMeasureMetric(targetDocId, 'temp');
+                            }
+                        }
+                    },
                     scales: {
                         y: { min: 35.5, max: 38.5, grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#94a3b8' } },
                         x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 9 } } }
@@ -1319,7 +1480,7 @@
             });
         }
 
-        function updateWeightChart(labels, weightData) {
+        function updateWeightChart(labels, weightData, metaDocIds) {
             const ctx = document.getElementById('weightChart').getContext('2d');
             if(weightChartInstance) weightChartInstance.destroy();
 
@@ -1336,7 +1497,8 @@
                             borderWidth: 2,
                             tension: 0.3,
                             fill: true,
-                            pointRadius: 4,
+                            pointRadius: 5,
+                            pointHoverRadius: 8,
                             pointBackgroundColor: '#60a5fa'
                         }
                     ]
@@ -1344,6 +1506,15 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    onClick: (e, elements) => {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            const targetDocId = metaDocIds[index];
+                            if(targetDocId) {
+                                removeMeasureMetric(targetDocId, 'weight');
+                            }
+                        }
+                    },
                     scales: {
                         y: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#94a3b8' } },
                         x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 9 } } }
@@ -1398,206 +1569,184 @@
                     document.getElementById('vote-time').value = data.heure !== "--" ? data.heure : "";
                 }
             });
-        }
 
-        function setupChatListener() {
-            const chatBox = document.getElementById('chat-box');
-            const q = query(collection(db, "chat"), orderBy("timestamp", "asc"), limit(100));
-            onSnapshot(q, snapshot => {
-                chatBox.innerHTML = "";
+            onSnapshot(collection(db, "predictions"), (snapshot) => {
+                let totalVotes = 0, girlVotes = 0, boyVotes = 0;
+                let sumWeight = 0, countWeight = 0;
+                let sumHeight = 0, countHeight = 0;
+                let namesCount = {};
+                
+                const listContainer = document.getElementById('list-all-votes');
+                listContainer.innerHTML = "";
+                globalPredictions = [];
+
                 snapshot.forEach(docSnap => {
-                    const msg = docSnap.data();
-                    const isMe = msg.user === userName;
-                    chatBox.innerHTML += `
-                        <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'} max-w-[85%] ${isMe ? 'self-end' : 'self-start'}">
-                            <span class="text-[9px] text-slate-500 mb-1 px-1">${msg.user}</span>
-                            <div class="p-3.5 rounded-2xl text-xs ${isMe ? 'bg-purple-600 text-white rounded-tr-none' : 'glass text-slate-200 rounded-tl-none'}">
-                                ${msg.message}
+                    const item = docSnap.data();
+                    globalPredictions.push(item);
+                    totalVotes++;
+
+                    if(item.sexe === 'Fille') girlVotes++;
+                    if(item.sexe === 'Garçon') boyVotes++;
+
+                    if(item.poids) { sumWeight += item.poids; countWeight++; }
+                    if(item.taille) { sumHeight += item.taille; countHeight++; }
+
+                    if(item.prenom) {
+                        const cleanName = item.prenom.trim();
+                        namesCount[cleanName] = (namesCount[cleanName] || 0) + 1;
+                    }
+
+                    const genderColor = item.sexe === 'Fille' ? 'text-pink-400' : 'text-blue-400';
+                    const genderBadge = item.sexe === 'Fille' ? 'bg-pink-500/10 border-pink-500/20' : 'bg-blue-500/10 border-blue-500/20';
+
+                    listContainer.innerHTML += `
+                        <div class="glass p-5 rounded-3xl border border-white/5 space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="font-black text-sm text-white">${item.user}</span>
+                                <span class="text-[10px] font-bold px-3 py-1 rounded-full border ${genderBadge} ${genderColor}">${item.sexe}</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 text-xs">
+                                <p class="text-slate-400">Prénom : <b class="text-white">${item.prenom || '--'}</b></p>
+                                <p class="text-slate-400">Passion : <b class="text-white">${item.passion || '--'}</b></p>
+                                <p class="text-slate-400">Poids : <b class="text-white">${item.poids ? item.poids + ' kg' : '--'}</b></p>
+                                <p class="text-slate-400">Taille : <b class="text-white">${item.taille ? item.taille + ' cm' : '--'}</b></p>
+                                <p class="text-slate-400 col-span-2">Estimation : <b class="text-purple-300">${item.date || '--'} à ${item.heure || '--'}</b></p>
                             </div>
                         </div>
                     `;
                 });
+
+                if(totalVotes > 0) {
+                    const pctGirl = Math.round((girlVotes / totalVotes) * 100);
+                    const pctBoy = Math.round((boyVotes / totalVotes) * 100);
+                    document.getElementById('pct-girl').innerText = pctGirl;
+                    document.getElementById('pct-boy').innerText = pctBoy;
+                    document.getElementById('bar-girl').style.width = `${pctGirl}%`;
+                    document.getElementById('bar-boy').style.width = `${pctBoy}%`;
+
+                    if(countWeight > 0) document.getElementById('avg-weight').innerText = (sumWeight / countWeight).toFixed(3);
+                    if(countHeight > 0) document.getElementById('avg-height').innerText = (sumHeight / countHeight).toFixed(1);
+
+                    const topNames = Object.entries(namesCount).sort((a, b) => b[1] - a[1]).slice(0, 3);
+                    const topNamesContainer = document.getElementById('top-names-list');
+                    if(topNames.length > 0) {
+                        topNamesContainer.innerHTML = topNames.map(([name, count]) => `
+                            <div class="flex justify-between items-center bg-white/5 p-2 rounded-xl">
+                                <span class="font-bold text-white">${name}</span>
+                                <span class="text-purple-400 font-black">${count} vote(s)</span>
+                            </div>
+                        `).join('');
+                    }
+                }
+            });
+
+            onSnapshot(doc(db, "results", "final"), docSnap => {
+                if(docSnap.exists()) {
+                    const res = docSnap.data();
+                    document.getElementById('panel-final-result').classList.remove('hidden');
+                    document.getElementById('res-final-name').innerText = res.prenom;
+                    document.getElementById('res-final-gender').innerText = res.sexe;
+                    document.getElementById('res-final-weight').innerText = res.poids;
+                    document.getElementById('res-final-height').innerText = res.taille;
+                    document.getElementById('res-final-date').innerText = res.date;
+                    document.getElementById('res-final-time').innerText = res.heure;
+
+                    if(globalPredictions.length > 0) {
+                        let bestUser = "";
+                        let minScore = Infinity;
+
+                        globalPredictions.forEach(p => {
+                            let score = 0;
+                            if(p.sexe !== res.sexe) score += 100;
+                            if(p.poids && res.poids) score += Math.abs(p.poids - res.poids) * 10;
+                            if(p.taille && res.taille) score += Math.abs(p.taille - res.taille) * 5;
+
+                            if(score < minScore) {
+                                minScore = score;
+                                bestUser = p.user;
+                            }
+                        });
+
+                        document.getElementById('winner-name').innerText = bestUser || "Personne !";
+                    }
+                }
+            });
+        }
+
+        document.getElementById('btn-save-final').onclick = async () => {
+            if(!isAdmin) return;
+            const sexe = document.getElementById('final-gender').value;
+            const prenom = document.getElementById('final-name').value.trim();
+            const poids = parseFloat(document.getElementById('final-weight').value);
+            const taille = parseFloat(document.getElementById('final-height').value);
+            const date = document.getElementById('final-date').value;
+            const heure = document.getElementById('final-time').value;
+
+            if(!sexe || !prenom || isNaN(poids) || isNaN(taille) || !date || !heure) {
+                return alert("Remplis toutes les informations finales !");
+            }
+
+            await setDoc(doc(db, "results", "final"), { sexe, prenom, poids, taille, date, heure, timestamp: serverTimestamp() });
+            await triggerPushNotification("🎉 BÉBÉ EST LÀ !", `${prenom} est né(e) ! Venez découvrir le gagnant !`);
+            alert("Résultat final publié avec succès !");
+        };
+
+        function setupChatListener() {
+            const q = query(collection(db, "chat"), orderBy("timestamp", "asc"));
+            onSnapshot(q, snapshot => {
+                const chatBox = document.getElementById('chat-box');
+                chatBox.innerHTML = "";
+
+                snapshot.forEach(docSnap => {
+                    const msg = docSnap.data();
+                    const isMe = msg.user === userName;
+                    const isUrgent = msg.urgent;
+
+                    chatBox.innerHTML += `
+                        <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'}">
+                            <span class="text-[9px] font-bold text-slate-500 mb-0.5 px-2">${msg.user}</span>
+                            <div class="max-w-[80%] p-3.5 rounded-2xl text-xs font-semibold shadow-lg ${
+                                isUrgent 
+                                    ? 'bg-red-600 text-white font-black animate-bounce border border-red-400' 
+                                    : isMe 
+                                        ? 'bg-purple-600 text-white rounded-tr-none' 
+                                        : 'glass text-slate-200 rounded-tl-none border border-white/5'
+                            }">
+                                ${msg.text}
+                            </div>
+                        </div>
+                    `;
+                });
+
                 chatBox.scrollTop = chatBox.scrollHeight;
             });
         }
 
         document.getElementById('btn-send').onclick = async () => {
-            const chatInput = document.getElementById('chat-input');
-            const msg = chatInput.value.trim();
-            if(msg.length > 0) {
-                await addDoc(collection(db, "chat"), { user: userName, message: msg, timestamp: serverTimestamp() });
-                chatInput.value = "";
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            if(text) {
+                await addDoc(collection(db, "chat"), { user: userName, text: text, urgent: false, timestamp: serverTimestamp() });
+                input.value = "";
             }
         };
 
-        onSnapshot(collection(db, "predictions"), snapshot => {
-            let totalVotes = snapshot.size;
-            let countGirl = 0; let countBoy = 0;
-            let sumWeight = 0; let sumHeight = 0;
-            let nameCounts = {};
-            globalPredictions = [];
-
-            const listAll = document.getElementById('list-all-votes');
-            listAll.innerHTML = "";
-
-            if(totalVotes === 0) {
-                updateStatsVisuals(0, 0, 0, 0, []);
-                listAll.innerHTML = `<p class="text-slate-500 italic text-center py-8">Aucun pronostic.</p>`;
-                return;
-            }
-
-            snapshot.forEach(d => {
-                const data = d.data();
-                globalPredictions.push(data);
-
-                if(data.sexe === 'Fille' || data.sexe === 'F') countGirl++;
-                if(data.sexe === 'Garçon' || data.sexe === 'G' || data.sexe === 'M' || data.sexe === 'Masculin') countBoy++;
-                sumWeight += data.poids || 0;
-                sumHeight += data.taille || 0;
-
-                let p = data.prenom ? data.prenom.trim().toLowerCase() : "aucun";
-                p = p.charAt(0).toUpperCase() + p.slice(1);
-                nameCounts[p] = (nameCounts[p] || 0) + 1;
-
-                const isFille = (data.sexe === 'Fille' || data.sexe === 'F');
-                const genderIcon = isFille ? 'fa-venus text-pink-400' : 'fa-mars text-blue-400';
-
-                listAll.innerHTML += `
-                    <div class="glass p-5 rounded-3xl border-l-4 ${isFille ? 'border-pink-500' : 'border-blue-500'} flex flex-col gap-2 relative">
-                        <div class="flex justify-between items-center">
-                            <span class="font-black text-xs uppercase tracking-wider text-purple-400">${data.user}</span>
-                            <div class="flex items-center gap-2">
-                                <button onclick="deleteProno('${data.user}')" class="admin-only text-red-400 hover:text-red-500 p-1 mr-2 text-sm transition-all is-block"><i class="fas fa-trash"></i></button>
-                                <i class="fas ${genderIcon} text-base"></i>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-y-1 text-[11px] text-slate-300">
-                            <p><b>Prénom :</b> ${data.prenom || "--"}</p>
-                            <p class="truncate"><b>Passion :</b> ${data.passion || "Mystère 🔮"}</p>
-                            <p><b>Poids :</b> ${data.poids} kg</p>
-                            <p><b>Taille :</b> ${data.taille} cm</p>
-                            <p class="col-span-2"><b>Le :</b> ${data.date} à ${data.heure}</p>
-                        </div>
-                    </div>
-                `;
-            });
-
-            let pctGirl = Math.round((countGirl / totalVotes) * 100) || 0;
-            let pctBoy = Math.round((countBoy / totalVotes) * 100) || 0;
-            let avgW = (sumWeight / totalVotes).toFixed(3);
-            let avgH = (sumHeight / totalVotes).toFixed(1);
-
-            let sortedNames = Object.entries(nameCounts).sort((a,b) => b[1] - a[1]).slice(0, 5);
-            updateStatsVisuals(pctGirl, pctBoy, avgW, avgH, sortedNames);
-            checkAndCalculateWinner();
-        });
-
-        function updateStatsVisuals(pGirl, pBoy, avgW, avgH, topNames) {
-            document.getElementById('pct-girl').innerText = pGirl;
-            document.getElementById('pct-boy').innerText = pBoy;
-            document.getElementById('bar-girl').style.width = pGirl + '%';
-            document.getElementById('bar-boy').style.width = pBoy + '%';
-            document.getElementById('avg-weight').innerText = avgW;
-            document.getElementById('avg-height').innerText = avgH;
-
-            const topList = document.getElementById('top-names-list');
-            if(topNames.length === 0) {
-                topList.innerHTML = `<p class="text-slate-500 italic text-center text-xs">Aucun vote</p>`;
-            } else {
-                topList.innerHTML = topNames.map(([name, count]) => `
-                    <div class="flex justify-between items-center bg-white/5 p-3 rounded-xl">
-                        <span class="font-bold">${name}</span>
-                        <span class="bg-purple-500/20 text-purple-400 px-2 py-0.5 rounded-lg text-[10px] font-black">${count} vote(s)</span>
-                    </div>
-                `).join('');
-            }
-        }
-
-        window.deleteProno = async (userId) => { 
-            if(!isAdmin) return;
-            if(confirm(`Supprimer le pronostic de "${userId}" ?`)) {
-                await deleteDoc(doc(db, "predictions", userId)); 
-            }
+        document.getElementById('chat-input').onkeypress = (e) => {
+            if(e.key === 'Enter') document.getElementById('btn-send').click();
         };
-
-        document.getElementById('btn-save-final').onclick = async () => {
-            if(!isAdmin) return;
-            const g = document.getElementById('final-gender').value;
-            const n = document.getElementById('final-name').value.trim();
-            const w = parseFloat(document.getElementById('final-weight').value);
-            const h = parseFloat(document.getElementById('final-height').value);
-            const d = document.getElementById('final-date').value;
-            const t = document.getElementById('final-time').value;
-
-            if(!g || !n || isNaN(w) || isNaN(h)) return alert("Saisie incomplète !");
-
-            await setDoc(doc(db, "resultat", "verdict"), { sexe: g, prenom: n, poids: w, taille: h, date: d || "--", heure: t || "--" });
-            await triggerPushNotification("🏁 LE VERDICT EST TOMBÉ !", `Le bébé est là ! Découvre le gagnant !`);
-            alert("Résultat final publié ! 🏁");
-        };
-
-        let finalResultData = null;
-        onSnapshot(doc(db, "resultat", "verdict"), docSnap => {
-            if(docSnap.exists()) {
-                finalResultData = docSnap.get();
-                document.getElementById('panel-final-result').classList.remove('hidden');
-                document.getElementById('res-final-name').innerText = finalResultData.prenom;
-                document.getElementById('res-final-gender').innerText = `👶 C'est une ${finalResultData.sexe} !`;
-                document.getElementById('res-final-weight').innerText = finalResultData.poids;
-                document.getElementById('res-final-height').innerText = finalResultData.taille;
-                document.getElementById('res-final-date').innerText = finalResultData.date;
-                document.getElementById('res-final-time').innerText = finalResultData.heure;
-                checkAndCalculateWinner();
-            }
-        });
-
-        function checkAndCalculateWinner() {
-            if(!finalResultData || globalPredictions.length === 0) return;
-            let bestScore = Infinity; 
-            let winner = "Aucun gagnant déterminé";
-
-            globalPredictions.forEach(p => {
-                let score = 0;
-                const pSexe = (p.sexe === 'Fille' || p.sexe === 'F') ? 'Fille' : 'Garçon';
-                const fSexe = (finalResultData.sexe === 'Fille' || finalResultData.sexe === 'F') ? 'Fille' : 'Garçon';
-                
-                if(pSexe !== fSexe) score += 100;
-                if(p.prenom && p.prenom.trim().toLowerCase() === finalResultData.prenom.trim().toLowerCase()) score -= 50;
-                score += Math.abs(p.poids - finalResultData.poids) * 100;
-                score += Math.abs(p.taille - finalResultData.taille) * 10;
-
-                if(p.date !== "--" && finalResultData.date !== "--") {
-                    const voteDate = new Date(p.date);
-                    const realDate = new Date(finalResultData.date);
-                    const diffDays = Math.ceil(Math.abs(realDate - voteDate) / (1000 * 60 * 60 * 24));
-                    score += diffDays * 20;
-                }
-
-                if(score < bestScore) {
-                    bestScore = score;
-                    winner = `${p.user} (${score.toFixed(1)} pts diff.)`;
-                }
-            });
-
-            document.getElementById('winner-name').innerText = winner;
-        }
 
         document.getElementById('btn-urgent').onclick = async () => {
             if(!isAdmin) return;
-            const message = prompt("Message d'alerte :", "Le travail a commencé ! 🏥");
-            if(message) {
-                await triggerPushNotification("🚨 ALERTE MATERNITÉ !", message);
-                alert("Alerte envoyée !");
+            const text = prompt("Message d'alerte urgente (ex: En route pour la maternité !) :");
+            if(text) {
+                await addDoc(collection(db, "chat"), { user: userName, text: `🚨 ALERTE NAISSANCE : ${text}`, urgent: true, timestamp: serverTimestamp() });
+                await triggerPushNotification("🚨 ALERTE NAISSANCE !", text);
             }
         };
 
-        document.getElementById('logout-btn').onclick = async () => {
-            if(confirm("Déconnexion ?")) {
-                if(userName) await deleteDoc(doc(db, "presence", userName));
-                window.location.reload();
-            }
+        document.getElementById('logout-btn').onclick = () => {
+            location.reload();
         };
-
     </script>
 </body>
 </html>
