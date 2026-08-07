@@ -24,7 +24,6 @@
         .gender-btn.selected-pink { background: #db2777 !important; border-color: #f472b6; color: white; }
         .gender-btn.selected-blue { background: #2563eb !important; border-color: #60a5fa; color: white; }
 
-        /* OPTIMISATION DE L'IMPRESSION PDF */
         @media print {
             body, html { background: white !important; color: black !important; height: auto !important; overflow: visible !important; }
             nav, header, #push-alert, .page, .no-print, .tab-content:not(#tab-tracker) { display: none !important; }
@@ -58,8 +57,8 @@
             <h1 class="text-3xl font-black italic text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-blue-400 mb-2">BABY PREDICT</h1>
             <p class="text-[10px] uppercase tracking-widest text-slate-500 mb-8 font-bold">Pronostics & Suivi Maternité</p>
             <input type="tel" id="input-pass" class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-center text-2xl mb-5 text-white outline-none focus:border-purple-500 transition-all" placeholder="Code d'accès">
-            <button id="btn-to-name" class="w-full bg-gradient-to-r from-pink-600 to-blue-600 text-white font-black py-5 rounded-2xl uppercase text-xs transition-all shadow-lg italic tracking-wider">Vérifier le code</button>
-            <p class="text-[9px] text-slate-500 mt-4 italic">Demandez le code d'accès (Admin ou Proche) aux parents.</p>
+            <button id="btn-to-name" class="w-full bg-gradient-to-r from-pink-600 to-blue-600 text-white font-black py-5 rounded-2xl uppercase text-xs transition-all shadow-lg italic tracking-wider cursor-pointer">Vérifier le code</button>
+            <p class="text-[9px] text-slate-500 mt-4 italic">Code démo : <b>1234</b> (ou laissez vide pour accès proche)</p>
         </div>
     </div>
 
@@ -68,7 +67,7 @@
         <div class="glass p-10 rounded-[3rem] w-full max-w-sm border border-white/10 shadow-2xl">
             <p class="text-[10px] uppercase font-bold text-purple-400 mb-4 tracking-widest italic">Qui es-tu ?</p>
             <input type="text" id="input-name" class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-center text-xl mb-5 text-white outline-none focus:border-white/30 transition-all" placeholder="Ton Prénom / Pseudo">
-            <button id="btn-to-app" class="w-full bg-white text-black font-black py-5 rounded-2xl uppercase text-xs hover:bg-slate-200 transition-all shadow-lg italic">Rejoindre l'application</button>
+            <button id="btn-to-app" class="w-full bg-white text-black font-black py-5 rounded-2xl uppercase text-xs hover:bg-slate-200 transition-all shadow-lg italic cursor-pointer">Rejoindre l'application</button>
         </div>
     </div>
 
@@ -79,7 +78,7 @@
                 <h2 class="font-black italic text-xl uppercase tracking-tighter">Baby <span class="text-purple-400">Predict</span></h2>
                 <p id="role-tag" class="text-[8px] font-bold text-purple-400/50 uppercase tracking-widest"></p>
             </div>
-            <button id="logout-btn" class="w-10 h-10 glass rounded-full flex items-center justify-center text-red-400 hover:bg-red-500/10 transition-all"><i class="fas fa-power-off"></i></button>
+            <button id="logout-btn" class="w-10 h-10 glass rounded-full flex items-center justify-center text-red-400 hover:bg-red-500/10 transition-all cursor-pointer"><i class="fas fa-power-off"></i></button>
         </header>
 
         <main class="p-4 max-w-lg mx-auto">
@@ -331,7 +330,7 @@
                         <div class="grid grid-cols-3 gap-2">
                             <input type="date" id="weight-input-date" class="bg-black/50 border border-white/10 p-2 rounded-xl text-xs text-white outline-none">
                             <input type="number" step="0.001" id="weight-input-value" class="bg-black/50 border border-white/10 p-2 rounded-xl text-xs text-white outline-none" placeholder="Poids (kg)">
-                            <button onclick="addNewWeightEntry()" class="bg-purple-600 hover:bg-purple-500 text-white font-bold py-2 rounded-xl text-xs uppercase transition-all shadow-md">
+                            <button onclick="addNewWeightEntry()" class="bg-purple-600 hover:bg-purple-500 text-white font-bold py-2 rounded-xl text-xs uppercase transition-all shadow-md cursor-pointer">
                                 Ajouter
                             </button>
                         </div>
@@ -341,7 +340,6 @@
                     <div class="no-print space-y-2">
                         <span class="text-[10px] font-bold text-slate-400 uppercase block px-1">Historique des mesures</span>
                         <div id="weight-history-list" class="max-h-36 overflow-y-auto space-y-1.5 pr-1">
-                            <!-- Généré dynamiquement en JS -->
                         </div>
                     </div>
                 </div>
@@ -373,7 +371,6 @@
                         </div>
                     </div>
 
-                    <!-- CASE COUCHES AMÉLIORÉE -->
                     <div class="bg-white/5 p-4 rounded-xl space-y-3">
                         <label class="flex items-center gap-2 cursor-pointer">
                             <input type="checkbox" id="track-diaper-change" onchange="toggleDiaperDetails()" class="rounded accent-blue-500 w-4 h-4">
@@ -424,9 +421,12 @@
         </main>
     </div>
 
-    <!-- SCRIPT GESTION DU POIDS INTERACTIF ET INITIALISATION DES CHARTS -->
     <script>
-        // Données Poids dynamique (persistance sur localStorage)
+        // --- CONSTANTES & ETAT ---
+        const ADMIN_CODE = "1234";
+        let currentUser = null;
+        let isAdmin = false;
+
         let weightData = JSON.parse(localStorage.getItem('bp_weight_data')) || [
             { id: 1, date: '2026-08-01', weight: 3.200 },
             { id: 2, date: '2026-08-03', weight: 3.250 },
@@ -436,16 +436,83 @@
 
         let weightChartInstance = null;
 
-        // Pré-remplir la date du jour sur le champ d'ajout
+        // --- GESTION DE LA NAVIGATION ET DU LOGIN ---
         document.addEventListener('DOMContentLoaded', () => {
+            const btnToName = document.getElementById('btn-to-name');
+            const btnToApp = document.getElementById('btn-to-app');
+            const logoutBtn = document.getElementById('logout-btn');
+
+            if (btnToName) {
+                btnToName.addEventListener('click', handleCodeVerification);
+            }
+
+            if (btnToApp) {
+                btnToApp.addEventListener('click', handleNameSubmission);
+            }
+
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', handleLogout);
+            }
+
+            // Autoriser la touche Entrée pour valider
+            document.getElementById('input-pass').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handleCodeVerification();
+            });
+            document.getElementById('input-name').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handleNameSubmission();
+            });
+
             const today = new Date().toISOString().split('T')[0];
             const dateInput = document.getElementById('weight-input-date');
             if (dateInput) dateInput.value = today;
-            
+
             initWeightChart();
             renderWeightHistoryList();
         });
 
+        function handleCodeVerification() {
+            const passInput = document.getElementById('input-pass').value.trim();
+            if (passInput === ADMIN_CODE) {
+                isAdmin = true;
+                document.body.classList.add('is-admin');
+            } else {
+                isAdmin = false;
+                document.body.classList.remove('is-admin');
+            }
+
+            // Basculer vers la page prénom
+            document.getElementById('page-login').classList.add('hidden');
+            document.getElementById('page-name').classList.remove('hidden');
+        }
+
+        function handleNameSubmission() {
+            const nameInput = document.getElementById('input-name').value.trim();
+            if (!nameInput) {
+                alert('Veuillez entrer un prénom ou un pseudo.');
+                return;
+            }
+
+            currentUser = nameInput;
+            document.getElementById('display-name').textContent = currentUser;
+            document.getElementById('role-tag').textContent = isAdmin ? 'Mode Administrateur / Parent' : 'Mode Proche / Invité';
+
+            // Afficher l'application principale
+            document.getElementById('page-name').classList.add('hidden');
+            document.getElementById('main-app').classList.remove('hidden');
+        }
+
+        function handleLogout() {
+            currentUser = null;
+            isAdmin = false;
+            document.body.classList.remove('is-admin');
+            document.getElementById('input-pass').value = '';
+            document.getElementById('input-name').value = '';
+            document.getElementById('main-app').classList.add('hidden');
+            document.getElementById('page-name').classList.add('hidden');
+            document.getElementById('page-login').classList.remove('hidden');
+        }
+
+        // --- GESTION DU POIDS ---
         function saveWeightData() {
             localStorage.setItem('bp_weight_data', JSON.stringify(weightData));
             updateWeightChart();
@@ -456,7 +523,6 @@
             const ctx = document.getElementById('weightChart');
             if (!ctx) return;
 
-            // Tri par date
             weightData.sort((a, b) => new Date(a.date) - new Date(b.date));
 
             weightChartInstance = new Chart(ctx, {
@@ -517,7 +583,6 @@
             weightChartInstance.data.datasets[0].data = weightData.map(d => d.weight);
             weightChartInstance.update();
 
-            // Mettre à jour la carte dernier poids si elle existe
             const lastWeightEl = document.getElementById('last-weight');
             if (lastWeightEl && weightData.length > 0) {
                 const last = weightData[weightData.length - 1];
@@ -548,7 +613,6 @@
 
             weightData.push(newEntry);
             saveWeightData();
-
             weightInput.value = '';
         }
 
@@ -574,20 +638,35 @@
                         <span class="text-purple-400 font-bold">⚖️ ${item.weight} kg</span>
                         <span class="text-[10px] text-slate-400">(${item.date})</span>
                     </div>
-                    <button onclick="deleteWeightEntry(${item.id})" class="text-red-400 hover:text-red-300 p-1 transition-colors" title="Supprimer">
+                    <button onclick="deleteWeightEntry(${item.id})" class="text-red-400 hover:text-red-300 p-1 transition-colors cursor-pointer" title="Supprimer">
                         <i class="fas fa-trash-alt"></i>
                     </button>
                 </div>
             `).join('');
         }
 
-        // Placeholders pour fonctions globales du reste de l'application
-        function toggleDiaperDetails() {}
+        // Placeholders des fonctions secondaires
+        function toggleDiaperDetails() {
+            const details = document.getElementById('diaper-details');
+            const checkbox = document.getElementById('track-diaper-change');
+            if (details && checkbox) {
+                details.classList.toggle('hidden', !checkbox.checked);
+            }
+        }
         function updateNextBottleDisplay() {}
-        function exportToPDF() {}
-        function setQuickFood(val) {}
-        function setNowTime() {}
-        function saveThresholds() {}
+        function exportToPDF() { window.print(); }
+        function setQuickFood(val) {
+            const foodInput = document.getElementById('track-food');
+            if (foodInput) foodInput.value = val;
+        }
+        function setNowTime() {
+            const timeInput = document.getElementById('track-time');
+            if (timeInput) {
+                const now = new Date();
+                timeInput.value = `${String(now.getHours()).padStart(2, '0')}h${String(now.getMinutes()).padStart(2, '0')}`;
+            }
+        }
+        function saveThresholds() { alert('Objectifs sauvegardés !'); }
     </script>
 </body>
 </html>
