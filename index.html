@@ -9,7 +9,8 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body { background: #07070a; color: #e2e8f0; font-family: 'Inter', sans-serif; margin: 0; min-height: 100vh; }
-        .glass { background: rgba(23, 23, 33, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.05); }
+        .glass { background: rgba(23, 23, 33, 0.75); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.08); }
+        .glass-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); }
         
         .admin-only { display: none !important; }
         .is-admin .admin-only { display: flex !important; }
@@ -27,11 +28,11 @@
         /* OPTIMISATION DE L'IMPRESSION PDF */
         @media print {
             body, html { background: white !important; color: black !important; height: auto !important; overflow: visible !important; }
-            nav, header, #push-alert, .page, .no-print, .tab-content:not(#tab-tracker) { display: none !important; }
+            nav, header, #push-alert, .page, .no-print, .tab-content:not(#tab-tracker):not(#tab-charts) { display: none !important; }
             
-            #tab-tracker { display: block !important; padding: 0 !important; width: 100% !important; margin: 0 !important; position: absolute !important; left: 0 !important; top: 0 !important; }
+            #tab-tracker, #tab-charts { display: block !important; padding: 0 !important; width: 100% !important; margin: 0 !important; position: absolute !important; left: 0 !important; top: 0 !important; }
             
-            .glass { background: none !important; border: 1px solid #ccc !important; backdrop-filter: none !important; box-shadow: none !important; color: black !important; border-radius: 8px !important; margin-bottom: 15px !important; }
+            .glass, .glass-card { background: none !important; border: 1px solid #ccc !important; backdrop-filter: none !important; box-shadow: none !important; color: black !important; border-radius: 8px !important; margin-bottom: 15px !important; }
             table { width: 100% !important; border: 1px solid #000 !important; color: black !important; border-collapse: collapse !important; }
             th, td { border: 1px solid #ccc !important; color: black !important; padding: 8px !important; }
             th { background-color: #f0f0f0 !important; }
@@ -82,7 +83,7 @@
             <button id="logout-btn" class="w-10 h-10 glass rounded-full flex items-center justify-center text-red-400 hover:bg-red-500/10 transition-all"><i class="fas fa-power-off"></i></button>
         </header>
 
-        <main class="p-4 max-w-lg mx-auto">
+        <main class="p-4 max-w-2xl mx-auto">
             
             <!-- VUE GENERALE & STATS -->
             <section id="tab-home" class="tab-content active space-y-6">
@@ -202,17 +203,17 @@
                         <span><i class="fas fa-chart-pie mr-2"></i> Statistiques Biberons & Couches</span>
                     </h4>
                     <div class="grid grid-cols-3 gap-2 text-center text-xs">
-                        <div class="bg-white/5 p-3 rounded-2xl border border-white/5">
+                        <div class="glass-card p-3 rounded-2xl">
                             <span class="text-[8px] font-bold text-slate-400 uppercase block">Aujourd'hui</span>
                             <p class="font-black text-pink-400 mt-1">🍼 <span id="stat-bib-day">0</span></p>
                             <p class="font-black text-blue-400 mt-0.5">🧷 <span id="stat-diaper-day">0</span></p>
                         </div>
-                        <div class="bg-white/5 p-3 rounded-2xl border border-white/5">
+                        <div class="glass-card p-3 rounded-2xl">
                             <span class="text-[8px] font-bold text-slate-400 uppercase block">7 Derniers jours</span>
                             <p class="font-black text-pink-400 mt-1">🍼 <span id="stat-bib-week">0</span></p>
                             <p class="font-black text-blue-400 mt-0.5">🧷 <span id="stat-diaper-week">0</span></p>
                         </div>
-                        <div class="bg-white/5 p-3 rounded-2xl border border-white/5">
+                        <div class="glass-card p-3 rounded-2xl">
                             <span class="text-[8px] font-bold text-slate-400 uppercase block">Ce mois-ci</span>
                             <p class="font-black text-pink-400 mt-1">🍼 <span id="stat-bib-month">0</span></p>
                             <p class="font-black text-blue-400 mt-0.5">🧷 <span id="stat-diaper-month">0</span></p>
@@ -226,7 +227,7 @@
                         <span><i class="fas fa-sliders-h mr-2"></i> Configuration des Objectifs (Journalier)</span>
                     </h4>
                     <div class="grid grid-cols-2 gap-3 text-xs">
-                        <div class="space-y-2 bg-white/5 p-3 rounded-2xl">
+                        <div class="space-y-2 glass-card p-3 rounded-2xl">
                             <span class="text-[9px] font-bold text-pink-300 uppercase block">🍼 Biberons par jour</span>
                             <div class="flex items-center gap-2">
                                 <span class="text-[9px] text-slate-400">Min:</span>
@@ -235,7 +236,7 @@
                                 <input type="number" id="limit-bib-max" class="w-full bg-black/40 border border-white/10 p-1.5 rounded-lg text-center font-bold text-white" value="8">
                             </div>
                         </div>
-                        <div class="space-y-2 bg-white/5 p-3 rounded-2xl">
+                        <div class="space-y-2 glass-card p-3 rounded-2xl">
                             <span class="text-[9px] font-bold text-blue-300 uppercase block">🧷 Couches par jour</span>
                             <div class="flex items-center gap-2">
                                 <span class="text-[9px] text-slate-400">Min:</span>
@@ -248,16 +249,6 @@
                     <button onclick="saveThresholds()" class="w-full bg-amber-600/30 hover:bg-amber-600/50 border border-amber-500/40 text-amber-300 font-bold py-2 rounded-xl text-[10px] uppercase tracking-wider transition-all">
                         <i class="fas fa-save mr-1"></i> Sauvegarder les objectifs
                     </button>
-                </div>
-
-                <!-- GRAPHIQUE ACTIVITÉ BIBERONS / COUCHES -->
-                <div class="glass p-5 rounded-[2.5rem] border border-white/10 space-y-3">
-                    <h4 class="text-xs font-black uppercase text-purple-400 italic flex items-center justify-between">
-                        <span><i class="fas fa-chart-bar mr-2"></i> Activité Biberons & Couches (7 derniers jours)</span>
-                    </h4>
-                    <div class="w-full h-48">
-                        <canvas id="activityChart"></canvas>
-                    </div>
                 </div>
 
                 <!-- CARTE INTERVALLE REPAS -->
@@ -300,27 +291,6 @@
                     <div class="glass p-4 rounded-2xl border border-white/5">
                         <span class="text-[9px] font-bold text-slate-400 uppercase block">⚖️ Dernier Poids</span>
                         <p id="last-weight" class="text-sm font-black text-purple-400 mt-1">-- kg</p>
-                    </div>
-                </div>
-
-                <!-- GRAPHIQUE TEMPÉRATURE -->
-                <div class="glass p-5 rounded-[2.5rem] border border-white/10 space-y-3">
-                    <h4 class="text-xs font-black uppercase text-purple-400 italic flex items-center justify-between">
-                        <span><i class="fas fa-chart-line mr-2"></i> Courbe de Température (°C)</span>
-                        <span class="text-[9px] text-slate-500 font-normal">Min: 36.5°C | Max: 37.5°C</span>
-                    </h4>
-                    <div class="w-full h-48">
-                        <canvas id="tempChart"></canvas>
-                    </div>
-                </div>
-
-                <!-- GRAPHIQUE POIDS -->
-                <div class="glass p-5 rounded-[2.5rem] border border-white/10 space-y-3">
-                    <h4 class="text-xs font-black uppercase text-purple-400 italic flex items-center justify-between">
-                        <span><i class="fas fa-weight-hanging mr-2"></i> Courbe de Poids (kg)</span>
-                    </h4>
-                    <div class="w-full h-48">
-                        <canvas id="weightChart"></canvas>
                     </div>
                 </div>
 
@@ -383,7 +353,7 @@
                     <div class="space-y-3 text-xs">
                         <div>
                             <label class="block text-[9px] font-bold text-slate-400 mb-1">Alimentation (Saisie ou Sélection rapide)</label>
-                            <div class="flex gap-2 mb-2">
+                            <div class="flex flex-wrap gap-2 mb-2">
                                 <button type="button" onclick="setQuickFood('Bib 30ml')" class="bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg text-[10px] font-bold">30 ml</button>
                                 <button type="button" onclick="setQuickFood('Bib 60ml')" class="bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg text-[10px] font-bold">60 ml</button>
                                 <button type="button" onclick="setQuickFood('Bib 90ml')" class="bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg text-[10px] font-bold">90 ml</button>
@@ -426,6 +396,50 @@
                             <tr><td colspan="7" class="p-4 text-center text-slate-500 italic">Aucune donnée enregistrée</td></tr>
                         </tbody>
                     </table>
+                </div>
+            </section>
+
+            <!-- NOUVEL ONGLET : ANALYTICS & GRAPHIQUES -->
+            <section id="tab-charts" class="tab-content space-y-6">
+                <div class="flex justify-between items-center mb-2 px-2">
+                    <div>
+                        <h3 class="text-2xl font-black italic uppercase">Analytics</h3>
+                        <p class="text-[10px] text-slate-400">Courbes de santé & Rapports</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- GRAPHIQUE ACTIVITÉ BIBERONS / COUCHES -->
+                    <div class="glass p-5 rounded-[2.5rem] border border-white/10 space-y-3 md:col-span-2">
+                        <h4 class="text-xs font-black uppercase text-purple-400 italic flex items-center justify-between">
+                            <span><i class="fas fa-chart-bar mr-2"></i> Activité Biberons & Couches (7 derniers jours)</span>
+                        </h4>
+                        <div class="w-full h-56">
+                            <canvas id="activityChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- GRAPHIQUE TEMPÉRATURE -->
+                    <div class="glass p-5 rounded-[2.5rem] border border-white/10 space-y-3">
+                        <h4 class="text-xs font-black uppercase text-purple-400 italic flex items-center justify-between">
+                            <span><i class="fas fa-chart-line mr-2"></i> Courbe de Température (°C)</span>
+                        </h4>
+                        <p class="text-[9px] text-slate-500 font-normal">Min conseillé: 36.5°C | Max: 37.5°C</p>
+                        <div class="w-full h-52">
+                            <canvas id="tempChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- GRAPHIQUE POIDS -->
+                    <div class="glass p-5 rounded-[2.5rem] border border-white/10 space-y-3">
+                        <h4 class="text-xs font-black uppercase text-purple-400 italic flex items-center justify-between">
+                            <span><i class="fas fa-weight-hanging mr-2"></i> Courbe de Poids (kg)</span>
+                        </h4>
+                        <p class="text-[9px] text-slate-500 font-normal">Suivi de la prise de poids</p>
+                        <div class="w-full h-52">
+                            <canvas id="weightChart"></canvas>
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -504,14 +518,33 @@
             </section>
         </main>
 
-        <!-- NAVIGATION INFÉRIEURE -->
-        <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[95%] max-w-sm z-50 no-print">
-            <div class="glass rounded-[2.5rem] flex justify-around p-3 border border-white/10 shadow-2xl">
-                <button onclick="switchTab('home', this)" class="nav-btn text-purple-400 p-3"><i class="fas fa-chart-pie"></i></button>
-                <button onclick="switchTab('tracker', this)" class="nav-btn text-slate-500 p-3"><i class="fas fa-baby-carriage"></i></button>
-                <button onclick="switchTab('vote', this)" class="nav-btn text-slate-500 p-3"><i class="fas fa-vote-yea"></i></button>
-                <button onclick="switchTab('ranking', this)" class="nav-btn text-slate-500 p-3"><i class="fas fa-list-ol"></i></button>
-                <button onclick="switchTab('chat', this)" class="nav-btn text-slate-500 p-3"><i class="fas fa-comments"></i></button>
+        <!-- NAVIGATION INFÉRIEURE ERGONOMIQUE ET STRUCTURÉE -->
+        <nav class="fixed bottom-4 left-1/2 -translate-x-1/2 w-[95%] max-w-md z-50 no-print">
+            <div class="glass rounded-[2rem] flex justify-between items-center p-2 border border-white/10 shadow-2xl px-3">
+                <button onclick="switchTab('home', this)" class="nav-btn text-purple-400 flex flex-col items-center gap-1 p-2 transition-all">
+                    <i class="fas fa-chart-pie text-base"></i>
+                    <span class="text-[8px] font-bold uppercase tracking-wider">Accueil</span>
+                </button>
+                <button onclick="switchTab('tracker', this)" class="nav-btn text-slate-500 flex flex-col items-center gap-1 p-2 transition-all">
+                    <i class="fas fa-baby-carriage text-base"></i>
+                    <span class="text-[8px] font-bold uppercase tracking-wider">Suivi</span>
+                </button>
+                <button onclick="switchTab('charts', this)" class="nav-btn text-slate-500 flex flex-col items-center gap-1 p-2 transition-all">
+                    <i class="fas fa-chart-line text-base"></i>
+                    <span class="text-[8px] font-bold uppercase tracking-wider">Analytics</span>
+                </button>
+                <button onclick="switchTab('vote', this)" class="nav-btn text-slate-500 flex flex-col items-center gap-1 p-2 transition-all">
+                    <i class="fas fa-vote-yea text-base"></i>
+                    <span class="text-[8px] font-bold uppercase tracking-wider">Vote</span>
+                </button>
+                <button onclick="switchTab('ranking', this)" class="nav-btn text-slate-500 flex flex-col items-center gap-1 p-2 transition-all">
+                    <i class="fas fa-list-ol text-base"></i>
+                    <span class="text-[8px] font-bold uppercase tracking-wider">Pronos</span>
+                </button>
+                <button onclick="switchTab('chat', this)" class="nav-btn text-slate-500 flex flex-col items-center gap-1 p-2 transition-all">
+                    <i class="fas fa-comments text-base"></i>
+                    <span class="text-[8px] font-bold uppercase tracking-wider">Chat</span>
+                </button>
             </div>
         </nav>
     </div>
@@ -604,7 +637,7 @@
             thresholds.diaperMax = parseInt(document.getElementById('limit-diaper-max').value) || 0;
             localStorage.setItem('baby_thresholds', JSON.stringify(thresholds));
             alert("Objectifs mis à jour avec succès !");
-            setupBabyTrackerListener(); // Re-calcul des alertes avec les nouveaux seuils
+            setupBabyTrackerListener(); 
         };
 
         window.toggleDiaperDetails = () => {
@@ -1062,7 +1095,6 @@
                 let latestTempBb = null;
                 lastMealRawTimeStr = null;
 
-                // STATS COMPTEURS
                 let bibToday = 0, diaperToday = 0;
                 let bibWeek = 0, diaperWeek = 0;
                 let bibMonth = 0, diaperMonth = 0;
@@ -1072,7 +1104,6 @@
                 const startOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 6);
                 const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-                // Groupement pour le graphique d'activité (7 derniers jours)
                 let activityDays = {};
                 for (let i = 6; i >= 0; i--) {
                     let d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
@@ -1092,7 +1123,6 @@
                         const isBib = (d.food && d.food.trim() !== '') || d.bottleOnTime;
                         const isDiaper = d.diaperChanged || d.urine || d.stool;
 
-                        // Cumul des statistiques
                         if (itemDate >= startOfToday) {
                             if (isBib) bibToday++;
                             if (isDiaper) diaperToday++;
@@ -1154,7 +1184,6 @@
                     });
                 }
 
-                // MISE À JOUR AFFICHAGE STATS
                 document.getElementById('stat-bib-day').innerText = bibToday;
                 document.getElementById('stat-diaper-day').innerText = diaperToday;
                 document.getElementById('stat-bib-week').innerText = bibWeek;
@@ -1162,7 +1191,6 @@
                 document.getElementById('stat-bib-month').innerText = bibMonth;
                 document.getElementById('stat-diaper-month').innerText = diaperMonth;
 
-                // DÉTECTION ET ENVOI DES ALERTES DE DÉPASSEMENT DES SEUILS
                 if (bibToday > thresholds.bibMax && thresholds.bibMax > 0) {
                     triggerPushNotification("🍼 SEUIL MAXIMUM DE BIBERONS DÉPASSÉ", `Aujourd'hui : ${bibToday} biberons (Max configuré : ${thresholds.bibMax})`);
                 } else if (bibToday < thresholds.bibMin && thresholds.bibMin > 0 && now.getHours() >= 20) {
