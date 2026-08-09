@@ -4,408 +4,330 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BABY PREDICT 2026 - Pro & Suivi Maternité</title>
+  <!-- Tailwind CSS & Chart.js -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <style>
-    .glassmorphism {
-      background: rgba(255, 255, 255, 0.85);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-    }
-    .active-tab {
-      border-bottom: 3px solid #ec4899;
-      color: #db2777;
-      font-weight: 700;
-    }
+    body { background: #07070a; color: #e2e8f0; font-family: 'Inter', sans-serif; margin: 0; min-height: 100vh; }
+    .glass { background: rgba(23, 23, 33, 0.75); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.08); }
+    .glass-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); }
+    .active-tab { color: #c084fc !important; border-bottom: 2px solid #c084fc; }
+    .page { position: fixed; inset: 0; z-index: 100; background: #07070a; display: flex; align-items: center; justify-content: center; padding: 20px; }
   </style>
 </head>
-<body class="bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50 min-h-screen text-slate-800 font-sans pb-12">
+<body class="pb-24">
 
-  <!-- PAGE DE CONNEXION -->
-  <div id="loginPage" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-md p-4">
-    <div class="glassmorphism p-8 rounded-3xl shadow-2xl max-w-md w-full border border-white/50 text-center">
-      <div class="inline-flex p-4 rounded-full bg-pink-100 text-pink-500 mb-4 text-3xl">
-        <i class="fa-solid fa-baby"></i>
-      </div>
-      <h1 class="text-2xl font-black text-slate-800 mb-2">BABY PREDICT 2026</h1>
-      <p class="text-sm text-slate-500 mb-6">Connectez-vous pour accéder au tableau de bord et à la fiche de soins.</p>
+  <!-- PAGE DE CONNEXION (Style V2) -->
+  <div id="loginPage" class="page">
+    <div class="glass p-8 rounded-[2.5rem] max-w-sm w-full border border-purple-500/20 text-center shadow-2xl">
+      <div class="text-4xl mb-3">👶✨</div>
+      <h1 class="text-2xl font-black italic text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-blue-400 mb-1">BABY PREDICT 2026</h1>
+      <p class="text-[10px] uppercase tracking-widest text-slate-400 mb-6 font-bold">Pronostics & Suivi Maternité</p>
       
       <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4 text-left">
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Votre Prénom / Pseudo</label>
-          <input type="text" id="usernameInput" required placeholder="ex: Julie, Oncle Marc..." class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-400 bg-white/80">
+          <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Prénom / Pseudo</label>
+          <input type="text" id="usernameInput" required placeholder="ex: Julie, Marc..." class="w-full bg-white/5 border border-white/10 px-4 py-3 rounded-xl text-sm text-white outline-none focus:border-purple-500 transition">
         </div>
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Code d'accès</label>
-          <input type="password" id="accessCodeInput" required placeholder="Clé famille ou admin" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-400 bg-white/80">
-          <p class="text-xs text-slate-400 mt-1">Saisissez <code class="bg-slate-100 px-1 rounded text-pink-600 font-bold">ADMIN2026</code> pour le mode administration.</p>
+          <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Code d'accès</label>
+          <input type="password" id="accessCodeInput" required placeholder="Code famille ou ADMIN2026" class="w-full bg-white/5 border border-white/10 px-4 py-3 rounded-xl text-sm text-white outline-none focus:border-purple-500 transition">
         </div>
-        <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold rounded-xl shadow-lg hover:opacity-95 transition">
-          Accéder à l'application
+        <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-pink-600 to-purple-600 text-white font-black rounded-xl text-xs uppercase tracking-wider shadow-lg hover:opacity-90 transition">
+          Rejoindre l'application
         </button>
       </form>
     </div>
   </div>
 
-  <!-- NAVIGATION PRINCIPALE -->
-  <header class="max-w-6xl mx-auto px-4 pt-6">
-    <div class="glassmorphism rounded-2xl p-4 shadow-sm flex flex-wrap items-center justify-between gap-4">
+  <!-- EN-TÊTE PRINCIPALE -->
+  <header class="sticky top-0 bg-[#07070a]/90 backdrop-blur-xl z-40 border-b border-white/5 p-4">
+    <div class="max-w-4xl mx-auto flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <div class="p-3 bg-pink-500 text-white rounded-xl shadow-md">
-          <i class="fa-solid fa-baby-carriage text-xl"></i>
+        <div class="p-2.5 bg-purple-500/20 text-purple-400 rounded-xl border border-purple-500/30">
+          <i class="fa-solid fa-baby-carriage text-lg"></i>
         </div>
         <div>
-          <h1 class="font-extrabold text-lg text-slate-800">BABY PREDICT 2026</h1>
-          <p class="text-xs text-slate-500">Espace Suivi Maternité & Pronostics</p>
+          <h1 class="font-black italic text-lg uppercase tracking-tight text-white">Baby <span class="text-purple-400">Predict</span></h1>
+          <p class="text-[9px] text-slate-400">Espace Suivi & Pronostics</p>
         </div>
       </div>
 
-      <!-- Navigation par onglets -->
-      <nav class="flex gap-2 border-b md:border-b-0 border-slate-200 pb-2 md:pb-0">
-        <button onclick="switchTab('pronostics')" id="tab-pronostics" class="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-pink-600 active-tab transition flex items-center gap-2">
-          <i class="fa-solid fa-chart-pie"></i> Pronostics
-        </button>
-        <button onclick="switchTab('maternite')" id="tab-maternite" class="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-pink-600 transition flex items-center gap-2">
-          <i class="fa-solid fa-heart-pulse"></i> Suivi Maternité & Soins
-        </button>
-      </nav>
-
-      <!-- Info Profil -->
-      <div class="flex items-center gap-3 text-sm">
-        <span class="px-3 py-1.5 rounded-full bg-slate-100 font-medium text-slate-700 border border-slate-200" id="userBadge">
+      <div class="flex items-center gap-3">
+        <span class="px-3 py-1 rounded-full bg-white/5 text-xs font-bold text-slate-300 border border-white/10" id="userBadge">
           <i class="fa-regular fa-user mr-1"></i> Invité
         </span>
-        <button onclick="logout()" class="p-2 text-slate-400 hover:text-red-500 transition" title="Déconnexion">
-          <i class="fa-solid fa-right-from-bracket"></i>
+        <button onclick="logout()" class="p-2 text-slate-400 hover:text-red-400 transition">
+          <i class="fa-solid fa-power-off"></i>
         </button>
       </div>
     </div>
   </header>
 
-  <!-- CONTENU PRINCIPAL -->
-  <main class="max-w-6xl mx-auto px-4 mt-6">
+  <!-- NAVIGATION PAR ONGLETS -->
+  <nav class="max-w-4xl mx-auto px-4 mt-4">
+    <div class="glass rounded-2xl p-1 flex justify-around border border-white/10 text-xs">
+      <button onclick="switchTab('pronostics')" id="tab-pronostics" class="flex-1 py-2.5 font-bold text-slate-400 active-tab transition flex justify-center items-center gap-2">
+        <i class="fa-solid fa-chart-pie"></i> Pronostics
+      </button>
+      <button onclick="switchTab('maternite')" id="tab-maternite" class="flex-1 py-2.5 font-bold text-slate-400 transition flex justify-center items-center gap-2">
+        <i class="fa-solid fa-heart-pulse"></i> Suivi Maternité
+      </button>
+    </div>
+  </nav>
 
-    <!-- ========================================== -->
-    <!-- SECTION 1 : PRONOSTICS                     -->
-    <!-- ========================================== -->
+  <!-- CONTENU PRINCIPAL -->
+  <main class="max-w-4xl mx-auto px-4 mt-6">
+
+    <!-- SECTION 1 : PRONOSTICS -->
     <div id="section-pronostics" class="space-y-6">
       
-      <!-- Bannière de Résultat Final (Visible si clôturé) -->
-      <div id="resultBanner" class="hidden glassmorphism bg-gradient-to-r from-amber-100 via-pink-100 to-purple-100 p-6 rounded-3xl border-2 border-amber-300 shadow-md">
+      <!-- Bandeau Résultat Officiel -->
+      <div id="resultBanner" class="hidden glass bg-gradient-to-br from-yellow-600/20 to-amber-600/20 p-6 rounded-[2rem] border border-amber-500/30 shadow-xl">
         <div class="flex flex-col md:flex-row justify-between items-center gap-4">
           <div>
-            <span class="px-3 py-1 bg-amber-500 text-white font-bold text-xs rounded-full uppercase tracking-wider">Naissance Confirmée !</span>
-            <h2 class="text-2xl font-black text-slate-800 mt-2" id="resBabyName">Bébé Arrivé !</h2>
-            <p class="text-sm text-slate-600" id="resBabyDetails">Né(e) le -- à -- | -- kg | -- cm</p>
+            <span class="px-3 py-1 bg-amber-500/20 text-amber-300 font-black text-[10px] rounded-full uppercase tracking-wider border border-amber-500/30">Naissance Confirmée !</span>
+            <h2 class="text-2xl font-black text-white mt-2" id="resBabyName">Bébé Arrivé !</h2>
+            <p class="text-xs text-slate-300" id="resBabyDetails">Né(e) le -- | -- kg | -- cm</p>
           </div>
           <div class="text-right">
-            <p class="text-xs font-bold text-slate-500 uppercase">Grand Gagnant du Pronostic</p>
-            <p class="text-xl font-extrabold text-pink-600" id="resWinnerName">--</p>
+            <p class="text-[10px] font-bold text-slate-400 uppercase">Grand Gagnant</p>
+            <p class="text-xl font-black text-purple-400" id="resWinnerName">--</p>
           </div>
         </div>
       </div>
 
-      <!-- Panneau Admin Clôture (Réservé au rôle Admin) -->
-      <div id="adminPanel" class="hidden glassmorphism p-6 rounded-3xl border-2 border-purple-200">
-        <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
-          <i class="fa-solid fa-lock text-purple-600"></i> Panneau Administration : Publier les résultats officiels
+      <!-- Panneau Admin -->
+      <div id="adminPanel" class="hidden glass p-5 rounded-[2rem] border border-purple-500/30 space-y-3">
+        <h3 class="font-bold text-xs uppercase tracking-wider text-purple-400 flex items-center gap-2">
+          <i class="fa-solid fa-lock"></i> Panneau Administration : Publier les résultats
         </h3>
-        <form onsubmit="saveOfficialResults(event)" class="grid grid-cols-1 md:grid-cols-5 gap-3">
-          <input type="text" id="officialName" placeholder="Prénom" required class="px-3 py-2 rounded-xl border border-slate-200 text-sm">
-          <select id="officialGender" class="px-3 py-2 rounded-xl border border-slate-200 text-sm">
-            <option value="Fille">Fille</option>
-            <option value="Garçon">Garçon</option>
+        <form onsubmit="saveOfficialResults(event)" class="grid grid-cols-2 md:grid-cols-5 gap-2 text-xs">
+          <input type="text" id="officialName" placeholder="Prénom" required class="bg-white/5 border border-white/10 p-2 rounded-xl text-white outline-none">
+          <select id="officialGender" class="bg-white/5 border border-white/10 p-2 rounded-xl text-white outline-none">
+            <option value="Fille" class="bg-[#07070a]">Fille</option>
+            <option value="Garçon" class="bg-[#07070a]">Garçon</option>
           </select>
-          <input type="number" step="0.01" id="officialWeight" placeholder="Poids (kg)" required class="px-3 py-2 rounded-xl border border-slate-200 text-sm">
-          <input type="number" step="0.5" id="officialHeight" placeholder="Taille (cm)" required class="px-3 py-2 rounded-xl border border-slate-200 text-sm">
-          <button type="submit" class="bg-purple-600 text-white text-sm font-bold rounded-xl py-2 hover:bg-purple-700 transition">
-            Clôturer & Calculer Gagnant
+          <input type="number" step="0.01" id="officialWeight" placeholder="Poids (kg)" required class="bg-white/5 border border-white/10 p-2 rounded-xl text-white outline-none">
+          <input type="number" step="0.5" id="officialHeight" placeholder="Taille (cm)" required class="bg-white/5 border border-white/10 p-2 rounded-xl text-white outline-none">
+          <button type="submit" class="col-span-2 md:col-span-1 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl py-2 transition">
+            Clôturer
           </button>
         </form>
       </div>
 
-      <!-- Statistiques Globales des Votes -->
+      <!-- Stats Pronostics -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div class="glassmorphism p-5 rounded-2xl flex items-center gap-4">
-          <div class="p-3 bg-pink-100 text-pink-500 rounded-xl text-xl"><i class="fa-solid fa-venus-mars"></i></div>
+        <div class="glass p-5 rounded-2xl flex items-center gap-4">
+          <div class="p-3 bg-pink-500/20 text-pink-400 rounded-xl text-xl border border-pink-500/30"><i class="fa-solid fa-venus-mars"></i></div>
           <div>
-            <p class="text-xs font-bold text-slate-400 uppercase">Tendance Sexe</p>
-            <p class="text-lg font-black text-slate-700" id="statGender">50% Fille / 50% Garçon</p>
+            <p class="text-[10px] font-bold text-slate-400 uppercase">Tendance Sexe</p>
+            <p class="text-sm font-black text-slate-200" id="statGender">50% Fille / 50% Garçon</p>
           </div>
         </div>
-        <div class="glassmorphism p-5 rounded-2xl flex items-center gap-4">
-          <div class="p-3 bg-blue-100 text-blue-500 rounded-xl text-xl"><i class="fa-solid fa-weight-scale"></i></div>
+        <div class="glass p-5 rounded-2xl flex items-center gap-4">
+          <div class="p-3 bg-blue-500/20 text-blue-400 rounded-xl text-xl border border-blue-500/30"><i class="fa-solid fa-weight-scale"></i></div>
           <div>
-            <p class="text-xs font-bold text-slate-400 uppercase">Poids Moyen Prédit</p>
-            <p class="text-lg font-black text-slate-700" id="statAvgWeight">3,450 kg</p>
+            <p class="text-[10px] font-bold text-slate-400 uppercase">Poids Moyen</p>
+            <p class="text-sm font-black text-slate-200" id="statAvgWeight">3,450 kg</p>
           </div>
         </div>
-        <div class="glassmorphism p-5 rounded-2xl flex items-center gap-4">
-          <div class="p-3 bg-purple-100 text-purple-500 rounded-xl text-xl"><i class="fa-solid fa-ruler-vertical"></i></div>
+        <div class="glass p-5 rounded-2xl flex items-center gap-4">
+          <div class="p-3 bg-purple-500/20 text-purple-400 rounded-xl text-xl border border-purple-500/30"><i class="fa-solid fa-ruler-vertical"></i></div>
           <div>
-            <p class="text-xs font-bold text-slate-400 uppercase">Taille Moyenne Prédite</p>
-            <p class="text-lg font-black text-slate-700" id="statAvgHeight">50,2 cm</p>
+            <p class="text-[10px] font-bold text-slate-400 uppercase">Taille Moyenne</p>
+            <p class="text-sm font-black text-slate-200" id="statAvgHeight">50,2 cm</p>
           </div>
         </div>
       </div>
 
-      <!-- Formulaire de Pronostic + Liste des pronostics -->
+      <!-- Saisie & Liste des Pronostics -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        <!-- Formulaire -->
-        <div class="glassmorphism p-6 rounded-3xl border border-white/50 h-fit">
-          <h3 class="font-bold text-slate-800 text-lg mb-4 flex items-center gap-2">
-            <i class="fa-solid fa-pen-to-square text-pink-500"></i> Faire un pronostic
+        <div class="glass p-6 rounded-[2rem] border border-white/10 h-fit space-y-4">
+          <h3 class="font-bold text-sm uppercase text-purple-400 flex items-center gap-2">
+            <i class="fa-solid fa-pen-to-square"></i> Faire un pronostic
           </h3>
-          <form id="predictionForm" onsubmit="addPrediction(event)" class="space-y-4">
+          <form id="predictionForm" onsubmit="addPrediction(event)" class="space-y-3 text-xs">
             <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1">Prénom estimé</label>
-              <input type="text" id="predName" required placeholder="ex: Emma, Leo..." class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-pink-300 outline-none">
+              <label class="block text-slate-400 mb-1">Prénom estimé</label>
+              <input type="text" id="predName" required placeholder="ex: Emma, Leo..." class="w-full bg-white/5 border border-white/10 p-2.5 rounded-xl text-white outline-none">
             </div>
             <div class="grid grid-cols-2 gap-2">
               <div>
-                <label class="block text-xs font-semibold text-slate-600 mb-1">Sexe</label>
-                <select id="predGender" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-pink-300 outline-none">
-                  <option value="Fille">Fille 👧</option>
-                  <option value="Garçon">Garçon 👦</option>
+                <label class="block text-slate-400 mb-1">Sexe</label>
+                <select id="predGender" class="w-full bg-white/5 border border-white/10 p-2.5 rounded-xl text-white outline-none">
+                  <option value="Fille" class="bg-[#07070a]">Fille 👧</option>
+                  <option value="Garçon" class="bg-[#07070a]">Garçon 👦</option>
                 </select>
               </div>
               <div>
-                <label class="block text-xs font-semibold text-slate-600 mb-1">Poids (kg)</label>
-                <input type="number" step="0.05" min="1.5" max="5.5" id="predWeight" required placeholder="3.25" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-pink-300 outline-none">
+                <label class="block text-slate-400 mb-1">Poids (kg)</label>
+                <input type="number" step="0.05" min="1.5" max="5.5" id="predWeight" required placeholder="3.25" class="w-full bg-white/5 border border-white/10 p-2.5 rounded-xl text-white outline-none">
               </div>
             </div>
             <div class="grid grid-cols-2 gap-2">
               <div>
-                <label class="block text-xs font-semibold text-slate-600 mb-1">Taille (cm)</label>
-                <input type="number" step="0.5" min="40" max="60" id="predHeight" required placeholder="50.0" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-pink-300 outline-none">
+                <label class="block text-slate-400 mb-1">Taille (cm)</label>
+                <input type="number" step="0.5" min="40" max="60" id="predHeight" required placeholder="50.0" class="w-full bg-white/5 border border-white/10 p-2.5 rounded-xl text-white outline-none">
               </div>
               <div>
-                <label class="block text-xs font-semibold text-slate-600 mb-1">Date estimée</label>
-                <input type="date" id="predDate" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-pink-300 outline-none">
+                <label class="block text-slate-400 mb-1">Date estimée</label>
+                <input type="date" id="predDate" required class="w-full bg-white/5 border border-white/10 p-2.5 rounded-xl text-white outline-none">
               </div>
             </div>
-            <button type="submit" class="w-full py-3 bg-pink-500 hover:bg-pink-600 text-white font-bold rounded-xl shadow-md transition text-sm">
-              Enregistrer mon pronostic
+            <button type="submit" class="w-full py-3 bg-gradient-to-r from-pink-600 to-purple-600 hover:opacity-90 text-white font-bold rounded-xl transition text-xs uppercase tracking-wider">
+              Enregistrer
             </button>
           </form>
         </div>
 
-        <!-- Tableau des pronostics enregistrés -->
-        <div class="lg:col-span-2 glassmorphism p-6 rounded-3xl border border-white/50">
-          <h3 class="font-bold text-slate-800 text-lg mb-4 flex items-center justify-between">
-            <span><i class="fa-solid fa-list-ol text-purple-500 mr-2"></i>Pronostics de la famille</span>
-            <span class="text-xs bg-slate-200 text-slate-700 px-2.5 py-1 rounded-full" id="predCount">0 participation(s)</span>
+        <div class="lg:col-span-2 glass p-6 rounded-[2rem] border border-white/10">
+          <h3 class="font-bold text-sm text-slate-300 mb-4 flex justify-between items-center">
+            <span><i class="fa-solid fa-list-ol text-purple-400 mr-2"></i>Pronostics Enregistrés</span>
+            <span class="text-[10px] bg-white/10 text-slate-300 px-2.5 py-1 rounded-full" id="predCount">0 participation(s)</span>
           </h3>
           <div class="overflow-x-auto">
-            <table class="w-full text-left text-sm">
+            <table class="w-full text-left text-xs">
               <thead>
-                <tr class="border-b border-slate-200 text-slate-400 text-xs uppercase">
+                <tr class="border-b border-white/10 text-slate-400 uppercase text-[10px]">
                   <th class="pb-3 font-semibold">Participant</th>
-                  <th class="pb-3 font-semibold">Prénom estimé</th>
+                  <th class="pb-3 font-semibold">Prénom</th>
                   <th class="pb-3 font-semibold">Sexe</th>
                   <th class="pb-3 font-semibold">Poids</th>
                   <th class="pb-3 font-semibold">Taille</th>
                   <th class="pb-3 font-semibold">Date</th>
                 </tr>
               </thead>
-              <tbody id="predictionsTableBody" class="divide-y divide-slate-100">
-                <!-- Généré dynamiquement -->
+              <tbody id="predictionsTableBody" class="divide-y divide-white/5 text-slate-300">
               </tbody>
             </table>
           </div>
         </div>
-
       </div>
     </div>
 
-
-    <!-- ========================================== -->
-    <!-- SECTION 2 : SUIVI MATERNITÉ & SOINS        -->
-    <!-- ========================================== -->
+    <!-- SECTION 2 : SUIVI MATERNITÉ & SOINS -->
     <div id="section-maternite" class="hidden space-y-6">
       
-      <!-- En-tête Rappel Biberon & Export -->
-      <div class="glassmorphism p-6 rounded-3xl border border-white/50 flex flex-wrap items-center justify-between gap-4">
+      <!-- Rappel Biberon & PDF -->
+      <div class="glass p-5 rounded-[2rem] border border-white/10 flex flex-wrap items-center justify-between gap-4">
         <div class="flex items-center gap-4">
-          <div class="p-4 bg-amber-100 text-amber-600 rounded-2xl text-2xl">
+          <div class="p-3 bg-amber-500/20 text-amber-400 rounded-xl text-2xl border border-amber-500/30">
             <i class="fa-solid fa-bottle-droplet"></i>
           </div>
           <div>
-            <h3 class="font-bold text-slate-800">Rappel Prochain Biberon / Tétée</h3>
-            <p class="text-sm text-slate-500" id="nextFeedingTimer">Dernier repas enregistré : --:--</p>
+            <h3 class="font-bold text-sm text-slate-200">Rappel Prochain Biberon / Tétée</h3>
+            <p class="text-xs text-slate-400" id="nextFeedingTimer">Dernier repas : --:--</p>
           </div>
         </div>
         <div class="flex items-center gap-3">
-          <div class="flex items-center gap-2 bg-white/80 px-3 py-2 rounded-xl border border-slate-200 text-xs">
-            <span>Fréquence :</span>
-            <select id="feedingInterval" onchange="updateNextFeedingReminder()" class="font-bold text-slate-700 bg-transparent outline-none">
-              <option value="2">Toutes les 2h</option>
-              <option value="3" selected>Toutes les 3h</option>
-              <option value="4">Toutes les 4h</option>
+          <div class="flex items-center gap-2 bg-white/5 px-3 py-2 rounded-xl border border-white/10 text-xs">
+            <span class="text-slate-400">Intervalle :</span>
+            <select id="feedingInterval" onchange="updateNextFeedingReminder()" class="font-bold text-purple-400 bg-transparent outline-none">
+              <option value="2" class="bg-[#07070a]">2h</option>
+              <option value="3" selected class="bg-[#07070a]">3h</option>
+              <option value="4" class="bg-[#07070a]">4h</option>
             </select>
           </div>
-          <button onclick="exportCarePDF()" class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl text-sm shadow-md transition flex items-center gap-2">
-            <i class="fa-solid fa-file-pdf text-red-400"></i> Exporter PDF Pédiatre
+          <button onclick="exportCarePDF()" class="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl text-xs transition flex items-center gap-2">
+            <i class="fa-solid fa-file-pdf"></i> Export PDF
           </button>
         </div>
       </div>
 
-      <!-- Objectifs et Statistiques (Repas / Couches) -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div class="glassmorphism p-4 rounded-2xl">
-          <div class="flex justify-between items-center mb-1">
-            <span class="text-xs font-bold text-slate-400 uppercase">Repas (Aujourd'hui)</span>
-            <span class="text-xs bg-pink-100 text-pink-600 font-bold px-2 py-0.5 rounded-full" id="badgeMealsGoal">Obj: 8</span>
-          </div>
-          <p class="text-2xl font-black text-slate-800" id="statMealsToday">0</p>
-          <p class="text-xs text-slate-400 mt-1" id="statMealsVol">Volume : 0 ml</p>
-        </div>
-
-        <div class="glassmorphism p-4 rounded-2xl">
-          <div class="flex justify-between items-center mb-1">
-            <span class="text-xs font-bold text-slate-400 uppercase">Couches (Aujourd'hui)</span>
-            <span class="text-xs bg-blue-100 text-blue-600 font-bold px-2 py-0.5 rounded-full" id="badgeDiapersGoal">Obj: 6</span>
-          </div>
-          <p class="text-2xl font-black text-slate-800" id="statDiapersToday">0</p>
-          <p class="text-xs text-slate-400 mt-1" id="statDiapersDetail">Saines / Urinairement stables</p>
-        </div>
-
-        <div class="glassmorphism p-4 rounded-2xl">
-          <span class="text-xs font-bold text-slate-400 uppercase">Température Bébé</span>
-          <p class="text-2xl font-black text-slate-800" id="statLastTemp">-- °C</p>
-          <p class="text-xs text-emerald-600 font-semibold mt-1" id="statTempStatus">Statut : Normal</p>
-        </div>
-
-        <div class="glassmorphism p-4 rounded-2xl">
-          <span class="text-xs font-bold text-slate-400 uppercase">Dernier Poids</span>
-          <p class="text-2xl font-black text-slate-800" id="statCurrentWeight">3,200 kg</p>
-          <p class="text-xs text-slate-400 mt-1" id="statWeightDiff">+0 g cette semaine</p>
-        </div>
-      </div>
-
-      <!-- Graphiques : Température & Poids (Interactif) -->
+      <!-- Graphiques Interactifs -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="glassmorphism p-6 rounded-3xl border border-white/50">
-          <h4 class="font-bold text-slate-800 text-sm mb-4 flex items-center gap-2">
-            <i class="fa-solid fa-temperature-half text-red-500"></i> Suivi Température (Bébé & Couveuse)
+        <div class="glass p-5 rounded-[2rem] border border-white/10">
+          <h4 class="font-bold text-xs uppercase text-slate-300 mb-4 flex items-center gap-2">
+            <i class="fa-solid fa-temperature-half text-red-400"></i> Suivi Température (°C)
           </h4>
-          <div class="h-64">
+          <div class="h-56">
             <canvas id="chartTemp"></canvas>
           </div>
         </div>
 
-        <!-- MODULE COURBE DE POIDS INTERACTIVE -->
-        <div class="glassmorphism p-6 rounded-3xl border border-white/50 space-y-4">
-          <div class="flex items-center justify-between">
-            <h4 class="font-bold text-slate-800 text-sm flex items-center gap-2">
-              <i class="fa-solid fa-chart-line text-blue-500"></i> Courbe de Poids Interactive
-            </h4>
-            <span class="text-xs font-semibold bg-blue-50 text-blue-600 px-2.5 py-1 rounded-full border border-blue-200">Ajustement automatique</span>
-          </div>
+        <div class="glass p-5 rounded-[2rem] border border-white/10 space-y-4">
+          <h4 class="font-bold text-xs uppercase text-slate-300 flex items-center gap-2">
+            <i class="fa-solid fa-chart-line text-blue-400"></i> Courbe de Poids Interactive
+          </h4>
 
-          <!-- Formulaire Ajout Rapide de Mesure de Poids -->
-          <form onsubmit="addWeightPoint(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-2 bg-white/60 p-3 rounded-2xl border border-slate-200">
-            <div>
-              <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Date</label>
-              <input type="date" id="weightPointDate" required class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs focus:ring-2 focus:ring-blue-300 outline-none">
-            </div>
-            <div>
-              <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Poids (kg)</label>
-              <input type="number" step="0.01" min="0.5" max="10" id="weightPointVal" required placeholder="3.25" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs focus:ring-2 focus:ring-blue-300 outline-none">
-            </div>
-            <div class="flex items-end">
-              <button type="submit" class="w-full py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg shadow-sm transition flex items-center justify-center gap-1">
-                <i class="fa-solid fa-plus"></i> Ajouter
-              </button>
-            </div>
+          <form onsubmit="addWeightPoint(event)" class="grid grid-cols-3 gap-2 bg-white/5 p-2.5 rounded-xl border border-white/10 text-xs">
+            <input type="date" id="weightPointDate" required class="bg-black/40 border border-white/10 px-2 py-1 rounded-lg text-white outline-none">
+            <input type="number" step="0.01" min="0.5" max="10" id="weightPointVal" required placeholder="Poids (kg)" class="bg-black/40 border border-white/10 px-2 py-1 rounded-lg text-white outline-none">
+            <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg text-[10px] uppercase">
+              + Ajouter
+            </button>
           </form>
 
-          <!-- Zone Graphique ChartJS -->
-          <div class="h-52">
+          <div class="h-44">
             <canvas id="chartWeight"></canvas>
           </div>
 
-          <!-- Liste / Historique des points de poids avec bouton suppression -->
-          <div>
-            <p class="text-xs font-bold text-slate-600 mb-2 uppercase tracking-wider">Points de mesure enregistrés</p>
-            <div id="weightPointsList" class="max-h-36 overflow-y-auto space-y-1.5 pr-1 text-xs">
-              <!-- Liste injectée par JavaScript -->
-            </div>
+          <div id="weightPointsList" class="max-h-28 overflow-y-auto space-y-1 text-xs pr-1">
           </div>
         </div>
       </div>
 
-      <!-- Formulaire de Saisie de Soin + Journal -->
+      <!-- Saisie de Soin + Journal de Bord -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        <!-- Formulaire de Saisie Soin -->
-        <div class="glassmorphism p-6 rounded-3xl border border-white/50 h-fit">
-          <h3 class="font-bold text-slate-800 text-lg mb-4 flex items-center gap-2">
-            <i class="fa-solid fa-notes-medical text-emerald-500"></i> Nouvelle Transmission Soin
+        <div class="glass p-6 rounded-[2rem] border border-white/10 h-fit space-y-3 text-xs">
+          <h3 class="font-bold text-sm uppercase text-emerald-400 flex items-center gap-2">
+            <i class="fa-solid fa-notes-medical"></i> Transmission Soin
           </h3>
           <form id="careForm" onsubmit="addCareEntry(event)" class="space-y-3">
             <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1">Heure du soin</label>
-              <input type="time" id="careTime" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-300 outline-none">
+              <label class="block text-slate-400 mb-1">Heure du soin</label>
+              <input type="time" id="careTime" required class="w-full bg-white/5 border border-white/10 p-2.5 rounded-xl text-white outline-none">
             </div>
-
             <div class="grid grid-cols-2 gap-2">
               <div>
-                <label class="block text-xs font-semibold text-slate-600 mb-1">Temp. Bébé (°C)</label>
-                <input type="number" step="0.1" id="careTempBaby" placeholder="36.8" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-300 outline-none">
+                <label class="block text-slate-400 mb-1">Temp. Bébé (°C)</label>
+                <input type="number" step="0.1" id="careTempBaby" placeholder="36.8" class="w-full bg-white/5 border border-white/10 p-2.5 rounded-xl text-white outline-none">
               </div>
               <div>
-                <label class="block text-xs font-semibold text-slate-600 mb-1">Temp. Couveuse</label>
-                <input type="number" step="0.1" id="careTempIncubator" placeholder="31.5" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-300 outline-none">
+                <label class="block text-slate-400 mb-1">Temp. Couveuse</label>
+                <input type="number" step="0.1" id="careTempIncubator" placeholder="31.5" class="w-full bg-white/5 border border-white/10 p-2.5 rounded-xl text-white outline-none">
               </div>
             </div>
-
             <div class="grid grid-cols-2 gap-2">
               <div>
-                <label class="block text-xs font-semibold text-slate-600 mb-1">Couche</label>
-                <select id="careDiaper" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-300 outline-none">
-                  <option value="Propre / Rien">Propre</option>
-                  <option value="Urine">Urine 💛</option>
-                  <option value="Selles">Selles 🤎</option>
-                  <option value="Urine + Selles">Urine + Selles</option>
+                <label class="block text-slate-400 mb-1">Couche</label>
+                <select id="careDiaper" class="w-full bg-white/5 border border-white/10 p-2.5 rounded-xl text-white outline-none">
+                  <option value="Propre" class="bg-[#07070a]">Propre</option>
+                  <option value="Urine" class="bg-[#07070a]">Urine 💛</option>
+                  <option value="Selles" class="bg-[#07070a]">Selles 🤎</option>
+                  <option value="Urine + Selles" class="bg-[#07070a]">Urine + Selles</option>
                 </select>
               </div>
               <div>
-                <label class="block text-xs font-semibold text-slate-600 mb-1">Repas (ml)</label>
-                <input type="number" id="careFeeding" placeholder="60" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-300 outline-none">
+                <label class="block text-slate-400 mb-1">Repas (ml)</label>
+                <input type="number" id="careFeeding" placeholder="60" class="w-full bg-white/5 border border-white/10 p-2.5 rounded-xl text-white outline-none">
               </div>
             </div>
-
             <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1">Observations / Remarques</label>
-              <textarea id="careNotes" rows="2" placeholder="Bébé tonique, bien bu, peau saine..." class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-300 outline-none"></textarea>
+              <label class="block text-slate-400 mb-1">Observations</label>
+              <textarea id="careNotes" rows="2" placeholder="Remarques..." class="w-full bg-white/5 border border-white/10 p-2.5 rounded-xl text-white outline-none"></textarea>
             </div>
-
-            <button type="submit" class="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl shadow-md transition text-sm">
+            <button type="submit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl transition text-xs uppercase tracking-wider">
               Enregistrer l'observation
             </button>
           </form>
         </div>
 
-        <!-- Journal de bord de la journée (Exportable PDF) -->
-        <div class="lg:col-span-2 glassmorphism p-6 rounded-3xl border border-white/50" id="careJournalContainer">
+        <div class="lg:col-span-2 glass p-6 rounded-[2rem] border border-white/10" id="careJournalContainer">
           <div class="flex items-center justify-between mb-4">
-            <div>
-              <h3 class="font-bold text-slate-800 text-lg">
-                <i class="fa-solid fa-clipboard-list text-emerald-500 mr-2"></i>Fiche de Soins Hospitalière / Maternité
-              </h3>
-              <p class="text-xs text-slate-400">Transmissions quotidiennes de l'équipe et des parents</p>
-            </div>
-            <span class="text-xs font-bold text-slate-500 bg-slate-100 px-3 py-1 rounded-full" id="careDateHeader">Aujourd'hui</span>
+            <h3 class="font-bold text-sm text-slate-200">
+              <i class="fa-solid fa-clipboard-list text-emerald-400 mr-2"></i>Fiche de Soins Hospitalière
+            </h3>
+            <span class="text-xs font-bold text-purple-400 bg-white/5 px-3 py-1 rounded-full border border-white/10" id="careDateHeader">Aujourd'hui</span>
           </div>
 
           <div class="overflow-x-auto">
-            <table class="w-full text-left text-sm">
+            <table class="w-full text-left text-xs">
               <thead>
-                <tr class="border-b border-slate-200 text-slate-400 text-xs uppercase">
+                <tr class="border-b border-white/10 text-slate-400 uppercase text-[10px]">
                   <th class="pb-3 font-semibold">Heure</th>
                   <th class="pb-3 font-semibold">T° Bébé / Couv.</th>
                   <th class="pb-3 font-semibold">Couche</th>
@@ -414,67 +336,45 @@
                   <th class="pb-3 font-semibold">Auteur</th>
                 </tr>
               </thead>
-              <tbody id="careTableBody" class="divide-y divide-slate-100">
-                <!-- Injecté par JavaScript -->
+              <tbody id="careTableBody" class="divide-y divide-white/5 text-slate-300">
               </tbody>
             </table>
           </div>
         </div>
-
       </div>
 
     </div>
 
   </main>
 
-  <!-- SCRIPTS APPLICATION -->
   <script>
-    // ==========================================
-    // ETAT GLOBAL DE L'APPLICATION
-    // ==========================================
     let currentUser = null;
     let isAdmin = false;
 
-    // Données des Pronostics
     let predictions = [
       { user: "Mamie Chantal", name: "Alice", gender: "Fille", weight: 3.200, height: 49.5, date: "2026-08-15" },
-      { user: "Oncle Lucas", name: "Hugo", gender: "Garçon", weight: 3.600, height: 51.0, date: "2026-08-18" },
       { user: "Papa & Maman", name: "Emma", gender: "Fille", weight: 3.350, height: 50.0, date: "2026-08-12" }
     ];
 
-    let officialResult = null;
-
-    // Données de Suivi Soins
     let careEntries = [
-      { time: "08:00", tempBaby: 36.7, tempIncubator: 31.0, diaper: "Urine", feeding: 60, notes: "Réveil calme, bon réflexe de succion.", author: "Infirmière Sophie" },
-      { time: "11:00", tempBaby: 36.9, tempIncubator: 30.8, diaper: "Urine + Selles", feeding: 65, notes: "Soin de cordon effectué. Peau bien hydratée.", author: "Maman" }
+      { time: "08:00", tempBaby: 36.7, tempIncubator: 31.0, diaper: "Urine", feeding: 60, notes: "Réveil calme.", author: "Sophie" }
     ];
 
-    // Données pour la Courbe de Poids Interactive
     let weightHistory = [
       { date: "2026-08-01", weight: 3.10 },
-      { date: "2026-08-02", weight: 3.05 },
       { date: "2026-08-03", weight: 3.12 },
-      { date: "2026-08-04", weight: 3.20 },
       { date: "2026-08-05", weight: 3.28 },
-      { date: "2026-08-06", weight: 3.35 },
       { date: "2026-08-07", weight: 3.42 }
     ];
 
-    // Graphiques ChartJS
     let chartTempInstance = null;
     let chartWeightInstance = null;
 
-    // ==========================================
-    // INITIALISATION ET AUTHENTIFICATION
-    // ==========================================
     window.addEventListener('DOMContentLoaded', () => {
-      // Pré-remplir la date du jour sur les formulaires
       const todayStr = new Date().toISOString().split('T')[0];
       document.getElementById('predDate').value = todayStr;
       document.getElementById('weightPointDate').value = todayStr;
 
-      // Définir l'heure courante
       const now = new Date();
       document.getElementById('careTime').value = now.toTimeString().substring(0, 5);
       document.getElementById('careDateHeader').innerText = now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
@@ -498,7 +398,7 @@
         document.getElementById('adminPanel').classList.remove('hidden');
       }
 
-      document.getElementById('userBadge').innerHTML = `<i class="fa-solid fa-user-check text-emerald-500 mr-1"></i> ${currentUser} ${isAdmin ? '<span class="text-xs text-purple-600 font-bold">(Admin)</span>' : ''}`;
+      document.getElementById('userBadge').innerHTML = `<i class="fa-solid fa-user-check text-emerald-400 mr-1"></i> ${currentUser} ${isAdmin ? '<span class="text-purple-400 font-bold">(Admin)</span>' : ''}`;
       document.getElementById('loginPage').classList.add('hidden');
     }
 
@@ -523,41 +423,33 @@
       } else {
         secPronostics.classList.add('hidden');
         secMaternite.classList.remove('hidden');
+        tabPronostics.classList.add('active-tab');
         tabPronostics.classList.remove('active-tab');
-        tabMaternite.classList.add('active-tab');
       }
     }
 
-    // ==========================================
-    // LOGIQUE DU PRONOSTIC
-    // ==========================================
     function addPrediction(e) {
       e.preventDefault();
       if (!currentUser) return;
 
-      const newPred = {
+      predictions.push({
         user: currentUser,
         name: document.getElementById('predName').value.trim(),
         gender: document.getElementById('predGender').value,
         weight: parseFloat(document.getElementById('predWeight').value),
         height: parseFloat(document.getElementById('predHeight').value),
         date: document.getElementById('predDate').value
-      };
+      });
 
-      predictions.push(newPred);
       renderPredictions();
       document.getElementById('predictionForm').reset();
-      const todayStr = new Date().toISOString().split('T')[0];
-      document.getElementById('predDate').value = todayStr;
     }
 
     function renderPredictions() {
       const tbody = document.getElementById('predictionsTableBody');
       tbody.innerHTML = '';
 
-      let countFille = 0;
-      let totalWeight = 0;
-      let totalHeight = 0;
+      let countFille = 0, totalWeight = 0, totalHeight = 0;
 
       predictions.forEach(p => {
         if (p.gender === 'Fille') countFille++;
@@ -565,21 +457,20 @@
         totalHeight += p.height;
 
         const tr = document.createElement('tr');
-        tr.className = 'hover:bg-slate-50/50 transition';
+        tr.className = 'hover:bg-white/5 transition';
         tr.innerHTML = `
-          <td class="py-3 font-semibold text-slate-700">${p.user}</td>
-          <td class="py-3 font-bold text-pink-600">${p.name}</td>
-          <td class="py-3">${p.gender === 'Fille' ? '👧 Fille' : '👦 Garçon'}</td>
-          <td class="py-3 font-medium">${p.weight.toFixed(3)} kg</td>
-          <td class="py-3 font-medium">${p.height} cm</td>
-          <td class="py-3 text-slate-500">${p.date}</td>
+          <td class="py-2.5 font-semibold text-slate-200">${p.user}</td>
+          <td class="py-2.5 font-bold text-purple-400">${p.name}</td>
+          <td class="py-2.5">${p.gender === 'Fille' ? '👧 Fille' : '👦 Garçon'}</td>
+          <td class="py-2.5">${p.weight.toFixed(3)} kg</td>
+          <td class="py-2.5">${p.height} cm</td>
+          <td class="py-2.5 text-slate-400">${p.date}</td>
         `;
         tbody.appendChild(tr);
       });
 
       document.getElementById('predCount').innerText = `${predictions.length} participation(s)`;
 
-      // Mettre à jour les stats
       if (predictions.length > 0) {
         const girlPct = Math.round((countFille / predictions.length) * 100);
         document.getElementById('statGender').innerText = `${girlPct}% Fille / ${100 - girlPct}% Garçon`;
@@ -595,33 +486,18 @@
       const weight = parseFloat(document.getElementById('officialWeight').value);
       const height = parseFloat(document.getElementById('officialHeight').value);
 
-      officialResult = { name, gender, weight, height };
-
-      // Recherche du meilleur pronostic
-      let bestWinner = null;
-      let minDiff = Infinity;
-
+      let bestWinner = null, minDiff = Infinity;
       predictions.forEach(p => {
-        const diffW = Math.abs(p.weight - weight);
-        const diffH = Math.abs(p.height - height);
-        const score = diffW * 10 + diffH;
-
-        if (score < minDiff) {
-          minDiff = score;
-          bestWinner = p.user;
-        }
+        const score = Math.abs(p.weight - weight) * 10 + Math.abs(p.height - height);
+        if (score < minDiff) { minDiff = score; bestWinner = p.user; }
       });
 
-      // Afficher le bandeau
       document.getElementById('resBabyName').innerText = `Bienvenue à ${name} ! 👶`;
       document.getElementById('resBabyDetails').innerText = `Sexe : ${gender} | Poids : ${weight} kg | Taille : ${height} cm`;
-      document.getElementById('resWinnerName').innerText = bestWinner ? bestWinner : 'Égalité !';
+      document.getElementById('resWinnerName').innerText = bestWinner || 'Égalité !';
       document.getElementById('resultBanner').classList.remove('hidden');
     }
 
-    // ==========================================
-    // LOGIQUE DE SUIVI SOINS & MATERNITÉ
-    // ==========================================
     function addCareEntry(e) {
       e.preventDefault();
       const time = document.getElementById('careTime').value;
@@ -631,99 +507,56 @@
       const feeding = parseInt(document.getElementById('careFeeding').value) || 0;
       const notes = document.getElementById('careNotes').value.trim();
 
-      const entry = {
-        time,
-        tempBaby,
-        tempIncubator,
-        diaper,
-        feeding,
-        notes: notes || 'RAS',
-        author: currentUser || 'Soignant'
-      };
+      careEntries.push({
+        time, tempBaby, tempIncubator, diaper, feeding, notes: notes || 'RAS', author: currentUser || 'Soignant'
+      });
 
-      careEntries.push(entry);
       renderCareEntries();
 
-      // Mettre à jour la température dans le graphique
       if (tempBaby) {
         chartTempInstance.data.labels.push(time);
         chartTempInstance.data.datasets[0].data.push(tempBaby);
-        if (tempIncubator) {
-          chartTempInstance.data.datasets[1].data.push(tempIncubator);
-        } else {
-          chartTempInstance.data.datasets[1].data.push(null);
-        }
+        chartTempInstance.data.datasets[1].data.push(tempIncubator);
         chartTempInstance.update();
       }
 
       document.getElementById('careForm').reset();
-      const now = new Date();
-      document.getElementById('careTime').value = now.toTimeString().substring(0, 5);
     }
 
     function renderCareEntries() {
       const tbody = document.getElementById('careTableBody');
       tbody.innerHTML = '';
 
-      let totalMeals = 0;
-      let totalVolume = 0;
-      let totalDiapers = 0;
-      let lastTemp = null;
-
       careEntries.forEach(c => {
-        if (c.feeding > 0) {
-          totalMeals++;
-          totalVolume += c.feeding;
-        }
-        if (c.diaper !== 'Propre / Rien') {
-          totalDiapers++;
-        }
-        if (c.tempBaby) {
-          lastTemp = c.tempBaby;
-        }
-
         const tr = document.createElement('tr');
-        tr.className = 'hover:bg-slate-50/50 transition';
+        tr.className = 'hover:bg-white/5 transition';
         tr.innerHTML = `
-          <td class="py-3 font-bold text-slate-700">${c.time}</td>
-          <td class="py-3">${c.tempBaby ? `<span class="font-bold text-red-500">${c.tempBaby}°C</span>` : '--'} ${c.tempIncubator ? `<span class="text-xs text-slate-400">(${c.tempIncubator}°C)</span>` : ''}</td>
-          <td class="py-3"><span class="px-2 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-600 border border-blue-100">${c.diaper}</span></td>
-          <td class="py-3 font-bold text-emerald-600">${c.feeding > 0 ? c.feeding + ' ml' : '--'}</td>
-          <td class="py-3 text-slate-600 text-xs italic">${c.notes}</td>
-          <td class="py-3 text-slate-400 text-xs">${c.author}</td>
+          <td class="py-2.5 font-bold text-slate-200">${c.time}</td>
+          <td class="py-2.5">${c.tempBaby ? `<span class="font-bold text-red-400">${c.tempBaby}°C</span>` : '--'}</td>
+          <td class="py-2.5"><span class="px-2 py-0.5 rounded-full text-[10px] bg-white/10 border border-white/10">${c.diaper}</span></td>
+          <td class="py-2.5 font-bold text-emerald-400">${c.feeding > 0 ? c.feeding + ' ml' : '--'}</td>
+          <td class="py-2.5 text-slate-400 italic">${c.notes}</td>
+          <td class="py-2.5 text-slate-400">${c.author}</td>
         `;
         tbody.appendChild(tr);
       });
-
-      // Mettre à jour les indicateurs
-      document.getElementById('statMealsToday').innerText = totalMeals;
-      document.getElementById('statMealsVol').innerText = `Volume total : ${totalVolume} ml`;
-      document.getElementById('statDiapersToday').innerText = totalDiapers;
-      if (lastTemp) {
-        document.getElementById('statLastTemp').innerText = `${lastTemp} °C`;
-      }
 
       updateNextFeedingReminder();
     }
 
     function updateNextFeedingReminder() {
       if (careEntries.length === 0) return;
-
       const lastFeeding = [...careEntries].reverse().find(c => c.feeding > 0);
       if (!lastFeeding) return;
 
       const intervalHours = parseInt(document.getElementById('feedingInterval').value);
       const [hours, minutes] = lastFeeding.time.split(':').map(Number);
-      
       let nextHours = (hours + intervalHours) % 24;
       const formattedNext = `${String(nextHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
 
-      document.getElementById('nextFeedingTimer').innerHTML = `Dernier repas : <strong>${lastFeeding.time}</strong> (${lastFeeding.feeding} ml) — Prochain estimé : <strong class="text-amber-600">${formattedNext}</strong>`;
+      document.getElementById('nextFeedingTimer').innerHTML = `Dernier repas : <strong>${lastFeeding.time}</strong> — Prochain : <strong class="text-amber-400">${formattedNext}</strong>`;
     }
 
-    // ==========================================
-    // LOGIQUE DE LA COURBE DE POIDS INTERACTIVE
-    // ==========================================
     function addWeightPoint(e) {
       e.preventDefault();
       const dateVal = document.getElementById('weightPointDate').value;
@@ -731,13 +564,11 @@
 
       if (!dateVal || isNaN(weightVal)) return;
 
-      // Ajouter le nouveau point et trier chronologiquement
       weightHistory.push({ date: dateVal, weight: weightVal });
       weightHistory.sort((a, b) => new Date(a.date) - new Date(b.date));
 
       updateWeightChart();
       renderWeightList();
-
       document.getElementById('weightPointVal').value = '';
     }
 
@@ -749,144 +580,53 @@
 
     function updateWeightChart() {
       if (!chartWeightInstance) return;
-
-      const labels = weightHistory.map(item => item.date);
-      const data = weightHistory.map(item => item.weight);
-
-      chartWeightInstance.data.labels = labels;
-      chartWeightInstance.data.datasets[0].data = data;
+      chartWeightInstance.data.labels = weightHistory.map(w => w.date);
+      chartWeightInstance.data.datasets[0].data = weightHistory.map(w => w.weight);
       chartWeightInstance.update();
-
-      // Mettre à jour la carte de statistique globale du poids
-      if (weightHistory.length > 0) {
-        const latest = weightHistory[weightHistory.length - 1].weight;
-        document.getElementById('statCurrentWeight').innerText = `${latest.toFixed(3)} kg`;
-
-        if (weightHistory.length > 1) {
-          const prev = weightHistory[0].weight;
-          const diffGrams = Math.round((latest - prev) * 1000);
-          const sign = diffGrams >= 0 ? '+' : '';
-          document.getElementById('statWeightDiff').innerText = `${sign}${diffGrams} g depuis le 1er relevé`;
-        }
-      } else {
-        document.getElementById('statCurrentWeight').innerText = `-- kg`;
-        document.getElementById('statWeightDiff').innerText = `Aucune donnée`;
-      }
     }
 
     function renderWeightList() {
       const container = document.getElementById('weightPointsList');
       container.innerHTML = '';
-
-      if (weightHistory.length === 0) {
-        container.innerHTML = `<p class="text-slate-400 italic">Aucune mesure enregistrée.</p>`;
-        return;
-      }
-
       weightHistory.forEach((item, index) => {
         const div = document.createElement('div');
-        div.className = 'flex items-center justify-between bg-white/80 p-2 rounded-xl border border-slate-100 shadow-sm hover:border-blue-200 transition';
+        div.className = 'flex items-center justify-between bg-white/5 p-1.5 rounded-lg border border-white/5 text-[11px]';
         div.innerHTML = `
-          <div class="flex items-center gap-2">
-            <i class="fa-solid fa-weight-scale text-blue-500"></i>
-            <span class="font-bold text-slate-700">${item.weight.toFixed(3)} kg</span>
-            <span class="text-[11px] text-slate-400">(${item.date})</span>
-          </div>
-          <button onclick="removeWeightPoint(${index})" class="text-slate-400 hover:text-red-500 p-1 rounded-lg hover:bg-red-50 transition" title="Supprimer ce point">
-            <i class="fa-solid fa-trash-can"></i>
-          </button>
+          <span><b class="text-blue-400">${item.weight.toFixed(3)} kg</b> (${item.date})</span>
+          <button onclick="removeWeightPoint(${index})" class="text-slate-500 hover:text-red-400"><i class="fa-solid fa-trash"></i></button>
         `;
         container.appendChild(div);
       });
     }
 
-    // ==========================================
-    // INITIALISATION DES GRAPHIQUES CHART.JS
-    // ==========================================
     function initCharts() {
-      // 1. Graphique Température
       const ctxTemp = document.getElementById('chartTemp').getContext('2d');
       chartTempInstance = new Chart(ctxTemp, {
         type: 'line',
         data: {
-          labels: ['08:00', '11:00'],
+          labels: ['08:00'],
           datasets: [
-            {
-              label: 'Temp. Bébé (°C)',
-              data: [36.7, 36.9],
-              borderColor: '#ef4444',
-              backgroundColor: 'rgba(239, 68, 68, 0.1)',
-              tension: 0.3,
-              fill: true,
-              pointRadius: 5
-            },
-            {
-              label: 'Temp. Couveuse (°C)',
-              data: [31.0, 30.8],
-              borderColor: '#f59e0b',
-              borderDash: [5, 5],
-              tension: 0.3,
-              pointRadius: 3
-            }
+            { label: 'Temp. Bébé (°C)', data: [36.7], borderColor: '#f87171', backgroundColor: 'rgba(248, 113, 113, 0.1)', fill: true },
+            { label: 'Temp. Couveuse (°C)', data: [31.0], borderColor: '#fbbf24', borderDash: [5, 5] }
           ]
         },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { position: 'bottom' } },
-          scales: {
-            y: { min: 25, max: 40 }
-          }
-        }
+        options: { responsive: true, maintainAspectRatio: false }
       });
 
-      // 2. Graphique Poids (Interactif)
       const ctxWeight = document.getElementById('chartWeight').getContext('2d');
       chartWeightInstance = new Chart(ctxWeight, {
         type: 'line',
         data: {
           labels: weightHistory.map(w => w.date),
-          datasets: [{
-            label: 'Poids du bébé (kg)',
-            data: weightHistory.map(w => w.weight),
-            borderColor: '#3b82f6',
-            backgroundColor: 'rgba(59, 130, 246, 0.15)',
-            fill: true,
-            tension: 0.2,
-            pointBackgroundColor: '#2563eb',
-            pointRadius: 5,
-            pointHoverRadius: 7
-          }]
+          datasets: [{ label: 'Poids (kg)', data: weightHistory.map(w => w.weight), borderColor: '#60a5fa', backgroundColor: 'rgba(96, 165, 250, 0.15)', fill: true }]
         },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false }
-          },
-          scales: {
-            y: {
-              title: { display: true, text: 'Poids (kg)' }
-            }
-          }
-        }
+        options: { responsive: true, maintainAspectRatio: false }
       });
     }
 
-    // ==========================================
-    // EXPORTATION PDF
-    // ==========================================
     function exportCarePDF() {
       const element = document.getElementById('careJournalContainer');
-      const opt = {
-        margin:       0.5,
-        filename:     `Fiche_Soins_Maternite_${new Date().toISOString().split('T')[0]}.pdf`,
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2 },
-        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
-      };
-
-      html2pdf().set(opt).from(element).save();
+      html2pdf().set({ margin: 0.5, filename: 'Fiche_Soins.pdf', html2canvas: { scale: 2 } }).from(element).save();
     }
   </script>
 </body>
