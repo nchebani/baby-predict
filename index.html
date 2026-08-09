@@ -10,32 +10,35 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <style>
-    body { background: #07070a; color: #e2e8f0; font-family: 'Inter', sans-serif; margin: 0; min-height: 100vh; }
-    .glass { background: rgba(23, 23, 33, 0.75); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.08); }
-    .glass-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); }
-    .active-tab { color: #c084fc !important; border-bottom: 2px solid #c084fc; }
-    .page { position: fixed; inset: 0; z-index: 100; background: #07070a; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    /* Palette & Styles V2 Exacts */
+    body { background: #0b0f19; color: #f1f5f9; font-family: 'Inter', sans-serif; margin: 0; min-height: 100vh; }
+    .glass-v2 { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.1); }
+    .glass-card-v2 { background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(255, 255, 255, 0.08); }
+    .glow-purple { box-shadow: 0 0 25px -5px rgba(168, 85, 247, 0.3); }
+    .glow-pink { box-shadow: 0 0 25px -5px rgba(236, 72, 153, 0.3); }
+    .active-tab { color: #ec4899 !important; border-bottom: 2px solid #ec4899; background: rgba(236, 72, 153, 0.1); }
+    .page { position: fixed; inset: 0; z-index: 100; background: #0b0f19; display: flex; align-items: center; justify-content: center; padding: 20px; }
   </style>
 </head>
 <body class="pb-24">
 
-  <!-- PAGE DE CONNEXION (Style V2) -->
+  <!-- PAGE DE CONNEXION (Theme V2) -->
   <div id="loginPage" class="page">
-    <div class="glass p-8 rounded-[2.5rem] max-w-sm w-full border border-purple-500/20 text-center shadow-2xl">
-      <div class="text-4xl mb-3">👶✨</div>
-      <h1 class="text-2xl font-black italic text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-blue-400 mb-1">BABY PREDICT 2026</h1>
+    <div class="glass-v2 p-8 rounded-[2.5rem] max-w-sm w-full border border-pink-500/30 text-center glow-purple shadow-2xl">
+      <div class="text-5xl mb-3">👶✨</div>
+      <h1 class="text-3xl font-black italic text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-400 to-cyan-400 mb-1">BABY PREDICT</h1>
       <p class="text-[10px] uppercase tracking-widest text-slate-400 mb-6 font-bold">Pronostics & Suivi Maternité</p>
       
       <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4 text-left">
         <div>
           <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Prénom / Pseudo</label>
-          <input type="text" id="usernameInput" required placeholder="ex: Julie, Marc..." class="w-full bg-white/5 border border-white/10 px-4 py-3 rounded-xl text-sm text-white outline-none focus:border-purple-500 transition">
+          <input type="text" id="usernameInput" required placeholder="ex: Julie, Marc..." class="w-full bg-slate-900/80 border border-slate-700/60 px-4 py-3 rounded-xl text-sm text-white outline-none focus:border-pink-500 transition">
         </div>
         <div>
           <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Code d'accès</label>
-          <input type="password" id="accessCodeInput" required placeholder="Code famille ou ADMIN2026" class="w-full bg-white/5 border border-white/10 px-4 py-3 rounded-xl text-sm text-white outline-none focus:border-purple-500 transition">
+          <input type="password" id="accessCodeInput" required placeholder="Code famille ou ADMIN2026" class="w-full bg-slate-900/80 border border-slate-700/60 px-4 py-3 rounded-xl text-sm text-white outline-none focus:border-pink-500 transition">
         </div>
-        <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-pink-600 to-purple-600 text-white font-black rounded-xl text-xs uppercase tracking-wider shadow-lg hover:opacity-90 transition">
+        <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-pink-500 via-purple-600 to-cyan-500 text-white font-black rounded-xl text-xs uppercase tracking-wider shadow-lg hover:opacity-90 transition">
           Rejoindre l'application
         </button>
       </form>
@@ -43,23 +46,23 @@
   </div>
 
   <!-- EN-TÊTE PRINCIPALE -->
-  <header class="sticky top-0 bg-[#07070a]/90 backdrop-blur-xl z-40 border-b border-white/5 p-4">
+  <header class="sticky top-0 bg-[#0b0f19]/90 backdrop-blur-xl z-40 border-b border-slate-800 p-4">
     <div class="max-w-4xl mx-auto flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <div class="p-2.5 bg-purple-500/20 text-purple-400 rounded-xl border border-purple-500/30">
+        <div class="p-2.5 bg-gradient-to-tr from-pink-500/20 to-purple-500/20 text-pink-400 rounded-xl border border-pink-500/30">
           <i class="fa-solid fa-baby-carriage text-lg"></i>
         </div>
         <div>
-          <h1 class="font-black italic text-lg uppercase tracking-tight text-white">Baby <span class="text-purple-400">Predict</span></h1>
+          <h1 class="font-black italic text-lg uppercase tracking-tight text-white">Baby <span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-cyan-400">Predict</span></h1>
           <p class="text-[9px] text-slate-400">Espace Suivi & Pronostics</p>
         </div>
       </div>
 
       <div class="flex items-center gap-3">
-        <span class="px-3 py-1 rounded-full bg-white/5 text-xs font-bold text-slate-300 border border-white/10" id="userBadge">
+        <span class="px-3 py-1 rounded-full bg-slate-900 text-xs font-bold text-slate-300 border border-slate-700" id="userBadge">
           <i class="fa-regular fa-user mr-1"></i> Invité
         </span>
-        <button onclick="logout()" class="p-2 text-slate-400 hover:text-red-400 transition">
+        <button onclick="logout()" class="p-2 text-slate-400 hover:text-pink-400 transition">
           <i class="fa-solid fa-power-off"></i>
         </button>
       </div>
@@ -68,11 +71,11 @@
 
   <!-- NAVIGATION PAR ONGLETS -->
   <nav class="max-w-4xl mx-auto px-4 mt-4">
-    <div class="glass rounded-2xl p-1 flex justify-around border border-white/10 text-xs">
-      <button onclick="switchTab('pronostics')" id="tab-pronostics" class="flex-1 py-2.5 font-bold text-slate-400 active-tab transition flex justify-center items-center gap-2">
+    <div class="glass-v2 rounded-2xl p-1 flex justify-around border border-slate-800 text-xs">
+      <button onclick="switchTab('pronostics')" id="tab-pronostics" class="flex-1 py-2.5 font-bold text-slate-400 active-tab rounded-xl transition flex justify-center items-center gap-2">
         <i class="fa-solid fa-chart-pie"></i> Pronostics
       </button>
-      <button onclick="switchTab('maternite')" id="tab-maternite" class="flex-1 py-2.5 font-bold text-slate-400 transition flex justify-center items-center gap-2">
+      <button onclick="switchTab('maternite')" id="tab-maternite" class="flex-1 py-2.5 font-bold text-slate-400 rounded-xl transition flex justify-center items-center gap-2">
         <i class="fa-solid fa-heart-pulse"></i> Suivi Maternité
       </button>
     </div>
@@ -85,56 +88,56 @@
     <div id="section-pronostics" class="space-y-6">
       
       <!-- Bandeau Résultat Officiel -->
-      <div id="resultBanner" class="hidden glass bg-gradient-to-br from-yellow-600/20 to-amber-600/20 p-6 rounded-[2rem] border border-amber-500/30 shadow-xl">
+      <div id="resultBanner" class="hidden glass-v2 bg-gradient-to-br from-amber-500/10 via-purple-500/10 to-pink-500/10 p-6 rounded-[2rem] border border-amber-500/40 glow-pink">
         <div class="flex flex-col md:flex-row justify-between items-center gap-4">
           <div>
-            <span class="px-3 py-1 bg-amber-500/20 text-amber-300 font-black text-[10px] rounded-full uppercase tracking-wider border border-amber-500/30">Naissance Confirmée !</span>
+            <span class="px-3 py-1 bg-amber-500/20 text-amber-300 font-black text-[10px] rounded-full uppercase tracking-wider border border-amber-500/40">Naissance Confirmée !</span>
             <h2 class="text-2xl font-black text-white mt-2" id="resBabyName">Bébé Arrivé !</h2>
             <p class="text-xs text-slate-300" id="resBabyDetails">Né(e) le -- | -- kg | -- cm</p>
           </div>
           <div class="text-right">
             <p class="text-[10px] font-bold text-slate-400 uppercase">Grand Gagnant</p>
-            <p class="text-xl font-black text-purple-400" id="resWinnerName">--</p>
+            <p class="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-cyan-400" id="resWinnerName">--</p>
           </div>
         </div>
       </div>
 
       <!-- Panneau Admin -->
-      <div id="adminPanel" class="hidden glass p-5 rounded-[2rem] border border-purple-500/30 space-y-3">
+      <div id="adminPanel" class="hidden glass-v2 p-5 rounded-[2rem] border border-purple-500/30 space-y-3">
         <h3 class="font-bold text-xs uppercase tracking-wider text-purple-400 flex items-center gap-2">
           <i class="fa-solid fa-lock"></i> Panneau Administration : Publier les résultats
         </h3>
         <form onsubmit="saveOfficialResults(event)" class="grid grid-cols-2 md:grid-cols-5 gap-2 text-xs">
-          <input type="text" id="officialName" placeholder="Prénom" required class="bg-white/5 border border-white/10 p-2 rounded-xl text-white outline-none">
-          <select id="officialGender" class="bg-white/5 border border-white/10 p-2 rounded-xl text-white outline-none">
-            <option value="Fille" class="bg-[#07070a]">Fille</option>
-            <option value="Garçon" class="bg-[#07070a]">Garçon</option>
+          <input type="text" id="officialName" placeholder="Prénom" required class="bg-slate-900 border border-slate-700 p-2 rounded-xl text-white outline-none focus:border-purple-500">
+          <select id="officialGender" class="bg-slate-900 border border-slate-700 p-2 rounded-xl text-white outline-none focus:border-purple-500">
+            <option value="Fille" class="bg-slate-900">Fille</option>
+            <option value="Garçon" class="bg-slate-900">Garçon</option>
           </select>
-          <input type="number" step="0.01" id="officialWeight" placeholder="Poids (kg)" required class="bg-white/5 border border-white/10 p-2 rounded-xl text-white outline-none">
-          <input type="number" step="0.5" id="officialHeight" placeholder="Taille (cm)" required class="bg-white/5 border border-white/10 p-2 rounded-xl text-white outline-none">
-          <button type="submit" class="col-span-2 md:col-span-1 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl py-2 transition">
+          <input type="number" step="0.01" id="officialWeight" placeholder="Poids (kg)" required class="bg-slate-900 border border-slate-700 p-2 rounded-xl text-white outline-none focus:border-purple-500">
+          <input type="number" step="0.5" id="officialHeight" placeholder="Taille (cm)" required class="bg-slate-900 border border-slate-700 p-2 rounded-xl text-white outline-none focus:border-purple-500">
+          <button type="submit" class="col-span-2 md:col-span-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold rounded-xl py-2 hover:opacity-90 transition">
             Clôturer
           </button>
         </form>
       </div>
 
-      <!-- Stats Pronostics -->
+      <!-- Stats Pronostics (Graphiques & Chiffres Clés de V1) -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div class="glass p-5 rounded-2xl flex items-center gap-4">
+        <div class="glass-v2 p-5 rounded-2xl flex items-center gap-4 border border-pink-500/20">
           <div class="p-3 bg-pink-500/20 text-pink-400 rounded-xl text-xl border border-pink-500/30"><i class="fa-solid fa-venus-mars"></i></div>
           <div>
             <p class="text-[10px] font-bold text-slate-400 uppercase">Tendance Sexe</p>
             <p class="text-sm font-black text-slate-200" id="statGender">50% Fille / 50% Garçon</p>
           </div>
         </div>
-        <div class="glass p-5 rounded-2xl flex items-center gap-4">
-          <div class="p-3 bg-blue-500/20 text-blue-400 rounded-xl text-xl border border-blue-500/30"><i class="fa-solid fa-weight-scale"></i></div>
+        <div class="glass-v2 p-5 rounded-2xl flex items-center gap-4 border border-cyan-500/20">
+          <div class="p-3 bg-cyan-500/20 text-cyan-400 rounded-xl text-xl border border-cyan-500/30"><i class="fa-solid fa-weight-scale"></i></div>
           <div>
             <p class="text-[10px] font-bold text-slate-400 uppercase">Poids Moyen</p>
             <p class="text-sm font-black text-slate-200" id="statAvgWeight">3,450 kg</p>
           </div>
         </div>
-        <div class="glass p-5 rounded-2xl flex items-center gap-4">
+        <div class="glass-v2 p-5 rounded-2xl flex items-center gap-4 border border-purple-500/20">
           <div class="p-3 bg-purple-500/20 text-purple-400 rounded-xl text-xl border border-purple-500/30"><i class="fa-solid fa-ruler-vertical"></i></div>
           <div>
             <p class="text-[10px] font-bold text-slate-400 uppercase">Taille Moyenne</p>
@@ -145,53 +148,53 @@
 
       <!-- Saisie & Liste des Pronostics -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="glass p-6 rounded-[2rem] border border-white/10 h-fit space-y-4">
-          <h3 class="font-bold text-sm uppercase text-purple-400 flex items-center gap-2">
+        <div class="glass-v2 p-6 rounded-[2rem] border border-slate-800 h-fit space-y-4">
+          <h3 class="font-bold text-sm uppercase text-pink-400 flex items-center gap-2">
             <i class="fa-solid fa-pen-to-square"></i> Faire un pronostic
           </h3>
           <form id="predictionForm" onsubmit="addPrediction(event)" class="space-y-3 text-xs">
             <div>
               <label class="block text-slate-400 mb-1">Prénom estimé</label>
-              <input type="text" id="predName" required placeholder="ex: Emma, Leo..." class="w-full bg-white/5 border border-white/10 p-2.5 rounded-xl text-white outline-none">
+              <input type="text" id="predName" required placeholder="ex: Emma, Leo..." class="w-full bg-slate-900 border border-slate-700/70 p-2.5 rounded-xl text-white outline-none focus:border-pink-500">
             </div>
             <div class="grid grid-cols-2 gap-2">
               <div>
                 <label class="block text-slate-400 mb-1">Sexe</label>
-                <select id="predGender" class="w-full bg-white/5 border border-white/10 p-2.5 rounded-xl text-white outline-none">
-                  <option value="Fille" class="bg-[#07070a]">Fille 👧</option>
-                  <option value="Garçon" class="bg-[#07070a]">Garçon 👦</option>
+                <select id="predGender" class="w-full bg-slate-900 border border-slate-700/70 p-2.5 rounded-xl text-white outline-none focus:border-pink-500">
+                  <option value="Fille" class="bg-slate-900">Fille 👧</option>
+                  <option value="Garçon" class="bg-slate-900">Garçon 👦</option>
                 </select>
               </div>
               <div>
                 <label class="block text-slate-400 mb-1">Poids (kg)</label>
-                <input type="number" step="0.05" min="1.5" max="5.5" id="predWeight" required placeholder="3.25" class="w-full bg-white/5 border border-white/10 p-2.5 rounded-xl text-white outline-none">
+                <input type="number" step="0.05" min="1.5" max="5.5" id="predWeight" required placeholder="3.25" class="w-full bg-slate-900 border border-slate-700/70 p-2.5 rounded-xl text-white outline-none focus:border-pink-500">
               </div>
             </div>
             <div class="grid grid-cols-2 gap-2">
               <div>
                 <label class="block text-slate-400 mb-1">Taille (cm)</label>
-                <input type="number" step="0.5" min="40" max="60" id="predHeight" required placeholder="50.0" class="w-full bg-white/5 border border-white/10 p-2.5 rounded-xl text-white outline-none">
+                <input type="number" step="0.5" min="40" max="60" id="predHeight" required placeholder="50.0" class="w-full bg-slate-900 border border-slate-700/70 p-2.5 rounded-xl text-white outline-none focus:border-pink-500">
               </div>
               <div>
                 <label class="block text-slate-400 mb-1">Date estimée</label>
-                <input type="date" id="predDate" required class="w-full bg-white/5 border border-white/10 p-2.5 rounded-xl text-white outline-none">
+                <input type="date" id="predDate" required class="w-full bg-slate-900 border border-slate-700/70 p-2.5 rounded-xl text-white outline-none focus:border-pink-500">
               </div>
             </div>
-            <button type="submit" class="w-full py-3 bg-gradient-to-r from-pink-600 to-purple-600 hover:opacity-90 text-white font-bold rounded-xl transition text-xs uppercase tracking-wider">
+            <button type="submit" class="w-full py-3 bg-gradient-to-r from-pink-500 via-purple-600 to-cyan-500 hover:opacity-90 text-white font-bold rounded-xl transition text-xs uppercase tracking-wider shadow-lg">
               Enregistrer
             </button>
           </form>
         </div>
 
-        <div class="lg:col-span-2 glass p-6 rounded-[2rem] border border-white/10">
+        <div class="lg:col-span-2 glass-v2 p-6 rounded-[2rem] border border-slate-800">
           <h3 class="font-bold text-sm text-slate-300 mb-4 flex justify-between items-center">
-            <span><i class="fa-solid fa-list-ol text-purple-400 mr-2"></i>Pronostics Enregistrés</span>
-            <span class="text-[10px] bg-white/10 text-slate-300 px-2.5 py-1 rounded-full" id="predCount">0 participation(s)</span>
+            <span><i class="fa-solid fa-list-ol text-cyan-400 mr-2"></i>Pronostics Enregistrés</span>
+            <span class="text-[10px] bg-slate-900 text-slate-300 px-2.5 py-1 rounded-full border border-slate-700" id="predCount">0 participation(s)</span>
           </h3>
           <div class="overflow-x-auto">
             <table class="w-full text-left text-xs">
               <thead>
-                <tr class="border-b border-white/10 text-slate-400 uppercase text-[10px]">
+                <tr class="border-b border-slate-800 text-slate-400 uppercase text-[10px]">
                   <th class="pb-3 font-semibold">Participant</th>
                   <th class="pb-3 font-semibold">Prénom</th>
                   <th class="pb-3 font-semibold">Sexe</th>
@@ -200,7 +203,7 @@
                   <th class="pb-3 font-semibold">Date</th>
                 </tr>
               </thead>
-              <tbody id="predictionsTableBody" class="divide-y divide-white/5 text-slate-300">
+              <tbody id="predictionsTableBody" class="divide-y divide-slate-800 text-slate-300">
               </tbody>
             </table>
           </div>
@@ -212,7 +215,7 @@
     <div id="section-maternite" class="hidden space-y-6">
       
       <!-- Rappel Biberon & PDF -->
-      <div class="glass p-5 rounded-[2rem] border border-white/10 flex flex-wrap items-center justify-between gap-4">
+      <div class="glass-v2 p-5 rounded-[2rem] border border-slate-800 flex flex-wrap items-center justify-between gap-4">
         <div class="flex items-center gap-4">
           <div class="p-3 bg-amber-500/20 text-amber-400 rounded-xl text-2xl border border-amber-500/30">
             <i class="fa-solid fa-bottle-droplet"></i>
@@ -223,15 +226,15 @@
           </div>
         </div>
         <div class="flex items-center gap-3">
-          <div class="flex items-center gap-2 bg-white/5 px-3 py-2 rounded-xl border border-white/10 text-xs">
+          <div class="flex items-center gap-2 bg-slate-900 px-3 py-2 rounded-xl border border-slate-700 text-xs">
             <span class="text-slate-400">Intervalle :</span>
-            <select id="feedingInterval" onchange="updateNextFeedingReminder()" class="font-bold text-purple-400 bg-transparent outline-none">
-              <option value="2" class="bg-[#07070a]">2h</option>
-              <option value="3" selected class="bg-[#07070a]">3h</option>
-              <option value="4" class="bg-[#07070a]">4h</option>
+            <select id="feedingInterval" onchange="updateNextFeedingReminder()" class="font-bold text-pink-400 bg-transparent outline-none">
+              <option value="2" class="bg-slate-900">2h</option>
+              <option value="3" selected class="bg-slate-900">3h</option>
+              <option value="4" class="bg-slate-900">4h</option>
             </select>
           </div>
-          <button onclick="exportCarePDF()" class="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl text-xs transition flex items-center gap-2">
+          <button onclick="exportCarePDF()" class="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 text-white font-bold rounded-xl text-xs transition flex items-center gap-2">
             <i class="fa-solid fa-file-pdf"></i> Export PDF
           </button>
         </div>
@@ -239,24 +242,24 @@
 
       <!-- Graphiques Interactifs -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="glass p-5 rounded-[2rem] border border-white/10">
+        <div class="glass-v2 p-5 rounded-[2rem] border border-slate-800">
           <h4 class="font-bold text-xs uppercase text-slate-300 mb-4 flex items-center gap-2">
-            <i class="fa-solid fa-temperature-half text-red-400"></i> Suivi Température (°C)
+            <i class="fa-solid fa-temperature-half text-pink-400"></i> Suivi Température (°C)
           </h4>
           <div class="h-56">
             <canvas id="chartTemp"></canvas>
           </div>
         </div>
 
-        <div class="glass p-5 rounded-[2rem] border border-white/10 space-y-4">
+        <div class="glass-v2 p-5 rounded-[2rem] border border-slate-800 space-y-4">
           <h4 class="font-bold text-xs uppercase text-slate-300 flex items-center gap-2">
-            <i class="fa-solid fa-chart-line text-blue-400"></i> Courbe de Poids Interactive
+            <i class="fa-solid fa-chart-line text-cyan-400"></i> Courbe de Poids Interactive
           </h4>
 
-          <form onsubmit="addWeightPoint(event)" class="grid grid-cols-3 gap-2 bg-white/5 p-2.5 rounded-xl border border-white/10 text-xs">
-            <input type="date" id="weightPointDate" required class="bg-black/40 border border-white/10 px-2 py-1 rounded-lg text-white outline-none">
-            <input type="number" step="0.01" min="0.5" max="10" id="weightPointVal" required placeholder="Poids (kg)" class="bg-black/40 border border-white/10 px-2 py-1 rounded-lg text-white outline-none">
-            <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg text-[10px] uppercase">
+          <form onsubmit="addWeightPoint(event)" class="grid grid-cols-3 gap-2 bg-slate-900 p-2 rounded-xl border border-slate-800 text-xs">
+            <input type="date" id="weightPointDate" required class="bg-slate-950 border border-slate-700 px-2 py-1 rounded-lg text-white outline-none focus:border-cyan-500">
+            <input type="number" step="0.01" min="0.5" max="10" id="weightPointVal" required placeholder="Poids (kg)" class="bg-slate-950 border border-slate-700 px-2 py-1 rounded-lg text-white outline-none focus:border-cyan-500">
+            <button type="submit" class="bg-gradient-to-r from-cyan-600 to-blue-600 hover:opacity-90 text-white font-bold rounded-lg text-[10px] uppercase">
               + Ajouter
             </button>
           </form>
@@ -272,62 +275,62 @@
 
       <!-- Saisie de Soin + Journal de Bord -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="glass p-6 rounded-[2rem] border border-white/10 h-fit space-y-3 text-xs">
-          <h3 class="font-bold text-sm uppercase text-emerald-400 flex items-center gap-2">
+        <div class="glass-v2 p-6 rounded-[2rem] border border-slate-800 h-fit space-y-3 text-xs">
+          <h3 class="font-bold text-sm uppercase text-cyan-400 flex items-center gap-2">
             <i class="fa-solid fa-notes-medical"></i> Transmission Soin
           </h3>
           <form id="careForm" onsubmit="addCareEntry(event)" class="space-y-3">
             <div>
               <label class="block text-slate-400 mb-1">Heure du soin</label>
-              <input type="time" id="careTime" required class="w-full bg-white/5 border border-white/10 p-2.5 rounded-xl text-white outline-none">
+              <input type="time" id="careTime" required class="w-full bg-slate-900 border border-slate-700/70 p-2.5 rounded-xl text-white outline-none focus:border-cyan-500">
             </div>
             <div class="grid grid-cols-2 gap-2">
               <div>
                 <label class="block text-slate-400 mb-1">Temp. Bébé (°C)</label>
-                <input type="number" step="0.1" id="careTempBaby" placeholder="36.8" class="w-full bg-white/5 border border-white/10 p-2.5 rounded-xl text-white outline-none">
+                <input type="number" step="0.1" id="careTempBaby" placeholder="36.8" class="w-full bg-slate-900 border border-slate-700/70 p-2.5 rounded-xl text-white outline-none focus:border-cyan-500">
               </div>
               <div>
                 <label class="block text-slate-400 mb-1">Temp. Couveuse</label>
-                <input type="number" step="0.1" id="careTempIncubator" placeholder="31.5" class="w-full bg-white/5 border border-white/10 p-2.5 rounded-xl text-white outline-none">
+                <input type="number" step="0.1" id="careTempIncubator" placeholder="31.5" class="w-full bg-slate-900 border border-slate-700/70 p-2.5 rounded-xl text-white outline-none focus:border-cyan-500">
               </div>
             </div>
             <div class="grid grid-cols-2 gap-2">
               <div>
                 <label class="block text-slate-400 mb-1">Couche</label>
-                <select id="careDiaper" class="w-full bg-white/5 border border-white/10 p-2.5 rounded-xl text-white outline-none">
-                  <option value="Propre" class="bg-[#07070a]">Propre</option>
-                  <option value="Urine" class="bg-[#07070a]">Urine 💛</option>
-                  <option value="Selles" class="bg-[#07070a]">Selles 🤎</option>
-                  <option value="Urine + Selles" class="bg-[#07070a]">Urine + Selles</option>
+                <select id="careDiaper" class="w-full bg-slate-900 border border-slate-700/70 p-2.5 rounded-xl text-white outline-none focus:border-cyan-500">
+                  <option value="Propre" class="bg-slate-900">Propre</option>
+                  <option value="Urine" class="bg-slate-900">Urine 💛</option>
+                  <option value="Selles" class="bg-slate-900">Selles 🤎</option>
+                  <option value="Urine + Selles" class="bg-slate-900">Urine + Selles</option>
                 </select>
               </div>
               <div>
                 <label class="block text-slate-400 mb-1">Repas (ml)</label>
-                <input type="number" id="careFeeding" placeholder="60" class="w-full bg-white/5 border border-white/10 p-2.5 rounded-xl text-white outline-none">
+                <input type="number" id="careFeeding" placeholder="60" class="w-full bg-slate-900 border border-slate-700/70 p-2.5 rounded-xl text-white outline-none focus:border-cyan-500">
               </div>
             </div>
             <div>
               <label class="block text-slate-400 mb-1">Observations</label>
-              <textarea id="careNotes" rows="2" placeholder="Remarques..." class="w-full bg-white/5 border border-white/10 p-2.5 rounded-xl text-white outline-none"></textarea>
+              <textarea id="careNotes" rows="2" placeholder="Remarques..." class="w-full bg-slate-900 border border-slate-700/70 p-2.5 rounded-xl text-white outline-none focus:border-cyan-500"></textarea>
             </div>
-            <button type="submit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl transition text-xs uppercase tracking-wider">
+            <button type="submit" class="w-full py-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:opacity-90 text-white font-bold rounded-xl transition text-xs uppercase tracking-wider">
               Enregistrer l'observation
             </button>
           </form>
         </div>
 
-        <div class="lg:col-span-2 glass p-6 rounded-[2rem] border border-white/10" id="careJournalContainer">
+        <div class="lg:col-span-2 glass-v2 p-6 rounded-[2rem] border border-slate-800" id="careJournalContainer">
           <div class="flex items-center justify-between mb-4">
             <h3 class="font-bold text-sm text-slate-200">
-              <i class="fa-solid fa-clipboard-list text-emerald-400 mr-2"></i>Fiche de Soins Hospitalière
+              <i class="fa-solid fa-clipboard-list text-cyan-400 mr-2"></i>Fiche de Soins Hospitalière
             </h3>
-            <span class="text-xs font-bold text-purple-400 bg-white/5 px-3 py-1 rounded-full border border-white/10" id="careDateHeader">Aujourd'hui</span>
+            <span class="text-xs font-bold text-pink-400 bg-slate-900 px-3 py-1 rounded-full border border-slate-800" id="careDateHeader">Aujourd'hui</span>
           </div>
 
           <div class="overflow-x-auto">
             <table class="w-full text-left text-xs">
               <thead>
-                <tr class="border-b border-white/10 text-slate-400 uppercase text-[10px]">
+                <tr class="border-b border-slate-800 text-slate-400 uppercase text-[10px]">
                   <th class="pb-3 font-semibold">Heure</th>
                   <th class="pb-3 font-semibold">T° Bébé / Couv.</th>
                   <th class="pb-3 font-semibold">Couche</th>
@@ -336,7 +339,7 @@
                   <th class="pb-3 font-semibold">Auteur</th>
                 </tr>
               </thead>
-              <tbody id="careTableBody" class="divide-y divide-white/5 text-slate-300">
+              <tbody id="careTableBody" class="divide-y divide-slate-800 text-slate-300">
               </tbody>
             </table>
           </div>
@@ -398,7 +401,7 @@
         document.getElementById('adminPanel').classList.remove('hidden');
       }
 
-      document.getElementById('userBadge').innerHTML = `<i class="fa-solid fa-user-check text-emerald-400 mr-1"></i> ${currentUser} ${isAdmin ? '<span class="text-purple-400 font-bold">(Admin)</span>' : ''}`;
+      document.getElementById('userBadge').innerHTML = `<i class="fa-solid fa-user-check text-cyan-400 mr-1"></i> ${currentUser} ${isAdmin ? '<span class="text-pink-400 font-bold">(Admin)</span>' : ''}`;
       document.getElementById('loginPage').classList.add('hidden');
     }
 
@@ -457,10 +460,10 @@
         totalHeight += p.height;
 
         const tr = document.createElement('tr');
-        tr.className = 'hover:bg-white/5 transition';
+        tr.className = 'hover:bg-slate-800/40 transition';
         tr.innerHTML = `
           <td class="py-2.5 font-semibold text-slate-200">${p.user}</td>
-          <td class="py-2.5 font-bold text-purple-400">${p.name}</td>
+          <td class="py-2.5 font-bold text-pink-400">${p.name}</td>
           <td class="py-2.5">${p.gender === 'Fille' ? '👧 Fille' : '👦 Garçon'}</td>
           <td class="py-2.5">${p.weight.toFixed(3)} kg</td>
           <td class="py-2.5">${p.height} cm</td>
@@ -529,12 +532,12 @@
 
       careEntries.forEach(c => {
         const tr = document.createElement('tr');
-        tr.className = 'hover:bg-white/5 transition';
+        tr.className = 'hover:bg-slate-800/40 transition';
         tr.innerHTML = `
           <td class="py-2.5 font-bold text-slate-200">${c.time}</td>
-          <td class="py-2.5">${c.tempBaby ? `<span class="font-bold text-red-400">${c.tempBaby}°C</span>` : '--'}</td>
-          <td class="py-2.5"><span class="px-2 py-0.5 rounded-full text-[10px] bg-white/10 border border-white/10">${c.diaper}</span></td>
-          <td class="py-2.5 font-bold text-emerald-400">${c.feeding > 0 ? c.feeding + ' ml' : '--'}</td>
+          <td class="py-2.5">${c.tempBaby ? `<span class="font-bold text-pink-400">${c.tempBaby}°C</span>` : '--'}</td>
+          <td class="py-2.5"><span class="px-2 py-0.5 rounded-full text-[10px] bg-slate-800 border border-slate-700">${c.diaper}</span></td>
+          <td class="py-2.5 font-bold text-cyan-400">${c.feeding > 0 ? c.feeding + ' ml' : '--'}</td>
           <td class="py-2.5 text-slate-400 italic">${c.notes}</td>
           <td class="py-2.5 text-slate-400">${c.author}</td>
         `;
@@ -590,10 +593,10 @@
       container.innerHTML = '';
       weightHistory.forEach((item, index) => {
         const div = document.createElement('div');
-        div.className = 'flex items-center justify-between bg-white/5 p-1.5 rounded-lg border border-white/5 text-[11px]';
+        div.className = 'flex items-center justify-between bg-slate-900/80 p-1.5 rounded-lg border border-slate-800 text-[11px]';
         div.innerHTML = `
-          <span><b class="text-blue-400">${item.weight.toFixed(3)} kg</b> (${item.date})</span>
-          <button onclick="removeWeightPoint(${index})" class="text-slate-500 hover:text-red-400"><i class="fa-solid fa-trash"></i></button>
+          <span><b class="text-cyan-400">${item.weight.toFixed(3)} kg</b> (${item.date})</span>
+          <button onclick="removeWeightPoint(${index})" class="text-slate-500 hover:text-pink-400"><i class="fa-solid fa-trash"></i></button>
         `;
         container.appendChild(div);
       });
@@ -606,8 +609,8 @@
         data: {
           labels: ['08:00'],
           datasets: [
-            { label: 'Temp. Bébé (°C)', data: [36.7], borderColor: '#f87171', backgroundColor: 'rgba(248, 113, 113, 0.1)', fill: true },
-            { label: 'Temp. Couveuse (°C)', data: [31.0], borderColor: '#fbbf24', borderDash: [5, 5] }
+            { label: 'Temp. Bébé (°C)', data: [36.7], borderColor: '#ec4899', backgroundColor: 'rgba(236, 72, 153, 0.15)', fill: true },
+            { label: 'Temp. Couveuse (°C)', data: [31.0], borderColor: '#f59e0b', borderDash: [5, 5] }
           ]
         },
         options: { responsive: true, maintainAspectRatio: false }
@@ -618,7 +621,7 @@
         type: 'line',
         data: {
           labels: weightHistory.map(w => w.date),
-          datasets: [{ label: 'Poids (kg)', data: weightHistory.map(w => w.weight), borderColor: '#60a5fa', backgroundColor: 'rgba(96, 165, 250, 0.15)', fill: true }]
+          datasets: [{ label: 'Poids (kg)', data: weightHistory.map(w => w.weight), borderColor: '#06b6d4', backgroundColor: 'rgba(6, 182, 212, 0.15)', fill: true }]
         },
         options: { responsive: true, maintainAspectRatio: false }
       });
