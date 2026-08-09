@@ -19,6 +19,19 @@
       color: #db2777;
       font-weight: 700;
     }
+    /* Style spécifique pour l'export PDF compact */
+    .pdf-compact {
+      background: white !important;
+      padding: 15px !important;
+      font-size: 11px !important;
+      color: #1e293b !important;
+    }
+    .pdf-compact table {
+      font-size: 10px !important;
+    }
+    .pdf-compact th, .pdf-compact td {
+      padding: 4px 6px !important;
+    }
   </style>
 </head>
 <body class="bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50 min-h-screen text-slate-800 font-sans pb-12">
@@ -62,7 +75,6 @@
         </div>
       </div>
 
-      <!-- Navigation par onglets -->
       <nav class="flex gap-2 border-b md:border-b-0 border-slate-200 pb-2 md:pb-0">
         <button onclick="switchTab('pronostics')" id="tab-pronostics" class="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-pink-600 active-tab transition flex items-center gap-2">
           <i class="fa-solid fa-chart-pie"></i> Pronostics
@@ -72,7 +84,6 @@
         </button>
       </nav>
 
-      <!-- Info Profil -->
       <div class="flex items-center gap-3 text-sm">
         <span class="px-3 py-1.5 rounded-full bg-slate-100 font-medium text-slate-700 border border-slate-200" id="userBadge">
           <i class="fa-regular fa-user mr-1"></i> Invité
@@ -87,12 +98,8 @@
   <!-- CONTENU PRINCIPAL -->
   <main class="max-w-6xl mx-auto px-4 mt-6">
 
-    <!-- ========================================== -->
-    <!-- SECTION 1 : PRONOSTICS                     -->
-    <!-- ========================================== -->
+    <!-- SECTION 1 : PRONOSTICS -->
     <div id="section-pronostics" class="space-y-6">
-      
-      <!-- Bannière de Résultat Final (Visible si clôturé) -->
       <div id="resultBanner" class="hidden glassmorphism bg-gradient-to-r from-amber-100 via-pink-100 to-purple-100 p-6 rounded-3xl border-2 border-amber-300 shadow-md">
         <div class="flex flex-col md:flex-row justify-between items-center gap-4">
           <div>
@@ -107,7 +114,6 @@
         </div>
       </div>
 
-      <!-- Panneau Admin Clôture (Réservé au rôle Admin) -->
       <div id="adminPanel" class="hidden glassmorphism p-6 rounded-3xl border-2 border-purple-200">
         <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
           <i class="fa-solid fa-lock text-purple-600"></i> Panneau Administration : Publier les résultats officiels
@@ -126,7 +132,6 @@
         </form>
       </div>
 
-      <!-- Statistiques Globales des Votes -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="glassmorphism p-5 rounded-2xl flex items-center gap-4">
           <div class="p-3 bg-pink-100 text-pink-500 rounded-xl text-xl"><i class="fa-solid fa-venus-mars"></i></div>
@@ -151,10 +156,7 @@
         </div>
       </div>
 
-      <!-- Formulaire de Pronostic + Liste des pronostics -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        <!-- Formulaire -->
         <div class="glassmorphism p-6 rounded-3xl border border-white/50 h-fit">
           <h3 class="font-bold text-slate-800 text-lg mb-4 flex items-center gap-2">
             <i class="fa-solid fa-pen-to-square text-pink-500"></i> Faire un pronostic
@@ -193,7 +195,6 @@
           </form>
         </div>
 
-        <!-- Tableau des pronostics enregistrés -->
         <div class="lg:col-span-2 glassmorphism p-6 rounded-3xl border border-white/50">
           <h3 class="font-bold text-slate-800 text-lg mb-4 flex items-center justify-between">
             <span><i class="fa-solid fa-list-ol text-purple-500 mr-2"></i>Pronostics de la famille</span>
@@ -211,23 +212,16 @@
                   <th class="pb-3 font-semibold">Date</th>
                 </tr>
               </thead>
-              <tbody id="predictionsTableBody" class="divide-y divide-slate-100">
-                <!-- Généré dynamiquement -->
-              </tbody>
+              <tbody id="predictionsTableBody" class="divide-y divide-slate-100"></tbody>
             </table>
           </div>
         </div>
-
       </div>
     </div>
 
-
-    <!-- ========================================== -->
-    <!-- SECTION 2 : SUIVI MATERNITÉ & SOINS        -->
-    <!-- ========================================== -->
+    <!-- SECTION 2 : SUIVI MATERNITÉ & SOINS -->
     <div id="section-maternite" class="hidden space-y-6">
       
-      <!-- En-tête Rappel Biberon & Export -->
       <div class="glassmorphism p-6 rounded-3xl border border-white/50 flex flex-wrap items-center justify-between gap-4">
         <div class="flex items-center gap-4">
           <div class="p-4 bg-amber-100 text-amber-600 rounded-2xl text-2xl">
@@ -253,7 +247,46 @@
         </div>
       </div>
 
-      <!-- Objectifs et Statistiques (Repas / Couches) -->
+      <!-- NOUVEAU MODULE : CHRONOMÈTRE / TÉTÉE & CONTRACTIONS -->
+      <div class="glassmorphism p-6 rounded-3xl border border-white/50">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <div class="p-3 bg-purple-100 text-purple-600 rounded-2xl text-xl">
+              <i class="fa-solid fa-stopwatch"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-slate-800">Chronomètre Allaitement & Contractions</h3>
+              <p class="text-xs text-slate-500">Mesurer la durée d'une tétée ou la fréquence d'une contraction</p>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-3">
+            <select id="timerType" class="px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold bg-white outline-none">
+              <option value="Tétée Sein Gauche">Tétée (Sein Gauche) 🤱</option>
+              <option value="Tétée Sein Droit">Tétée (Sein Droit) 🤱</option>
+              <option value="Contraction">Contraction ⚡</option>
+            </select>
+
+            <div class="bg-slate-900 text-emerald-400 font-mono text-2xl font-bold px-4 py-1.5 rounded-xl border border-slate-700 shadow-inner" id="timerDisplay">
+              00:00
+            </div>
+
+            <div class="flex gap-1.5">
+              <button onclick="toggleTimer()" id="btnStartTimer" class="px-3 py-2 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold rounded-xl shadow transition">
+                <i class="fa-solid fa-play"></i> Démarrer
+              </button>
+              <button onclick="resetTimer()" class="px-3 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold rounded-xl transition">
+                <i class="fa-solid fa-rotate-left"></i>
+              </button>
+              <button onclick="saveTimerToCare()" class="px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded-xl shadow transition">
+                <i class="fa-solid fa-plus"></i> Enregistrer
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Statistiques globales de soins -->
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div class="glassmorphism p-4 rounded-2xl">
           <div class="flex justify-between items-center mb-1">
@@ -273,10 +306,11 @@
           <p class="text-xs text-slate-400 mt-1" id="statDiapersDetail">Saines / Urinairement stables</p>
         </div>
 
-        <div class="glassmorphism p-4 rounded-2xl">
+        <!-- STAT DE TEMPÉRATURE AVEC ALERTE SURVEILLANCE -->
+        <div class="glassmorphism p-4 rounded-2xl border transition duration-300" id="cardTempStatus">
           <span class="text-xs font-bold text-slate-400 uppercase">Température Bébé</span>
           <p class="text-2xl font-black text-slate-800" id="statLastTemp">-- °C</p>
-          <p class="text-xs text-emerald-600 font-semibold mt-1" id="statTempStatus">Statut : Normal</p>
+          <p class="text-xs font-bold mt-1 text-emerald-600" id="statTempStatus">Statut : Normal</p>
         </div>
 
         <div class="glassmorphism p-4 rounded-2xl">
@@ -286,7 +320,6 @@
         </div>
       </div>
 
-      <!-- Graphiques : Température & Poids (Interactif) -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div class="glassmorphism p-6 rounded-3xl border border-white/50">
           <h4 class="font-bold text-slate-800 text-sm mb-4 flex items-center gap-2">
@@ -297,7 +330,6 @@
           </div>
         </div>
 
-        <!-- MODULE COURBE DE POIDS INTERACTIVE -->
         <div class="glassmorphism p-6 rounded-3xl border border-white/50 space-y-4">
           <div class="flex items-center justify-between">
             <h4 class="font-bold text-slate-800 text-sm flex items-center gap-2">
@@ -306,7 +338,6 @@
             <span class="text-xs font-semibold bg-blue-50 text-blue-600 px-2.5 py-1 rounded-full border border-blue-200">Ajustement automatique</span>
           </div>
 
-          <!-- Formulaire Ajout Rapide de Mesure de Poids -->
           <form onsubmit="addWeightPoint(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-2 bg-white/60 p-3 rounded-2xl border border-slate-200">
             <div>
               <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Date</label>
@@ -323,25 +354,18 @@
             </div>
           </form>
 
-          <!-- Zone Graphique ChartJS -->
           <div class="h-52">
             <canvas id="chartWeight"></canvas>
           </div>
 
-          <!-- Liste / Historique des points de poids avec bouton suppression -->
           <div>
             <p class="text-xs font-bold text-slate-600 mb-2 uppercase tracking-wider">Points de mesure enregistrés</p>
-            <div id="weightPointsList" class="max-h-36 overflow-y-auto space-y-1.5 pr-1 text-xs">
-              <!-- Liste injectée par JavaScript -->
-            </div>
+            <div id="weightPointsList" class="max-h-36 overflow-y-auto space-y-1.5 pr-1 text-xs"></div>
           </div>
         </div>
       </div>
 
-      <!-- Formulaire de Saisie de Soin + Journal -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        <!-- Formulaire de Saisie Soin -->
         <div class="glassmorphism p-6 rounded-3xl border border-white/50 h-fit">
           <h3 class="font-bold text-slate-800 text-lg mb-4 flex items-center gap-2">
             <i class="fa-solid fa-notes-medical text-emerald-500"></i> Nouvelle Transmission Soin
@@ -390,7 +414,6 @@
           </form>
         </div>
 
-        <!-- Journal de bord de la journée (Exportable PDF) -->
         <div class="lg:col-span-2 glassmorphism p-6 rounded-3xl border border-white/50" id="careJournalContainer">
           <div class="flex items-center justify-between mb-4">
             <div>
@@ -414,28 +437,18 @@
                   <th class="pb-3 font-semibold">Auteur</th>
                 </tr>
               </thead>
-              <tbody id="careTableBody" class="divide-y divide-slate-100">
-                <!-- Injecté par JavaScript -->
-              </tbody>
+              <tbody id="careTableBody" class="divide-y divide-slate-100"></tbody>
             </table>
           </div>
         </div>
-
       </div>
-
     </div>
-
   </main>
 
-  <!-- SCRIPTS APPLICATION -->
   <script>
-    // ==========================================
-    // ETAT GLOBAL DE L'APPLICATION
-    // ==========================================
     let currentUser = null;
     let isAdmin = false;
 
-    // Données des Pronostics
     let predictions = [
       { user: "Mamie Chantal", name: "Alice", gender: "Fille", weight: 3.200, height: 49.5, date: "2026-08-15" },
       { user: "Oncle Lucas", name: "Hugo", gender: "Garçon", weight: 3.600, height: 51.0, date: "2026-08-18" },
@@ -444,13 +457,11 @@
 
     let officialResult = null;
 
-    // Données de Suivi Soins
     let careEntries = [
       { time: "08:00", tempBaby: 36.7, tempIncubator: 31.0, diaper: "Urine", feeding: 60, notes: "Réveil calme, bon réflexe de succion.", author: "Infirmière Sophie" },
-      { time: "11:00", tempBaby: 36.9, tempIncubator: 30.8, diaper: "Urine + Selles", feeding: 65, notes: "Soin de cordon effectué. Peau bien hydratée.", author: "Maman" }
+      { time: "11:00", tempBaby: 37.8, tempIncubator: 30.8, diaper: "Urine + Selles", feeding: 65, notes: "Soin de cordon effectué. Peau bien hydratée.", author: "Maman" }
     ];
 
-    // Données pour la Courbe de Poids Interactive
     let weightHistory = [
       { date: "2026-08-01", weight: 3.10 },
       { date: "2026-08-02", weight: 3.05 },
@@ -461,20 +472,78 @@
       { date: "2026-08-07", weight: 3.42 }
     ];
 
-    // Graphiques ChartJS
     let chartTempInstance = null;
     let chartWeightInstance = null;
 
-    // ==========================================
-    // INITIALISATION ET AUTHENTIFICATION
-    // ==========================================
+    // LOGIQUE CHRONOMÈTRE
+    let timerInterval = null;
+    let timerSeconds = 0;
+
+    function toggleTimer() {
+      const btn = document.getElementById('btnStartTimer');
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        btn.innerHTML = `<i class="fa-solid fa-play"></i> Reprendre`;
+        btn.className = "px-3 py-2 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold rounded-xl shadow transition";
+      } else {
+        timerInterval = setInterval(() => {
+          timerSeconds++;
+          updateTimerDisplay();
+        }, 1000);
+        btn.innerHTML = `<i class="fa-solid fa-pause"></i> Pause`;
+        btn.className = "px-3 py-2 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold rounded-xl shadow transition";
+      }
+    }
+
+    function resetTimer() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+      timerSeconds = 0;
+      updateTimerDisplay();
+      const btn = document.getElementById('btnStartTimer');
+      btn.innerHTML = `<i class="fa-solid fa-play"></i> Démarrer`;
+      btn.className = "px-3 py-2 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold rounded-xl shadow transition";
+    }
+
+    function updateTimerDisplay() {
+      const mins = String(Math.floor(timerSeconds / 60)).padStart(2, '0');
+      const secs = String(timerSeconds % 60).padStart(2, '0');
+      document.getElementById('timerDisplay').innerText = `${mins}:${secs}`;
+    }
+
+    function saveTimerToCare() {
+      if (timerSeconds === 0) return;
+
+      const type = document.getElementById('timerType').value;
+      const mins = Math.floor(timerSeconds / 60);
+      const secs = timerSeconds % 60;
+      const durationStr = mins > 0 ? `${mins} min ${secs} s` : `${secs} s`;
+
+      const now = new Date();
+      const timeStr = now.toTimeString().substring(0, 5);
+
+      careEntries.push({
+        time: timeStr,
+        tempBaby: null,
+        tempIncubator: null,
+        diaper: "Propre / Rien",
+        feeding: 0,
+        notes: `Chronomètre : ${type} - Durée : ${durationStr}`,
+        author: currentUser || "Parent"
+      });
+
+      renderCareEntries();
+      resetTimer();
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
-      // Pré-remplir la date du jour sur les formulaires
       const todayStr = new Date().toISOString().split('T')[0];
       document.getElementById('predDate').value = todayStr;
       document.getElementById('weightPointDate').value = todayStr;
 
-      // Définir l'heure courante
       const now = new Date();
       document.getElementById('careTime').value = now.toTimeString().substring(0, 5);
       document.getElementById('careDateHeader').innerText = now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
@@ -528,9 +597,6 @@
       }
     }
 
-    // ==========================================
-    // LOGIQUE DU PRONOSTIC
-    // ==========================================
     function addPrediction(e) {
       e.preventDefault();
       if (!currentUser) return;
@@ -579,7 +645,6 @@
 
       document.getElementById('predCount').innerText = `${predictions.length} participation(s)`;
 
-      // Mettre à jour les stats
       if (predictions.length > 0) {
         const girlPct = Math.round((countFille / predictions.length) * 100);
         document.getElementById('statGender').innerText = `${girlPct}% Fille / ${100 - girlPct}% Garçon`;
@@ -597,7 +662,6 @@
 
       officialResult = { name, gender, weight, height };
 
-      // Recherche du meilleur pronostic
       let bestWinner = null;
       let minDiff = Infinity;
 
@@ -612,16 +676,12 @@
         }
       });
 
-      // Afficher le bandeau
       document.getElementById('resBabyName').innerText = `Bienvenue à ${name} ! 👶`;
       document.getElementById('resBabyDetails').innerText = `Sexe : ${gender} | Poids : ${weight} kg | Taille : ${height} cm`;
       document.getElementById('resWinnerName').innerText = bestWinner ? bestWinner : 'Égalité !';
       document.getElementById('resultBanner').classList.remove('hidden');
     }
 
-    // ==========================================
-    // LOGIQUE DE SUIVI SOINS & MATERNITÉ
-    // ==========================================
     function addCareEntry(e) {
       e.preventDefault();
       const time = document.getElementById('careTime').value;
@@ -644,7 +704,6 @@
       careEntries.push(entry);
       renderCareEntries();
 
-      // Mettre à jour la température dans le graphique
       if (tempBaby) {
         chartTempInstance.data.labels.push(time);
         chartTempInstance.data.datasets[0].data.push(tempBaby);
@@ -682,11 +741,23 @@
           lastTemp = c.tempBaby;
         }
 
+        // DÉTECTION ET FORMATAGE ALERTE TEMPÉRATURE
+        let tempHtml = '--';
+        if (c.tempBaby) {
+          if (c.tempBaby >= 37.5) {
+            tempHtml = `<span class="font-bold text-red-600 bg-red-100 px-2 py-0.5 rounded-full animate-pulse"><i class="fa-solid fa-triangle-exclamation mr-1"></i>${c.tempBaby}°C</span>`;
+          } else if (c.tempBaby <= 35.5) {
+            tempHtml = `<span class="font-bold text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full animate-pulse"><i class="fa-solid fa-temperature-arrow-down mr-1"></i>${c.tempBaby}°C</span>`;
+          } else {
+            tempHtml = `<span class="font-bold text-emerald-600">${c.tempBaby}°C</span>`;
+          }
+        }
+
         const tr = document.createElement('tr');
         tr.className = 'hover:bg-slate-50/50 transition';
         tr.innerHTML = `
           <td class="py-3 font-bold text-slate-700">${c.time}</td>
-          <td class="py-3">${c.tempBaby ? `<span class="font-bold text-red-500">${c.tempBaby}°C</span>` : '--'} ${c.tempIncubator ? `<span class="text-xs text-slate-400">(${c.tempIncubator}°C)</span>` : ''}</td>
+          <td class="py-3">${tempHtml} ${c.tempIncubator ? `<span class="text-xs text-slate-400">(${c.tempIncubator}°C)</span>` : ''}</td>
           <td class="py-3"><span class="px-2 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-600 border border-blue-100">${c.diaper}</span></td>
           <td class="py-3 font-bold text-emerald-600">${c.feeding > 0 ? c.feeding + ' ml' : '--'}</td>
           <td class="py-3 text-slate-600 text-xs italic">${c.notes}</td>
@@ -695,12 +766,29 @@
         tbody.appendChild(tr);
       });
 
-      // Mettre à jour les indicateurs
       document.getElementById('statMealsToday').innerText = totalMeals;
       document.getElementById('statMealsVol').innerText = `Volume total : ${totalVolume} ml`;
       document.getElementById('statDiapersToday').innerText = totalDiapers;
+
+      // MISE À JOUR BANDEAU STAT DE TEMPÉRATURE
+      const cardTemp = document.getElementById('cardTempStatus');
+      const statTempStatus = document.getElementById('statTempStatus');
+
       if (lastTemp) {
         document.getElementById('statLastTemp').innerText = `${lastTemp} °C`;
+        if (lastTemp >= 37.5) {
+          statTempStatus.innerText = "Alerte : Hyperthermie / Fièvre !";
+          statTempStatus.className = "text-xs font-extrabold mt-1 text-red-600";
+          cardTemp.className = "glassmorphism p-4 rounded-2xl border-2 border-red-400 bg-red-50/50";
+        } else if (lastTemp <= 35.5) {
+          statTempStatus.innerText = "Alerte : Hypothermie !";
+          statTempStatus.className = "text-xs font-extrabold mt-1 text-blue-600";
+          cardTemp.className = "glassmorphism p-4 rounded-2xl border-2 border-blue-400 bg-blue-50/50";
+        } else {
+          statTempStatus.innerText = "Statut : Normal";
+          statTempStatus.className = "text-xs font-semibold mt-1 text-emerald-600";
+          cardTemp.className = "glassmorphism p-4 rounded-2xl border border-white/50";
+        }
       }
 
       updateNextFeedingReminder();
@@ -721,9 +809,6 @@
       document.getElementById('nextFeedingTimer').innerHTML = `Dernier repas : <strong>${lastFeeding.time}</strong> (${lastFeeding.feeding} ml) — Prochain estimé : <strong class="text-amber-600">${formattedNext}</strong>`;
     }
 
-    // ==========================================
-    // LOGIQUE DE LA COURBE DE POIDS INTERACTIVE
-    // ==========================================
     function addWeightPoint(e) {
       e.preventDefault();
       const dateVal = document.getElementById('weightPointDate').value;
@@ -731,7 +816,6 @@
 
       if (!dateVal || isNaN(weightVal)) return;
 
-      // Ajouter le nouveau point et trier chronologiquement
       weightHistory.push({ date: dateVal, weight: weightVal });
       weightHistory.sort((a, b) => new Date(a.date) - new Date(b.date));
 
@@ -757,7 +841,6 @@
       chartWeightInstance.data.datasets[0].data = data;
       chartWeightInstance.update();
 
-      // Mettre à jour la carte de statistique globale du poids
       if (weightHistory.length > 0) {
         const latest = weightHistory[weightHistory.length - 1].weight;
         document.getElementById('statCurrentWeight').innerText = `${latest.toFixed(3)} kg`;
@@ -800,11 +883,7 @@
       });
     }
 
-    // ==========================================
-    // INITIALISATION DES GRAPHIQUES CHART.JS
-    // ==========================================
     function initCharts() {
-      // 1. Graphique Température
       const ctxTemp = document.getElementById('chartTemp').getContext('2d');
       chartTempInstance = new Chart(ctxTemp, {
         type: 'line',
@@ -813,7 +892,7 @@
           datasets: [
             {
               label: 'Temp. Bébé (°C)',
-              data: [36.7, 36.9],
+              data: [36.7, 37.8],
               borderColor: '#ef4444',
               backgroundColor: 'rgba(239, 68, 68, 0.1)',
               tension: 0.3,
@@ -834,13 +913,10 @@
           responsive: true,
           maintainAspectRatio: false,
           plugins: { legend: { position: 'bottom' } },
-          scales: {
-            y: { min: 25, max: 40 }
-          }
+          scales: { y: { min: 30, max: 40 } }
         }
       });
 
-      // 2. Graphique Poids (Interactif)
       const ctxWeight = document.getElementById('chartWeight').getContext('2d');
       chartWeightInstance = new Chart(ctxWeight, {
         type: 'line',
@@ -861,32 +937,29 @@
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false }
-          },
-          scales: {
-            y: {
-              title: { display: true, text: 'Poids (kg)' }
-            }
-          }
+          plugins: { legend: { display: false } },
+          scales: { y: { title: { display: true, text: 'Poids (kg)' } } }
         }
       });
     }
 
-    // ==========================================
-    // EXPORTATION PDF
-    // ==========================================
+    // EXPORTATION PDF COMPACT
     function exportCarePDF() {
       const element = document.getElementById('careJournalContainer');
+      
+      element.classList.add('pdf-compact');
+
       const opt = {
-        margin:       0.5,
+        margin:       [0.3, 0.3, 0.3, 0.3],
         filename:     `Fiche_Soins_Maternite_${new Date().toISOString().split('T')[0]}.pdf`,
         image:        { type: 'jpeg', quality: 0.98 },
         html2canvas:  { scale: 2 },
-        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+        jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
       };
 
-      html2pdf().set(opt).from(element).save();
+      html2pdf().set(opt).from(element).save().then(() => {
+        element.classList.remove('pdf-compact');
+      });
     }
   </script>
 </body>
