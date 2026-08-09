@@ -19,7 +19,6 @@
       color: #db2777;
       font-weight: 700;
     }
-    /* Style spécifique pour l'export PDF compact */
     .pdf-compact {
       background: white !important;
       padding: 15px !important;
@@ -247,7 +246,7 @@
         </div>
       </div>
 
-      <!-- NOUVEAU MODULE : CHRONOMÈTRE / TÉTÉE & CONTRACTIONS -->
+      <!-- MODULE CHRONOMÈTRE (SEIN / BIBERON / CONTRACTIONS) -->
       <div class="glassmorphism p-6 rounded-3xl border border-white/50">
         <div class="flex flex-col md:flex-row items-center justify-between gap-4">
           <div class="flex items-center gap-3">
@@ -255,13 +254,14 @@
               <i class="fa-solid fa-stopwatch"></i>
             </div>
             <div>
-              <h3 class="font-bold text-slate-800">Chronomètre Allaitement & Contractions</h3>
-              <p class="text-xs text-slate-500">Mesurer la durée d'une tétée ou la fréquence d'une contraction</p>
+              <h3 class="font-bold text-slate-800">Chronomètre Repas & Contractions</h3>
+              <p class="text-xs text-slate-500">Mesurer la durée d'un biberon, d'une tétée au sein ou la fréquence d'une contraction</p>
             </div>
           </div>
 
           <div class="flex flex-wrap items-center gap-3">
             <select id="timerType" class="px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold bg-white outline-none">
+              <option value="Repas (Biberon)">Repas (Biberon) 🍼</option>
               <option value="Tétée Sein Gauche">Tétée (Sein Gauche) 🤱</option>
               <option value="Tétée Sein Droit">Tétée (Sein Droit) 🤱</option>
               <option value="Contraction">Contraction ⚡</option>
@@ -306,7 +306,6 @@
           <p class="text-xs text-slate-400 mt-1" id="statDiapersDetail">Saines / Urinairement stables</p>
         </div>
 
-        <!-- STAT DE TEMPÉRATURE AVEC ALERTE SURVEILLANCE -->
         <div class="glassmorphism p-4 rounded-2xl border transition duration-300" id="cardTempStatus">
           <span class="text-xs font-bold text-slate-400 uppercase">Température Bébé</span>
           <p class="text-2xl font-black text-slate-800" id="statLastTemp">-- °C</p>
@@ -458,7 +457,7 @@
     let officialResult = null;
 
     let careEntries = [
-      { time: "08:00", tempBaby: 36.7, tempIncubator: 31.0, diaper: "Urine", feeding: 60, notes: "Réveil calme, bon réflexe de succion.", author: "Infirmière Sophie" },
+      { time: "08:00", tempBaby: 36.7, tempIncubator: 31.0, diaper: "Urine", feeding: 60, notes: "Réveil calme, bon biberon.", author: "Infirmière Sophie" },
       { time: "11:00", tempBaby: 37.8, tempIncubator: 30.8, diaper: "Urine + Selles", feeding: 65, notes: "Soin de cordon effectué. Peau bien hydratée.", author: "Maman" }
     ];
 
@@ -475,7 +474,6 @@
     let chartTempInstance = null;
     let chartWeightInstance = null;
 
-    // LOGIQUE CHRONOMÈTRE
     let timerInterval = null;
     let timerSeconds = 0;
 
@@ -522,6 +520,14 @@
       const secs = timerSeconds % 60;
       const durationStr = mins > 0 ? `${mins} min ${secs} s` : `${secs} s`;
 
+      let volume = 0;
+      if (type === 'Repas (Biberon)') {
+        const inputVol = prompt("Quantité bu au biberon (en ml) :", "60");
+        if (inputVol !== null) {
+          volume = parseInt(inputVol) || 0;
+        }
+      }
+
       const now = new Date();
       const timeStr = now.toTimeString().substring(0, 5);
 
@@ -530,7 +536,7 @@
         tempBaby: null,
         tempIncubator: null,
         diaper: "Propre / Rien",
-        feeding: 0,
+        feeding: volume,
         notes: `Chronomètre : ${type} - Durée : ${durationStr}`,
         author: currentUser || "Parent"
       });
@@ -741,7 +747,6 @@
           lastTemp = c.tempBaby;
         }
 
-        // DÉTECTION ET FORMATAGE ALERTE TEMPÉRATURE
         let tempHtml = '--';
         if (c.tempBaby) {
           if (c.tempBaby >= 37.5) {
@@ -770,7 +775,6 @@
       document.getElementById('statMealsVol').innerText = `Volume total : ${totalVolume} ml`;
       document.getElementById('statDiapersToday').innerText = totalDiapers;
 
-      // MISE À JOUR BANDEAU STAT DE TEMPÉRATURE
       const cardTemp = document.getElementById('cardTempStatus');
       const statTempStatus = document.getElementById('statTempStatus');
 
@@ -943,10 +947,8 @@
       });
     }
 
-    // EXPORTATION PDF COMPACT
     function exportCarePDF() {
       const element = document.getElementById('careJournalContainer');
-      
       element.classList.add('pdf-compact');
 
       const opt = {
