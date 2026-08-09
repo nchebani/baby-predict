@@ -52,15 +52,15 @@
         </div>
     </div>
 
-    <!-- PAGE DE LOGIN MULTI-ACCÃS -->
+    <!-- PAGE DE LOGIN MULTI-ACCÈS -->
     <div id="page-login" class="page">
         <div class="glass p-10 rounded-[3rem] w-full max-w-sm border border-purple-500/20 text-center shadow-2xl">
-            <div class="text-4xl mb-4">ð¶â¨</div>
+            <div class="text-4xl mb-4">👶✨</div>
             <h1 class="text-3xl font-black italic text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-blue-400 mb-2">BABY PREDICT</h1>
-            <p class="text-[10px] uppercase tracking-widest text-slate-500 mb-8 font-bold">Pronostics & Suivi MaternitÃ©</p>
-            <input type="tel" id="input-pass" class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-center text-2xl mb-5 text-white outline-none focus:border-purple-500 transition-all" placeholder="Code d'accÃ¨s">
-            <button id="btn-to-name" class="w-full bg-gradient-to-r from-pink-600 to-blue-600 text-white font-black py-5 rounded-2xl uppercase text-xs transition-all shadow-lg italic tracking-wider">VÃ©rifier le code</button>
-            <p class="text-[9px] text-slate-500 mt-4 italic">Demandez le code d'accÃ¨s (Admin ou Proche) aux parents.</p>
+            <p class="text-[10px] uppercase tracking-widest text-slate-500 mb-8 font-bold">Pronostics & Suivi Maternité</p>
+            <input type="tel" id="input-pass" class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-center text-2xl mb-5 text-white outline-none focus:border-purple-500 transition-all" placeholder="Code d'accès">
+            <button id="btn-to-name" class="w-full bg-gradient-to-r from-pink-600 to-blue-600 text-white font-black py-5 rounded-2xl uppercase text-xs transition-all shadow-lg italic tracking-wider">Vérifier le code</button>
+            <p class="text-[9px] text-slate-500 mt-4 italic">Demandez le code d'accès (Admin ou Proche) aux parents.</p>
         </div>
     </div>
 
@@ -68,7 +68,7 @@
     <div id="page-name" class="page hidden text-center">
         <div class="glass p-10 rounded-[3rem] w-full max-w-sm border border-white/10 shadow-2xl">
             <p class="text-[10px] uppercase font-bold text-purple-400 mb-4 tracking-widest italic">Qui es-tu ?</p>
-            <input type="text" id="input-name" class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-center text-xl mb-5 text-white outline-none focus:border-white/30 transition-all" placeholder="Ton PrÃ©nom / Pseudo">
+            <input type="text" id="input-name" class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-center text-xl mb-5 text-white outline-none focus:border-white/30 transition-all" placeholder="Ton Prénom / Pseudo">
             <button id="btn-to-app" class="w-full bg-white text-black font-black py-5 rounded-2xl uppercase text-xs hover:bg-slate-200 transition-all shadow-lg italic">Rejoindre l'application</button>
         </div>
     </div>
@@ -89,35 +89,35 @@
             <section id="tab-home" class="tab-content active space-y-6">
                 
                 <div id="panel-final-result" class="hidden bg-gradient-to-br from-yellow-600/20 to-amber-600/20 border border-yellow-500/30 p-6 rounded-[2.5rem] text-center shadow-2xl">
-                    <span class="text-[10px] font-black uppercase text-yellow-400 tracking-widest bg-yellow-500/10 px-3 py-1 rounded-full border border-yellow-500/20"><i class="fas fa-trophy mr-1"></i> Le BÃ©bÃ© est lÃ  ! <i class="fas fa-trophy ml-1"></i></span>
+                    <span class="text-[10px] font-black uppercase text-yellow-400 tracking-widest bg-yellow-500/10 px-3 py-1 rounded-full border border-yellow-500/20"><i class="fas fa-trophy mr-1"></i> Le Bébé est là ! <i class="fas fa-trophy ml-1"></i></span>
                     <h3 class="text-3xl font-black mt-4 text-white uppercase tracking-tight" id="res-final-name">---</h3>
                     <p class="text-sm font-bold text-slate-300 mt-1" id="res-final-gender">---</p>
                     <div class="grid grid-cols-2 gap-4 mt-4 text-xs bg-black/40 p-4 rounded-2xl">
-                        <p>ð¶ <b>Poids :</b> <span id="res-final-weight">0</span> kg</p>
-                        <p>ð <b>Taille :</b> <span id="res-final-height">0</span> cm</p>
-                        <p class="col-span-2 border-t border-white/5 pt-2 mt-1">ð <b>NÃ© le :</b> <span id="res-final-date">--</span> Ã  <span id="res-final-time">--</span></p>
+                        <p>👶 <b>Poids :</b> <span id="res-final-weight">0</span> kg</p>
+                        <p>📏 <b>Taille :</b> <span id="res-final-height">0</span> cm</p>
+                        <p class="col-span-2 border-t border-white/5 pt-2 mt-1">📅 <b>Né le :</b> <span id="res-final-date">--</span> à <span id="res-final-time">--</span></p>
                     </div>
                     <div class="mt-4 p-3 bg-purple-500/20 rounded-xl border border-purple-500/30">
-                        <p class="text-[10px] uppercase font-black text-purple-300">ð Meilleur Pronostic ð</p>
+                        <p class="text-[10px] uppercase font-black text-purple-300">🏆 Meilleur Pronostic 🏆</p>
                         <p class="font-black text-lg text-white mt-1" id="winner-name">Calcul en cours...</p>
                     </div>
                 </div>
 
                 <div class="admin-only glass p-6 rounded-[2.5rem] border border-yellow-500/20 space-y-4">
-                    <h4 class="text-xs font-black uppercase tracking-wider text-yellow-500 italic"><i class="fas fa-edit mr-2"></i>[ADMIN] ClÃ´turer & Entrer les vraies infos</h4>
+                    <h4 class="text-xs font-black uppercase tracking-wider text-yellow-500 italic"><i class="fas fa-edit mr-2"></i>[ADMIN] Clôturer & Entrer les vraies infos</h4>
                     <div class="grid grid-cols-2 gap-2 text-xs">
                         <select id="final-gender" class="bg-white/5 border border-white/10 p-2 rounded-xl text-white outline-none">
                             <option value="" class="bg-[#07070a]">Sexe...</option>
                             <option value="Fille" class="bg-[#07070a]">Fille</option>
-                            <option value="GarÃ§on" class="bg-[#07070a]">GarÃ§on</option>
+                            <option value="Garçon" class="bg-[#07070a]">Garçon</option>
                         </select>
-                        <input type="text" id="final-name" class="bg-white/5 border border-white/10 p-2 rounded-xl text-white outline-none" placeholder="Vrai PrÃ©nom">
+                        <input type="text" id="final-name" class="bg-white/5 border border-white/10 p-2 rounded-xl text-white outline-none" placeholder="Vrai Prénom">
                         <input type="number" step="0.001" id="final-weight" class="bg-white/5 border border-white/10 p-2 rounded-xl text-white outline-none" placeholder="Poids (kg)">
                         <input type="number" step="0.5" id="final-height" class="bg-white/5 border border-white/10 p-2 rounded-xl text-white outline-none" placeholder="Taille (cm)">
                         <input type="date" id="final-date" class="bg-white/5 border border-white/10 p-2 rounded-xl text-white outline-none">
                         <input type="time" id="final-time" class="bg-white/5 border border-white/10 p-2 rounded-xl text-white outline-none">
                     </div>
-                    <button id="btn-save-final" class="w-full bg-yellow-600 text-white font-black py-3 rounded-xl uppercase text-[10px] tracking-wider shadow-lg">Publier le rÃ©sultat final</button>
+                    <button id="btn-save-final" class="w-full bg-yellow-600 text-white font-black py-3 rounded-xl uppercase text-[10px] tracking-wider shadow-lg">Publier le résultat final</button>
                 </div>
 
                 <div class="glass p-8 rounded-[3rem] text-center shadow-2xl relative overflow-hidden">
@@ -130,7 +130,7 @@
                     <h4 class="text-xs font-black uppercase tracking-wider text-slate-400 italic text-center">Tendance Sexe</h4>
                     <div class="flex items-center justify-between text-xs font-bold px-2">
                         <span class="text-pink-400"><i class="fas fa-venus mr-1"></i> Fille : <span id="pct-girl">0</span>%</span>
-                        <span class="text-blue-400">GarÃ§on : <span id="pct-boy">0</span>% <i class="fas fa-mars ml-1"></i></span>
+                        <span class="text-blue-400">Garçon : <span id="pct-boy">0</span>% <i class="fas fa-mars ml-1"></i></span>
                     </div>
                     <div class="w-full bg-white/5 h-4 rounded-full overflow-hidden flex">
                         <div id="bar-girl" class="bg-pink-500 h-full transition-all duration-500" style="width: 50%"></div>
@@ -150,22 +150,22 @@
                 </div>
 
                 <div class="glass p-6 rounded-[2.5rem]">
-                    <h4 class="text-xs font-black uppercase tracking-wider text-slate-400 italic mb-4"><i class="fas fa-star mr-2 text-yellow-400"></i>PrÃ©noms les plus votÃ©s</h4>
+                    <h4 class="text-xs font-black uppercase tracking-wider text-slate-400 italic mb-4"><i class="fas fa-star mr-2 text-yellow-400"></i>Prénoms les plus votés</h4>
                     <div id="top-names-list" class="space-y-2 text-xs">
                         <p class="text-slate-500 italic text-center text-xs">Aucun vote pour le moment</p>
                     </div>
                 </div>
             </section>
 
-            <!-- ONGLET : SUIVI BÃBÃ & FEUILLE DE SOINS MATERNITÃ -->
+            <!-- ONGLET : SUIVI BÉBÉ & FEUILLE DE SOINS MATERNITÉ -->
             <section id="tab-tracker" class="tab-content space-y-6">
                 <div class="flex justify-between items-center mb-2 px-2 no-print">
                     <div>
-                        <h3 class="text-2xl font-black italic uppercase">Suivi MaternitÃ©</h3>
-                        <p class="text-[10px] text-slate-400">SantÃ© & Fiche de Soins</p>
+                        <h3 class="text-2xl font-black italic uppercase">Suivi Maternité</h3>
+                        <p class="text-[10px] text-slate-400">Santé & Fiche de Soins</p>
                     </div>
                     <button onclick="exportToPDF()" class="glass text-purple-400 hover:bg-purple-500/20 p-3 rounded-2xl text-xs font-bold border border-purple-500/30 flex items-center gap-2 cursor-pointer">
-                        <i class="fas fa-print"></i> Export PDF / PÃ©diatre
+                        <i class="fas fa-print"></i> Export PDF / Pédiatre
                     </button>
                 </div>
 
@@ -176,17 +176,17 @@
                             <i class="fas fa-baby-bottle animate-bounce"></i>
                         </div>
                         <div>
-                            <span class="text-[9px] font-black uppercase text-pink-300 tracking-widest block">â° Prochain Biberon</span>
+                            <span class="text-[9px] font-black uppercase text-pink-300 tracking-widest block">⏰ Prochain Biberon</span>
                             <h4 id="next-bottle-time" class="text-2xl font-black text-white">--h--</h4>
-                            <p id="next-bottle-status" class="text-[10px] text-slate-300 font-bold mt-0.5">En attente de donnÃ©es...</p>
+                            <p id="next-bottle-status" class="text-[10px] text-slate-300 font-bold mt-0.5">En attente de données...</p>
                             <span id="next-bottle-dose" class="inline-block mt-2 bg-pink-500/20 text-pink-300 border border-pink-500/30 text-[9px] font-bold px-2.5 py-0.5 rounded-full">
-                                ð¼ Dose conseillÃ©e : -- ml
+                                🍼 Dose conseillée : -- ml
                             </span>
                         </div>
                     </div>
                     
                     <div class="text-right">
-                        <label class="text-[8px] uppercase font-bold text-slate-400 block mb-1">FrÃ©quence</label>
+                        <label class="text-[8px] uppercase font-bold text-slate-400 block mb-1">Fréquence</label>
                         <select id="bottle-interval" onchange="updateNextBottleDisplay()" class="bg-black/50 border border-white/10 text-xs font-bold text-pink-300 p-2 rounded-xl outline-none">
                             <option value="2.5" class="bg-[#07070a]">2h30</option>
                             <option value="3.0" class="bg-[#07070a]">3h00</option>
@@ -205,18 +205,18 @@
                     <div class="grid grid-cols-3 gap-2 text-center text-xs">
                         <div class="glass-card p-3 rounded-2xl">
                             <span class="text-[8px] font-bold text-slate-400 uppercase block">Aujourd'hui</span>
-                            <p class="font-black text-pink-400 mt-1">ð¼ <span id="stat-bib-day">0</span></p>
-                            <p class="font-black text-blue-400 mt-0.5">ð§· <span id="stat-diaper-day">0</span></p>
+                            <p class="font-black text-pink-400 mt-1">🍼 <span id="stat-bib-day">0</span></p>
+                            <p class="font-black text-blue-400 mt-0.5">🧷 <span id="stat-diaper-day">0</span></p>
                         </div>
                         <div class="glass-card p-3 rounded-2xl">
                             <span class="text-[8px] font-bold text-slate-400 uppercase block">7 Derniers jours</span>
-                            <p class="font-black text-pink-400 mt-1">ð¼ <span id="stat-bib-week">0</span></p>
-                            <p class="font-black text-blue-400 mt-0.5">ð§· <span id="stat-diaper-week">0</span></p>
+                            <p class="font-black text-pink-400 mt-1">🍼 <span id="stat-bib-week">0</span></p>
+                            <p class="font-black text-blue-400 mt-0.5">🧷 <span id="stat-diaper-week">0</span></p>
                         </div>
                         <div class="glass-card p-3 rounded-2xl">
                             <span class="text-[8px] font-bold text-slate-400 uppercase block">Ce mois-ci</span>
-                            <p class="font-black text-pink-400 mt-1">ð¼ <span id="stat-bib-month">0</span></p>
-                            <p class="font-black text-blue-400 mt-0.5">ð§· <span id="stat-diaper-month">0</span></p>
+                            <p class="font-black text-pink-400 mt-1">🍼 <span id="stat-bib-month">0</span></p>
+                            <p class="font-black text-blue-400 mt-0.5">🧷 <span id="stat-diaper-month">0</span></p>
                         </div>
                     </div>
                 </div>
@@ -228,7 +228,7 @@
                     </h4>
                     <div class="grid grid-cols-2 gap-3 text-xs">
                         <div class="space-y-2 glass-card p-3 rounded-2xl">
-                            <span class="text-[9px] font-bold text-pink-300 uppercase block">ð¼ Biberons par jour</span>
+                            <span class="text-[9px] font-bold text-pink-300 uppercase block">🍼 Biberons par jour</span>
                             <div class="flex items-center gap-2">
                                 <span class="text-[9px] text-slate-400">Min:</span>
                                 <input type="number" id="limit-bib-min" class="w-full bg-black/40 border border-white/10 p-1.5 rounded-lg text-center font-bold text-white" value="5">
@@ -237,7 +237,7 @@
                             </div>
                         </div>
                         <div class="space-y-2 glass-card p-3 rounded-2xl">
-                            <span class="text-[9px] font-bold text-blue-300 uppercase block">ð§· Couches par jour</span>
+                            <span class="text-[9px] font-bold text-blue-300 uppercase block">🧷 Couches par jour</span>
                             <div class="flex items-center gap-2">
                                 <span class="text-[9px] text-slate-400">Min:</span>
                                 <input type="number" id="limit-diaper-min" class="w-full bg-black/40 border border-white/10 p-1.5 rounded-lg text-center font-bold text-white" value="6">
@@ -258,9 +258,9 @@
                             <i class="fas fa-clock"></i>
                         </div>
                         <div>
-                            <span class="text-[9px] font-black uppercase text-amber-300 tracking-widest block">â³ Plage Prochain Repas (1h30 Max)</span>
-                            <h4 id="meal-window-range" class="text-xl font-black text-white">--h-- Ã  --h--</h4>
-                            <p id="meal-window-status" class="text-[10px] text-slate-300 font-bold mt-0.5">Aucun biberon programmÃ©</p>
+                            <span class="text-[9px] font-black uppercase text-amber-300 tracking-widest block">⏳ Plage Prochain Repas (1h30 Max)</span>
+                            <h4 id="meal-window-range" class="text-xl font-black text-white">--h-- à --h--</h4>
+                            <p id="meal-window-status" class="text-[10px] text-slate-300 font-bold mt-0.5">Aucun biberon programmé</p>
                         </div>
                     </div>
                 </div>
@@ -277,19 +277,19 @@
                 <!-- CARTES RAPIDES "DERNIERS..." -->
                 <div class="grid grid-cols-2 gap-3 no-print">
                     <div class="glass p-4 rounded-2xl border border-white/5">
-                        <span class="text-[9px] font-bold text-slate-400 uppercase block">ð¼ Dernier Repas</span>
+                        <span class="text-[9px] font-bold text-slate-400 uppercase block">🍼 Dernier Repas</span>
                         <p id="last-meal" class="text-sm font-black text-pink-400 mt-1">Aucun</p>
                     </div>
                     <div class="glass p-4 rounded-2xl border border-white/5">
-                        <span class="text-[9px] font-bold text-slate-400 uppercase block">ð© DerniÃ¨re Selle</span>
+                        <span class="text-[9px] font-bold text-slate-400 uppercase block">💩 Dernière Selle</span>
                         <p id="last-stool" class="text-sm font-black text-amber-400 mt-1">Aucune</p>
                     </div>
                     <div class="glass p-4 rounded-2xl border border-white/5">
-                        <span class="text-[9px] font-bold text-slate-400 uppercase block">ð§ DerniÃ¨re Urine</span>
+                        <span class="text-[9px] font-bold text-slate-400 uppercase block">💧 Dernière Urine</span>
                         <p id="last-urine" class="text-sm font-black text-blue-400 mt-1">Aucune</p>
                     </div>
                     <div class="glass p-4 rounded-2xl border border-white/5">
-                        <span class="text-[9px] font-bold text-slate-400 uppercase block">âï¸ Dernier Poids</span>
+                        <span class="text-[9px] font-bold text-slate-400 uppercase block">⚖️ Dernier Poids</span>
                         <p id="last-weight" class="text-sm font-black text-purple-400 mt-1">-- kg</p>
                     </div>
                 </div>
@@ -312,30 +312,30 @@
                             <input type="text" id="track-time" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none" placeholder="Ex: 14h30">
                         </div>
                         <div>
-                            <label class="block text-[9px] font-bold text-slate-400 mb-1">TÂ° BÃ©bÃ© (Â°C)</label>
+                            <label class="block text-[9px] font-bold text-slate-400 mb-1">T° Bébé (°C)</label>
                             <input type="number" step="0.1" id="track-temp-bb" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none" placeholder="Ex: 36.8">
                         </div>
                         <div>
-                            <label class="block text-[9px] font-bold text-slate-400 mb-1">TÂ° LC/INC (Â°C)</label>
+                            <label class="block text-[9px] font-bold text-slate-400 mb-1">T° LC/INC (°C)</label>
                             <input type="number" step="0.1" id="track-temp-inc" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none" placeholder="Ex: 37.0">
                         </div>
                     </div>
 
-                    <!-- CASE COUCHES AMÃLIORÃE -->
+                    <!-- CASE COUCHES AMÉLIORÉE -->
                     <div class="bg-white/5 p-4 rounded-xl space-y-3">
                         <label class="flex items-center gap-2 cursor-pointer">
                             <input type="checkbox" id="track-diaper-change" onchange="toggleDiaperDetails()" class="rounded accent-blue-500 w-4 h-4">
-                            <span class="text-slate-200 font-bold text-xs">ð§· Changement de couche effectuÃ©</span>
+                            <span class="text-slate-200 font-bold text-xs">🧷 Changement de couche effectué</span>
                         </label>
                         
                         <div id="diaper-details" class="hidden grid grid-cols-2 gap-3 text-xs pl-6 pt-1 border-t border-white/5">
                             <label class="flex items-center gap-2 cursor-pointer">
                                 <input type="checkbox" id="track-urine" class="rounded accent-blue-500 w-4 h-4">
-                                <span class="text-slate-300 font-bold">ð§ Urine</span>
+                                <span class="text-slate-300 font-bold">💧 Urine</span>
                             </label>
                             <label class="flex items-center gap-2 cursor-pointer">
                                 <input type="checkbox" id="track-stool" class="rounded accent-amber-500 w-4 h-4">
-                                <span class="text-slate-300 font-bold">ð© Selle</span>
+                                <span class="text-slate-300 font-bold">💩 Selle</span>
                             </label>
                         </div>
                     </div>
@@ -344,21 +344,21 @@
                         <label class="flex items-center gap-3 cursor-pointer">
                             <input type="checkbox" id="track-bottle-ontime" class="rounded accent-pink-500 w-5 h-5">
                             <div>
-                                <span class="text-pink-300 font-black text-xs block">â Biberon pris & validÃ© Ã  temps</span>
-                                <span class="text-[9px] text-slate-400">Lance automatiquement la fenÃªtre du repas suivant.</span>
+                                <span class="text-pink-300 font-black text-xs block">✅ Biberon pris & validé à temps</span>
+                                <span class="text-[9px] text-slate-400">Lance automatiquement la fenêtre du repas suivant.</span>
                             </div>
                         </label>
                     </div>
 
                     <div class="space-y-3 text-xs">
                         <div>
-                            <label class="block text-[9px] font-bold text-slate-400 mb-1">Alimentation (Saisie ou SÃ©lection rapide)</label>
+                            <label class="block text-[9px] font-bold text-slate-400 mb-1">Alimentation (Saisie ou Sélection rapide)</label>
                             <div class="flex flex-wrap gap-2 mb-2">
                                 <button type="button" onclick="setQuickFood('Bib 30ml')" class="bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg text-[10px] font-bold">30 ml</button>
                                 <button type="button" onclick="setQuickFood('Bib 60ml')" class="bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg text-[10px] font-bold">60 ml</button>
                                 <button type="button" onclick="setQuickFood('Bib 90ml')" class="bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg text-[10px] font-bold">90 ml</button>
                                 <button type="button" onclick="setQuickFood('Bib 120ml')" class="bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg text-[10px] font-bold">120 ml</button>
-                                <button type="button" onclick="setQuickFood('TÃ©tÃ©e')" class="bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg text-[10px] font-bold">TÃ©tÃ©e</button>
+                                <button type="button" onclick="setQuickFood('Tétée')" class="bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg text-[10px] font-bold">Tétée</button>
                             </div>
                             <input type="text" id="track-food" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none" placeholder="Ex: Bib 60 ml">
                         </div>
@@ -379,21 +379,21 @@
 
                 <!-- TABLEAU RECAPITULATIF -->
                 <div class="glass p-5 rounded-[2.5rem] border border-white/10 overflow-x-auto space-y-3">
-                    <h4 class="text-xs font-black uppercase text-slate-300 italic"><i class="fas fa-table mr-2 text-purple-400"></i> Historique Fiche de Soins MaternitÃ©</h4>
+                    <h4 class="text-xs font-black uppercase text-slate-300 italic"><i class="fas fa-table mr-2 text-purple-400"></i> Historique Fiche de Soins Maternité</h4>
                     <table class="w-full text-left text-[11px] border-collapse min-w-[500px]">
                         <thead>
                             <tr class="border-b border-white/10 text-slate-400 uppercase text-[9px]">
                                 <th class="p-2">Jour/Heure</th>
                                 <th class="p-2">Couche / U/S</th>
-                                <th class="p-2">TÂ° BB</th>
-                                <th class="p-2">TÂ° LC</th>
+                                <th class="p-2">T° BB</th>
+                                <th class="p-2">T° LC</th>
                                 <th class="p-2">Alimentation</th>
                                 <th class="p-2">Observations</th>
                                 <th class="p-2 text-right no-print">Action</th>
                             </tr>
                         </thead>
                         <tbody id="table-track-body" class="divide-y divide-white/5 text-slate-200">
-                            <tr><td colspan="7" class="p-4 text-center text-slate-500 italic">Aucune donnÃ©e enregistrÃ©e</td></tr>
+                            <tr><td colspan="7" class="p-4 text-center text-slate-500 italic">Aucune donnée enregistrée</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -403,7 +403,7 @@
             <section id="tab-charts" class="tab-content space-y-6">
                 <div class="flex justify-between items-center mb-2 px-2">
                     <div>
-                        <h3 class="text-2xl font-black italic uppercase">Analytics & Ãdition Courbes</h3>
+                        <h3 class="text-2xl font-black italic uppercase">Analytics & Édition Courbes</h3>
                         <p class="text-[10px] text-slate-400">Gestion interactive, ajustement dynamique & suivi direct</p>
                     </div>
                 </div>
@@ -418,7 +418,7 @@
                             <label class="block text-[9px] font-bold text-slate-400 mb-1">Type de courbe</label>
                             <select id="chart-add-type" class="w-full bg-white/5 border border-white/10 p-2 rounded-xl text-white outline-none">
                                 <option value="weight" class="bg-[#07070a]">Poids (kg)</option>
-                                <option value="temp" class="bg-[#07070a]">TempÃ©rature (Â°C)</option>
+                                <option value="temp" class="bg-[#07070a]">Température (°C)</option>
                             </select>
                         </div>
                         <div>
@@ -431,32 +431,32 @@
                             <input type="text" id="chart-add-time" class="w-full bg-white/5 border border-white/10 p-2 rounded-xl text-white outline-none" placeholder="Ex: 08h00">
                         </div>
                         <div>
-                            <label class="block text-[9px] font-bold text-slate-400 mb-1">Valeur MesurÃ©e</label>
+                            <label class="block text-[9px] font-bold text-slate-400 mb-1">Valeur Mesurée</label>
                             <input type="number" step="0.01" id="chart-add-val" class="w-full bg-white/5 border border-white/10 p-2 rounded-xl text-white outline-none" placeholder="Ex: 3.250 ou 36.8">
                         </div>
                     </div>
                     <button onclick="addMeasureFromChart()" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-black py-2.5 rounded-xl uppercase text-[10px] tracking-wider transition-all shadow-lg">
-                        <i class="fas fa-chart-line mr-1"></i> Ajouter Ã  la courbe & Recalculer la tendance
+                        <i class="fas fa-chart-line mr-1"></i> Ajouter à la courbe & Recalculer la tendance
                     </button>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- GRAPHIQUE ACTIVITÃ BIBERONS / COUCHES -->
+                    <!-- GRAPHIQUE ACTIVITÉ BIBERONS / COUCHES -->
                     <div class="glass p-5 rounded-[2.5rem] border border-white/10 space-y-3 md:col-span-2">
                         <h4 class="text-xs font-black uppercase text-purple-400 italic flex items-center justify-between">
-                            <span><i class="fas fa-chart-bar mr-2"></i> ActivitÃ© Biberons & Couches (7 derniers jours)</span>
+                            <span><i class="fas fa-chart-bar mr-2"></i> Activité Biberons & Couches (7 derniers jours)</span>
                         </h4>
                         <div class="w-full h-56">
                             <canvas id="activityChart"></canvas>
                         </div>
                     </div>
 
-                    <!-- GRAPHIQUE TEMPÃRATURE -->
+                    <!-- GRAPHIQUE TEMPÉRATURE -->
                     <div class="glass p-5 rounded-[2.5rem] border border-white/10 space-y-3">
                         <h4 class="text-xs font-black uppercase text-purple-400 italic flex items-center justify-between">
-                            <span><i class="fas fa-chart-line mr-2"></i> Courbe de TempÃ©rature (Â°C)</span>
+                            <span><i class="fas fa-chart-line mr-2"></i> Courbe de Température (°C)</span>
                         </h4>
-                        <p class="text-[9px] text-slate-500 font-normal">Min conseillÃ©: 36.5Â°C | Max: 37.5Â°C â <i>Cliquez sur un point pour le supprimer</i></p>
+                        <p class="text-[9px] text-slate-500 font-normal">Min conseillé: 36.5°C | Max: 37.5°C — <i>Cliquez sur un point pour le supprimer</i></p>
                         <div class="w-full h-52">
                             <canvas id="tempChart"></canvas>
                         </div>
@@ -467,19 +467,19 @@
                         <h4 class="text-xs font-black uppercase text-purple-400 italic flex items-center justify-between">
                             <span><i class="fas fa-weight-hanging mr-2"></i> Courbe de Poids (kg)</span>
                         </h4>
-                        <p class="text-[9px] text-slate-500 font-normal">Suivi & tendance instantanÃ©e â <i>Cliquez sur un point pour le supprimer</i></p>
+                        <p class="text-[9px] text-slate-500 font-normal">Suivi & tendance instantanée — <i>Cliquez sur un point pour le supprimer</i></p>
                         <div class="w-full h-52">
                             <canvas id="weightChart"></canvas>
                         </div>
                     </div>
                 </div>
 
-                <!-- LISTE INTERACTIVE D'ÃDITION DES POINTS DE MESURES -->
+                <!-- LISTE INTERACTIVE D'ÉDITION DES POINTS DE MESURES -->
                 <div class="glass p-5 rounded-[2.5rem] border border-white/10 space-y-3">
                     <h4 class="text-xs font-black uppercase text-slate-300 italic flex items-center justify-between">
                         <span><i class="fas fa-list-check mr-2 text-purple-400"></i> Points de Mesures Existants (Suppression directe)</span>
                     </h4>
-                    <p class="text-[10px] text-slate-400">Toute suppression rÃ©ajuste la tendance et la courbe instantanÃ©ment sur l'ensemble de l'interface.</p>
+                    <p class="text-[10px] text-slate-400">Toute suppression réajuste la tendance et la courbe instantanément sur l'ensemble de l'interface.</p>
                     
                     <div class="max-h-60 overflow-y-auto pr-1">
                         <table class="w-full text-left text-[11px] border-collapse">
@@ -487,12 +487,12 @@
                                 <tr class="border-b border-white/10 text-slate-400 uppercase text-[9px]">
                                     <th class="p-2">Date / Heure</th>
                                     <th class="p-2">Poids (kg)</th>
-                                    <th class="p-2">TÂ° BB (Â°C)</th>
+                                    <th class="p-2">T° BB (°C)</th>
                                     <th class="p-2 text-right">Action</th>
                                 </tr>
                             </thead>
                             <tbody id="chart-points-list" class="divide-y divide-white/5 text-slate-200">
-                                <tr><td colspan="4" class="p-4 text-center text-slate-500 italic">Chargement des donnÃ©es de courbes...</td></tr>
+                                <tr><td colspan="4" class="p-4 text-center text-slate-500 italic">Chargement des données de courbes...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -507,20 +507,20 @@
 
                 <div class="glass p-6 rounded-[2.5rem] space-y-6">
                     <div>
-                        <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Fille ou GarÃ§on ?</label>
+                        <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Fille ou Garçon ?</label>
                         <div class="grid grid-cols-2 gap-3">
                             <button onclick="selectGender('Fille')" id="vote-girl" class="gender-btn glass p-4 rounded-2xl font-bold uppercase text-xs flex items-center justify-center gap-2 border border-white/5 text-pink-400"><i class="fas fa-venus"></i> Fille</button>
-                            <button onclick="selectGender('GarÃ§on')" id="vote-boy" class="gender-btn glass p-4 rounded-2xl font-bold uppercase text-xs flex items-center justify-center gap-2 border border-white/5 text-blue-400"><i class="fas fa-mars"></i> GarÃ§on</button>
+                            <button onclick="selectGender('Garçon')" id="vote-boy" class="gender-btn glass p-4 rounded-2xl font-bold uppercase text-xs flex items-center justify-center gap-2 border border-white/5 text-blue-400"><i class="fas fa-mars"></i> Garçon</button>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">IdÃ©e de PrÃ©nom</label>
-                            <input type="text" id="vote-name" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-purple-500 text-sm" placeholder="Ex: Lucas, LÃ©a...">
+                            <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Idée de Prénom</label>
+                            <input type="text" id="vote-name" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-purple-500 text-sm" placeholder="Ex: Lucas, Léa...">
                         </div>
                         <div>
-                            <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Sa future passion ð¨â½</label>
+                            <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Sa future passion 🎨⚽</label>
                             <input type="text" id="vote-passion" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-purple-500 text-sm" placeholder="Ex: Dessin, Foot, Musique...">
                         </div>
                     </div>
@@ -538,11 +538,11 @@
 
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Date estimÃ©e</label>
+                            <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Date estimée</label>
                             <input type="date" id="vote-date" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-purple-500 text-xs">
                         </div>
                         <div>
-                            <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Heure estimÃ©e</label>
+                            <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Heure estimée</label>
                             <input type="time" id="vote-time" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-purple-500 text-xs">
                         </div>
                     </div>
@@ -574,7 +574,7 @@
             </section>
         </main>
 
-        <!-- NAVIGATION INFÃRIEURE ERGONOMIQUE ET STRUCTURÃE -->
+        <!-- NAVIGATION INFÉRIEURE ERGONOMIQUE ET STRUCTURÉE -->
         <nav class="fixed bottom-4 left-1/2 -translate-x-1/2 w-[95%] max-w-md z-50 no-print">
             <div class="glass rounded-[2rem] flex justify-between items-center p-2 border border-white/10 shadow-2xl px-3">
                 <button onclick="switchTab('home', this)" class="nav-btn text-purple-400 flex flex-col items-center gap-1 p-2 transition-all">
@@ -610,7 +610,7 @@
         <div class="glass p-8 rounded-[2.5rem] w-full max-w-sm border border-white/10 text-center shadow-2xl space-y-6">
             <div>
                 <span class="text-xs font-black uppercase text-purple-400 tracking-widest italic">Ajouter pour un proche</span>
-                <h3 class="text-xl font-bold text-white mt-1">Quel est le sexe estimÃ© ?</h3>
+                <h3 class="text-xl font-bold text-white mt-1">Quel est le sexe estimé ?</h3>
             </div>
             
             <div class="grid grid-cols-2 gap-4">
@@ -620,7 +620,7 @@
                 </button>
                 <button id="admin-btn-boy" class="p-6 rounded-2xl glass border border-blue-500/30 hover:bg-blue-500/20 text-blue-400 font-black uppercase text-xs flex flex-col items-center gap-2 transition-all">
                     <i class="fas fa-mars text-3xl"></i>
-                    GarÃ§on
+                    Garçon
                 </button>
             </div>
 
@@ -654,7 +654,7 @@
         try {
             enableIndexedDbPersistence(db);
         } catch (err) {
-            console.log("Persistence offline non supportÃ©e par le navigateur", err);
+            console.log("Persistence offline non supportée par le navigateur", err);
         }
 
         let userName = "";
@@ -668,7 +668,7 @@
         let mealAlertSent = false;
         let trackingDataCache = [];
 
-        // SEUILS CONFIGURÃS PAR LES PARENTS
+        // SEUILS CONFIGURÉS PAR LES PARENTS
         let thresholds = {
             bibMin: 5,
             bibMax: 8,
@@ -693,7 +693,7 @@
             thresholds.diaperMin = parseInt(document.getElementById('limit-diaper-min').value) || 0;
             thresholds.diaperMax = parseInt(document.getElementById('limit-diaper-max').value) || 0;
             localStorage.setItem('baby_thresholds', JSON.stringify(thresholds));
-            alert("Objectifs mis Ã  jour avec succÃ¨s !");
+            alert("Objectifs mis à jour avec succès !");
             setupBabyTrackerListener(); 
         };
 
@@ -742,7 +742,7 @@
                 const monthNum = String(cur.getMonth() + 1).padStart(2, '0');
                 const dayName = daysShort[cur.getDay()];
                 
-                let valueStr = dayIndex === 0 ? "Naissance" : `${dayIndex}Ã¨me JOUR`;
+                let valueStr = dayIndex === 0 ? "Naissance" : `${dayIndex}ème JOUR`;
                 let labelStr = dayIndex === 0 
                     ? `Jour 0 - Naissance (${dayNum}/${monthNum} - ${dayName})`
                     : `Jour ${dayIndex} (${dayNum}/${monthNum} - ${dayName})`;
@@ -776,42 +776,42 @@
         };
 
         const manualImports = [
-            { user: "Sandra P.", sexe: "GarÃ§on", prenom: "AloÃ¯s", taille: 51, poids: 3.300, passion: "Danse", date: "2026-08-10", heure: "--" },
+            { user: "Sandra P.", sexe: "Garçon", prenom: "Aloïs", taille: 51, poids: 3.300, passion: "Danse", date: "2026-08-10", heure: "--" },
             { user: "Laura M.", sexe: "Fille", prenom: "Alice", taille: 51, poids: 3.450, passion: "Bouffe", date: "2026-07-23", heure: "--" },
-            { user: "Alison", sexe: "GarÃ§on", prenom: "Louis", taille: 50.5, poids: 3.500, passion: "Musique", date: "2026-08-10", heure: "--" },
-            { user: "Charline", sexe: "GarÃ§on", prenom: "ThÃ©o", taille: 51.2, poids: 3.505, passion: "Rire", date: "2026-08-09", heure: "--" },
+            { user: "Alison", sexe: "Garçon", prenom: "Louis", taille: 50.5, poids: 3.500, passion: "Musique", date: "2026-08-10", heure: "--" },
+            { user: "Charline", sexe: "Garçon", prenom: "Théo", taille: 51.2, poids: 3.505, passion: "Rire", date: "2026-08-09", heure: "--" },
             { user: "Fanny", sexe: "Fille", prenom: "Lise", taille: 49.5, poids: 3.473, passion: "Aya", date: "2026-08-12", heure: "--" },
-            { user: "Emma", sexe: "GarÃ§on", prenom: "Louison", taille: 50, poids: 3.550, passion: "Chat", date: "2026-08-07", heure: "--" },
-            { user: "Alicia", sexe: "Fille", prenom: "Enola", taille: 52, poids: 3.570, passion: "ApÃ©ros", date: "2026-08-08", heure: "--" },
-            { user: "Benjamin", sexe: "GarÃ§on", prenom: "Nod junior", taille: 51.5, poids: 3.430, passion: "Salsa/Fifs", date: "2026-08-11", heure: "--" },
-            { user: "Sarah", sexe: "Fille", prenom: "LÃ©o", taille: 51, poids: 3.260, passion: "Musique", date: "2026-08-02", heure: "--" },
+            { user: "Emma", sexe: "Garçon", prenom: "Louison", taille: 50, poids: 3.550, passion: "Chat", date: "2026-08-07", heure: "--" },
+            { user: "Alicia", sexe: "Fille", prenom: "Enola", taille: 52, poids: 3.570, passion: "Apéros", date: "2026-08-08", heure: "--" },
+            { user: "Benjamin", sexe: "Garçon", prenom: "Nod junior", taille: 51.5, poids: 3.430, passion: "Salsa/Fifs", date: "2026-08-11", heure: "--" },
+            { user: "Sarah", sexe: "Fille", prenom: "Léo", taille: 51, poids: 3.260, passion: "Musique", date: "2026-08-02", heure: "--" },
             { user: "Christine", sexe: "Fille", prenom: "Vanille", taille: 50, poids: 3.000, passion: "Sport", date: "2026-08-28", heure: "--" },
-            { user: "Maxime G.", sexe: "GarÃ§on", prenom: "Jean", taille: 49.4, poids: 3.120, passion: "Escrime", date: "2026-08-10", heure: "--" },
-            { user: "CÃ©line", sexe: "GarÃ§on", prenom: "Marius", taille: 48.7, poids: 2.900, passion: "Voyages", date: "2026-08-09", heure: "--" },
-            { user: "Dominique (PAPA)", sexe: "GarÃ§on", prenom: "Amour", taille: 50.2, poids: 3.060, passion: "Golfy", date: "2026-08-08", heure: "--" },
-            { user: "BÃ©atrice (MAMAN)", sexe: "GarÃ§on", prenom: "Anouk / SÃ©bastien", taille: 50.5, poids: 3.280, passion: "Musique", date: "2026-08-08", heure: "--" },
-            { user: "AnaÃ¯s", sexe: "GarÃ§on", prenom: "Fleur", taille: 51.3, poids: 3.500, passion: "Musique", date: "2026-08-08", heure: "--" },
-            { user: "JÃ©rÃ´me", sexe: "GarÃ§on", prenom: "Jean-Claude", taille: 50.1, poids: 3.200, passion: "Sport", date: "2026-08-07", heure: "--" },
+            { user: "Maxime G.", sexe: "Garçon", prenom: "Jean", taille: 49.4, poids: 3.120, passion: "Escrime", date: "2026-08-10", heure: "--" },
+            { user: "Céline", sexe: "Garçon", prenom: "Marius", taille: 48.7, poids: 2.900, passion: "Voyages", date: "2026-08-09", heure: "--" },
+            { user: "Dominique (PAPA)", sexe: "Garçon", prenom: "Amour", taille: 50.2, poids: 3.060, passion: "Golfy", date: "2026-08-08", heure: "--" },
+            { user: "Béatrice (MAMAN)", sexe: "Garçon", prenom: "Anouk / Sébastien", taille: 50.5, poids: 3.280, passion: "Musique", date: "2026-08-08", heure: "--" },
+            { user: "Anaïs", sexe: "Garçon", prenom: "Fleur", taille: 51.3, poids: 3.500, passion: "Musique", date: "2026-08-08", heure: "--" },
+            { user: "Jérôme", sexe: "Garçon", prenom: "Jean-Claude", taille: 50.1, poids: 3.200, passion: "Sport", date: "2026-08-07", heure: "--" },
             { user: "Henri", sexe: "Fille", prenom: "Teahorui / Perai", taille: 48, poids: 3.100, passion: "Sport", date: "2026-08-11", heure: "--" },
-            { user: "Valou", sexe: "GarÃ§on", prenom: "ThÃ©o", taille: 50, poids: 2.800, passion: "Sport", date: "2026-08-12", heure: "--" },
-            { user: "Anna", sexe: "Fille", prenom: "HÃ©lÃ¨ne", taille: 50, poids: 2.900, passion: "Danse", date: "2026-07-29", heure: "--" },
-            { user: "Sam", sexe: "GarÃ§on", prenom: "Michael ou Killian", taille: 50, poids: 3.100, passion: "10 maths", date: "2026-08-01", heure: "--" },
-            { user: "Iris", sexe: "Fille", prenom: "CÃ©anne", taille: 51, poids: 3.050, passion: "Gym", date: "2026-08-01", heure: "--" },
+            { user: "Valou", sexe: "Garçon", prenom: "Théo", taille: 50, poids: 2.800, passion: "Sport", date: "2026-08-12", heure: "--" },
+            { user: "Anna", sexe: "Fille", prenom: "Hélène", taille: 50, poids: 2.900, passion: "Danse", date: "2026-07-29", heure: "--" },
+            { user: "Sam", sexe: "Garçon", prenom: "Michael ou Killian", taille: 50, poids: 3.100, passion: "10 maths", date: "2026-08-01", heure: "--" },
+            { user: "Iris", sexe: "Fille", prenom: "Céanne", taille: 51, poids: 3.050, passion: "Gym", date: "2026-08-01", heure: "--" },
             { user: "Katou", sexe: "Fille", prenom: "Zalia", taille: 51, poids: 3.210, passion: "FIFA", date: "2026-07-27", heure: "--" },
-            { user: "Issiaga", sexe: "GarÃ§on", prenom: "Thomas", taille: 48, poids: 4.500, passion: "Danse", date: "2026-08-07", heure: "--" },
+            { user: "Issiaga", sexe: "Garçon", prenom: "Thomas", taille: 48, poids: 4.500, passion: "Danse", date: "2026-08-07", heure: "--" },
             { user: "Wilson", sexe: "Fille", prenom: "Natalia", taille: 52, poids: 3.000, passion: "Wing Tsun", date: "2026-08-10", heure: "--" },
-            { user: "Chamsia", sexe: "GarÃ§on", prenom: "Lali", taille: 55, poids: 3.200, passion: "Danse", date: "2026-08-08", heure: "--" },
-            { user: "Mamour", sexe: "GarÃ§on", prenom: "Honey", taille: 51, poids: 3.300, passion: "Kind", date: "2026-08-31", heure: "--" },
+            { user: "Chamsia", sexe: "Garçon", prenom: "Lali", taille: 55, poids: 3.200, passion: "Danse", date: "2026-08-08", heure: "--" },
+            { user: "Mamour", sexe: "Garçon", prenom: "Honey", taille: 51, poids: 3.300, passion: "Kind", date: "2026-08-31", heure: "--" },
             { user: "Zalid", sexe: "Fille", prenom: "Inaya", taille: 45, poids: 5.000, passion: "Chanter/L'ART", date: "2026-08-04", heure: "--" },
-            { user: "Rahama", sexe: "Fille", prenom: "Myan", taille: 52, poids: 4.500, passion: "MystÃ¨re ð®", date: "2026-08-03", heure: "--" },
+            { user: "Rahama", sexe: "Fille", prenom: "Myan", taille: 52, poids: 4.500, passion: "Mystère 🔮", date: "2026-08-03", heure: "--" },
             { user: "Rita", sexe: "Fille", prenom: "Aucun", taille: 50, poids: 3.700, passion: "Basket", date: "2026-07-29", heure: "--" },
-            { user: "KÃ©vin", sexe: "GarÃ§on", prenom: "Nelson", taille: 48, poids: 3.400, passion: "Basket", date: "2026-08-05", heure: "--" },
-            { user: "Tani", sexe: "GarÃ§on", prenom: "William", taille: 47, poids: 2.900, passion: "Foot", date: "2026-07-30", heure: "--" },
-            { user: "Ami de l'enfant", sexe: "GarÃ§on", prenom: "Miguel", taille: 50, poids: 3.000, passion: "Dessin", date: "2026-07-31", heure: "--" },
+            { user: "Kévin", sexe: "Garçon", prenom: "Nelson", taille: 48, poids: 3.400, passion: "Basket", date: "2026-08-05", heure: "--" },
+            { user: "Tani", sexe: "Garçon", prenom: "William", taille: 47, poids: 2.900, passion: "Foot", date: "2026-07-30", heure: "--" },
+            { user: "Ami de l'enfant", sexe: "Garçon", prenom: "Miguel", taille: 50, poids: 3.000, passion: "Dessin", date: "2026-07-31", heure: "--" },
             { user: "Marlyse", sexe: "Fille", prenom: "Aucun", taille: 45, poids: 3.250, passion: "Danse", date: "2026-08-11", heure: "--" },
-            { user: "BADE", sexe: "GarÃ§on", prenom: "KAÃ¯S", taille: 50, poids: 2.800, passion: "Football", date: "2026-08-05", heure: "--" },
-            { user: "Isaac", sexe: "GarÃ§on", prenom: "Benjamin/RaphaÃ«l", taille: 52, poids: 3.700, passion: "Ãchecs", date: "2026-08-07", heure: "--" },
-            { user: "Loane", sexe: "GarÃ§on", prenom: "Mathis", taille: 50, poids: 3.100, passion: "Football", date: "2026-08-08", heure: "--" }
+            { user: "BADE", sexe: "Garçon", prenom: "KAïS", taille: 50, poids: 2.800, passion: "Football", date: "2026-08-05", heure: "--" },
+            { user: "Isaac", sexe: "Garçon", prenom: "Benjamin/Raphaël", taille: 52, poids: 3.700, passion: "Échecs", date: "2026-08-07", heure: "--" },
+            { user: "Loane", sexe: "Garçon", prenom: "Mathis", taille: 50, poids: 3.100, passion: "Football", date: "2026-08-08", heure: "--" }
         ];
 
         function getRecommendedBottleDose(day, weightKg, intervalHours) {
@@ -819,15 +819,15 @@
 
             if (d.includes("NAISSANCE") || d.includes("JOUR 0")) return { dose: "10 - 15 ml", label: "Jour 0" };
             if (d.includes("1ER") || d.includes("JOUR 1")) return { dose: "10 - 30 ml", label: "Jour 1" };
-            if (d.includes("2Ã") || d.includes("2E") || d.includes("JOUR 2")) return { dose: "20 - 40 ml", label: "Jour 2" };
-            if (d.includes("3Ã") || d.includes("3E") || d.includes("JOUR 3")) return { dose: "30 - 50 ml", label: "Jour 3" };
-            if (d.includes("4Ã") || d.includes("4E") || d.includes("JOUR 4")) return { dose: "40 - 60 ml", label: "Jour 4" };
-            if (d.includes("5Ã") || d.includes("5E") || d.includes("JOUR 5")) return { dose: "50 - 70 ml", label: "Jour 5" };
-            if (d.includes("6Ã") || d.includes("6E") || d.includes("JOUR 6")) return { dose: "60 - 80 ml", label: "Jour 6" };
-            if (d.includes("7Ã") || d.includes("7E") || d.includes("JOUR 7")) return { dose: "70 - 90 ml", label: "Jour 7" };
-            if (d.includes("8Ã") || d.includes("8E") || d.includes("JOUR 8")) return { dose: "80 - 100 ml", label: "Jour 8" };
-            if (d.includes("9Ã") || d.includes("9E") || d.includes("JOUR 9")) return { dose: "90 - 110 ml", label: "Jour 9" };
-            if (d.includes("10Ã") || d.includes("10E") || d.includes("JOUR 10")) return { dose: "100 - 120 ml", label: "Jour 10" };
+            if (d.includes("2È") || d.includes("2E") || d.includes("JOUR 2")) return { dose: "20 - 40 ml", label: "Jour 2" };
+            if (d.includes("3È") || d.includes("3E") || d.includes("JOUR 3")) return { dose: "30 - 50 ml", label: "Jour 3" };
+            if (d.includes("4È") || d.includes("4E") || d.includes("JOUR 4")) return { dose: "40 - 60 ml", label: "Jour 4" };
+            if (d.includes("5È") || d.includes("5E") || d.includes("JOUR 5")) return { dose: "50 - 70 ml", label: "Jour 5" };
+            if (d.includes("6È") || d.includes("6E") || d.includes("JOUR 6")) return { dose: "60 - 80 ml", label: "Jour 6" };
+            if (d.includes("7È") || d.includes("7E") || d.includes("JOUR 7")) return { dose: "70 - 90 ml", label: "Jour 7" };
+            if (d.includes("8È") || d.includes("8E") || d.includes("JOUR 8")) return { dose: "80 - 100 ml", label: "Jour 8" };
+            if (d.includes("9È") || d.includes("9E") || d.includes("JOUR 9")) return { dose: "90 - 110 ml", label: "Jour 9" };
+            if (d.includes("10È") || d.includes("10E") || d.includes("JOUR 10")) return { dose: "100 - 120 ml", label: "Jour 10" };
 
             if (weightKg && weightKg > 0) {
                 const bottlesPerDay = Math.round(24 / (intervalHours || 3.5));
@@ -896,8 +896,8 @@
                 else document.body.classList.remove('is-admin');
                 document.getElementById('page-login').classList.add('hidden');
                 document.getElementById('page-name').classList.remove('hidden');
-                document.getElementById('role-tag').innerText = isAdmin ? "MODE ADMIN" : "MODE INVITÃ";
-            } else { alert("Code d'accÃ¨s invalide !"); }
+                document.getElementById('role-tag').innerText = isAdmin ? "MODE ADMIN" : "MODE INVITÉ";
+            } else { alert("Code d'accès invalide !"); }
         };
 
         document.getElementById('btn-to-app').onclick = async () => {
@@ -961,27 +961,27 @@
             document.getElementById('vote-girl').classList.remove('selected-pink');
             document.getElementById('vote-boy').classList.remove('selected-blue');
             if(gender === 'Fille') document.getElementById('vote-girl').classList.add('selected-pink');
-            if(gender === 'GarÃ§on') document.getElementById('vote-boy').classList.add('selected-blue');
+            if(gender === 'Garçon') document.getElementById('vote-boy').classList.add('selected-blue');
         };
 
         document.getElementById('btn-submit-vote').onclick = async () => {
             const nameProno = document.getElementById('vote-name').value.trim();
-            const passionProno = document.getElementById('vote-passion').value.trim() || "MystÃ¨re ð®";
+            const passionProno = document.getElementById('vote-passion').value.trim() || "Mystère 🔮";
             const weightProno = parseFloat(document.getElementById('vote-weight').value);
             const heightProno = parseFloat(document.getElementById('vote-height').value);
             const dateProno = document.getElementById('vote-date').value || "--";
             const timeProno = document.getElementById('vote-time').value || "--";
 
             if(!selectedGender || !nameProno || !weightProno || !heightProno) {
-                return alert("Remplis le Sexe, PrÃ©nom, Poids et Taille !");
+                return alert("Remplis le Sexe, Prénom, Poids et Taille !");
             }
 
             await setDoc(doc(db, "predictions", userName), {
                 user: userName, sexe: selectedGender, prenom: nameProno, passion: passionProno, poids: weightProno, taille: heightProno, date: dateProno, heure: timeProno, timestamp: serverTimestamp()
             });
 
-            await triggerPushNotification("ð¶ Nouveau Pronostic !", `${userName} voit une ${selectedGender} nommÃ©e ${nameProno} (${weightProno}kg) !`);
-            alert("Pronostic enregistrÃ© avec succÃ¨s ! ð");
+            await triggerPushNotification("👶 Nouveau Pronostic !", `${userName} voit une ${selectedGender} nommée ${nameProno} (${weightProno}kg) !`);
+            alert("Pronostic enregistré avec succès ! 🎉");
         };
 
         document.getElementById('btn-add-track').onclick = async () => {
@@ -1000,12 +1000,12 @@
             if(!time) return alert("Veuillez saisir l'heure du soin !");
 
             if(!isNaN(tempBb)) {
-                if(tempBb < 36.5) await triggerPushNotification("â ï¸ ALERTE TEMPÃRATURE BÃBÃ", `TempÃ©rature basse : ${tempBb}Â°C Ã  ${time} !`);
-                else if(tempBb > 37.5) await triggerPushNotification("ð¥ ALERTE FIÃVRE BÃBÃ", `TempÃ©rature Ã©levÃ©e : ${tempBb}Â°C Ã  ${time} !`);
+                if(tempBb < 36.5) await triggerPushNotification("⚠️ ALERTE TEMPÉRATURE BÉBÉ", `Température basse : ${tempBb}°C à ${time} !`);
+                else if(tempBb > 37.5) await triggerPushNotification("🔥 ALERTE FIÈVRE BÉBÉ", `Température élevée : ${tempBb}°C à ${time} !`);
             }
 
             if(bottleOnTime && !food) {
-                food = "Bib validÃ© Ã  temps â";
+                food = "Bib validé à temps ✅";
             }
 
             if(food) {
@@ -1028,7 +1028,7 @@
             document.getElementById('track-weight').value = "";
             document.getElementById('track-bottle-ontime').checked = false;
 
-            alert("Saisie enregistrÃ©e !");
+            alert("Saisie enregistrée !");
         };
 
         // AJOUT MESURE DIRECTE VIA SECTION ANALYTICS
@@ -1038,7 +1038,7 @@
             const time = document.getElementById('chart-add-time').value.trim() || "12h00";
             const val = parseFloat(document.getElementById('chart-add-val').value);
 
-            if(isNaN(val)) return alert("Veuillez renseigner une valeur numÃ©rique valide.");
+            if(isNaN(val)) return alert("Veuillez renseigner une valeur numérique valide.");
 
             let docObj = {
                 day,
@@ -1054,7 +1054,7 @@
 
             await addDoc(collection(db, "baby_tracking"), docObj);
             document.getElementById('chart-add-val').value = "";
-            alert("Mesure ajoutÃ©e ! La courbe s'ajuste instantanÃ©ment.");
+            alert("Mesure ajoutée ! La courbe s'ajuste instantanément.");
         };
 
         window.removeMeasureMetric = async (docId, metricType) => {
@@ -1087,13 +1087,13 @@
             const lastWeight = parseFloat(rawWeight) || 0;
 
             const doseInfo = getRecommendedBottleDose(currentDay, lastWeight, intervalHours);
-            document.getElementById('next-bottle-dose').innerHTML = `ð¼ Dose conseillÃ©e (${doseInfo.label}) : <b class="text-white">${doseInfo.dose}</b>`;
+            document.getElementById('next-bottle-dose').innerHTML = `🍼 Dose conseillée (${doseInfo.label}) : <b class="text-white">${doseInfo.dose}</b>`;
 
             if(!lastMealRawTimeStr) {
                 document.getElementById('next-bottle-time').innerText = "--h--";
-                document.getElementById('next-bottle-status').innerText = "Aucun repas enregistrÃ©";
-                document.getElementById('meal-window-range').innerText = "--h-- Ã  --h--";
-                document.getElementById('meal-window-status').innerText = "Aucun biberon programmÃ©";
+                document.getElementById('next-bottle-status').innerText = "Aucun repas enregistré";
+                document.getElementById('meal-window-range').innerText = "--h-- à --h--";
+                document.getElementById('meal-window-status').innerText = "Aucun biberon programmé";
                 return;
             }
 
@@ -1142,7 +1142,7 @@
                 statusEl.className = "text-[10px] text-green-400 font-bold mt-0.5";
             } else {
                 const lateMins = Math.abs(diffMinutes);
-                statusEl.innerText = `â ï¸ Retard de ${lateMins} min ! PrÃ©parez le biberon !`;
+                statusEl.innerText = `⚠️ Retard de ${lateMins} min ! Préparez le biberon !`;
                 statusEl.className = "text-[10px] text-red-400 font-bold mt-0.5 animate-pulse";
             }
 
@@ -1152,13 +1152,13 @@
             const nextMealEndH = String(nextMealMaxDate.getHours()).padStart(2, '0');
             const nextMealEndM = String(nextMealMaxDate.getMinutes()).padStart(2, '0');
 
-            document.getElementById('meal-window-range').innerText = `${nextMealStartH}h${nextMealStartM} Ã  ${nextMealEndH}h${nextMealEndM}`;
+            document.getElementById('meal-window-range').innerText = `${nextMealStartH}h${nextMealStartM} à ${nextMealEndH}h${nextMealEndM}`;
 
             const mealStatusEl = document.getElementById('meal-window-status');
             const mealCard = document.getElementById('meal-window-card');
 
             if (diffMinutes > 0) {
-                mealStatusEl.innerText = `â³ Plage du prochain repas calculÃ©e automatique (${nextMealStartH}h${nextMealStartM} max ${nextMealEndH}h${nextMealEndM})`;
+                mealStatusEl.innerText = `⏳ Plage du prochain repas calculée automatique (${nextMealStartH}h${nextMealStartM} max ${nextMealEndH}h${nextMealEndM})`;
                 mealStatusEl.className = "text-[10px] text-amber-300 font-bold mt-0.5";
                 mealCard.className = "bg-gradient-to-r from-amber-900/30 via-orange-900/30 to-purple-900/30 border border-amber-500/30 p-5 rounded-[2.5rem] flex items-center justify-between shadow-2xl relative overflow-hidden";
             } else {
@@ -1166,20 +1166,20 @@
                 const mealDiffMins = Math.round(mealDiffMs / 60000);
 
                 if (mealDiffMins >= 0) {
-                    mealStatusEl.innerText = `â³ Repas en cours ! BÃ©bÃ© a encore ${mealDiffMins} min pour terminer son biberon.`;
+                    mealStatusEl.innerText = `⏳ Repas en cours ! Bébé a encore ${mealDiffMins} min pour terminer son biberon.`;
                     mealStatusEl.className = "text-[10px] text-amber-300 font-bold mt-0.5";
                     mealCard.className = "bg-gradient-to-r from-amber-900/30 via-orange-900/30 to-purple-900/30 border border-amber-500/30 p-5 rounded-[2.5rem] flex items-center justify-between shadow-2xl relative overflow-hidden";
                 } else {
                     const elapsedOver = Math.abs(mealDiffMins);
-                    mealStatusEl.innerText = `ð¢ DÃPASSÃ DE ${elapsedOver} MIN ! Limite de 1h30 dÃ©passÃ©e ! Validez le biberon dÃ¨s qu'il est fini.`;
+                    mealStatusEl.innerText = `📢 DÉPASSÉ DE ${elapsedOver} MIN ! Limite de 1h30 dépassée ! Validez le biberon dès qu'il est fini.`;
                     mealStatusEl.className = "text-[10px] text-red-400 font-black mt-0.5 animate-bounce";
                     mealCard.className = "bg-gradient-to-r from-red-900/60 via-pink-900/60 to-purple-900/60 border border-red-500 p-5 rounded-[2.5rem] flex items-center justify-between shadow-2xl relative overflow-hidden";
 
                     if (!mealAlertSent) {
                         mealAlertSent = true;
                         triggerPushNotification(
-                            "ð¢ TEMPS DE REPAS DÃPASSÃ !",
-                            `Heure prÃ©vue : ${nextMealStartH}h${nextMealStartM}. La limite de 1h30 (${nextMealEndH}h${nextMealEndM}) est dÃ©passÃ©e !`
+                            "📢 TEMPS DE REPAS DÉPASSÉ !",
+                            `Heure prévue : ${nextMealStartH}h${nextMealStartM}. La limite de 1h30 (${nextMealEndH}h${nextMealEndM}) est dépassée !`
                         );
                     }
                 }
@@ -1193,14 +1193,14 @@
             const chartItems = data.filter(d => (d.weight !== null && d.weight !== undefined) || (d.tempBb !== null && d.tempBb !== undefined));
 
             if(chartItems.length === 0) {
-                listEl.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-500 italic">Aucune donnÃ©e de courbe actuellement</td></tr>`;
+                listEl.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-500 italic">Aucune donnée de courbe actuellement</td></tr>`;
                 return;
             }
 
             listEl.innerHTML = "";
             chartItems.forEach(item => {
                 const weightTxt = (item.weight !== null && item.weight !== undefined) ? `${item.weight} kg` : '--';
-                const tempTxt = (item.tempBb !== null && item.tempBb !== undefined) ? `${item.tempBb} Â°C` : '--';
+                const tempTxt = (item.tempBb !== null && item.tempBb !== undefined) ? `${item.tempBb} °C` : '--';
 
                 listEl.innerHTML += `
                     <tr>
@@ -1258,7 +1258,7 @@
                 }
 
                 if(snapshot.empty) {
-                    tableBody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-500 italic">Aucune donnÃ©e enregistrÃ©e</td></tr>`;
+                    tableBody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-500 italic">Aucune donnée enregistrée</td></tr>`;
                 } else {
                     snapshot.forEach(docSnap => {
                         const d = docSnap.data();
@@ -1306,25 +1306,25 @@
                         }
 
                         if(d.food || d.bottleOnTime) {
-                            lastMealText = `${d.food || 'ValidÃ©'} (${d.time})`;
+                            lastMealText = `${d.food || 'Validé'} (${d.time})`;
                             lastMealRawTimeStr = d.time;
                         }
                         if(d.stool) lastStoolText = `Oui (${d.time})`;
                         if(d.urine) lastUrineText = `Oui (${d.time})`;
 
                         let diaperDisplay = [];
-                        if(d.diaperChanged) diaperDisplay.push("ð§· Change");
-                        if(d.urine) diaperDisplay.push("ð§");
-                        if(d.stool) diaperDisplay.push("ð©");
+                        if(d.diaperChanged) diaperDisplay.push("🧷 Change");
+                        if(d.urine) diaperDisplay.push("💧");
+                        if(d.stool) diaperDisplay.push("💩");
                         let diaperStr = diaperDisplay.join(' ') || '--';
 
                         tableBody.innerHTML += `
                             <tr>
                                 <td class="p-2 font-bold">${d.day} <span class="text-purple-400 block text-[9px]">${d.time}</span></td>
                                 <td class="p-2">${diaperStr}</td>
-                                <td class="p-2 font-black ${d.tempBb < 36.5 ? 'text-blue-400' : d.tempBb > 37.5 ? 'text-red-400' : 'text-green-400'}">${d.tempBb ? d.tempBb + 'Â°' : '--'}</td>
-                                <td class="p-2 text-slate-400">${d.tempInc ? d.tempInc + 'Â°' : '--'}</td>
-                                <td class="p-2 font-semibold text-pink-300">${d.food || (d.bottleOnTime ? 'â Ã temps' : '--')}</td>
+                                <td class="p-2 font-black ${d.tempBb < 36.5 ? 'text-blue-400' : d.tempBb > 37.5 ? 'text-red-400' : 'text-green-400'}">${d.tempBb ? d.tempBb + '°' : '--'}</td>
+                                <td class="p-2 text-slate-400">${d.tempInc ? d.tempInc + '°' : '--'}</td>
+                                <td class="p-2 font-semibold text-pink-300">${d.food || (d.bottleOnTime ? '✅ À temps' : '--')}</td>
                                 <td class="p-2 text-slate-300">${d.obs || '--'}</td>
                                 <td class="p-2 text-right no-print">
                                     <button onclick="deleteTrackDoc('${id}')" class="admin-only text-red-400 hover:text-red-500 text-xs is-block"><i class="fas fa-trash"></i></button>
@@ -1342,15 +1342,15 @@
                 document.getElementById('stat-diaper-month').innerText = diaperMonth;
 
                 if (bibToday > thresholds.bibMax && thresholds.bibMax > 0) {
-                    triggerPushNotification("ð¼ SEUIL MAXIMUM DE BIBERONS DÃPASSÃ", `Aujourd'hui : ${bibToday} biberons (Max configurÃ© : ${thresholds.bibMax})`);
+                    triggerPushNotification("🍼 SEUIL MAXIMUM DE BIBERONS DÉPASSÉ", `Aujourd'hui : ${bibToday} biberons (Max configuré : ${thresholds.bibMax})`);
                 } else if (bibToday < thresholds.bibMin && thresholds.bibMin > 0 && now.getHours() >= 20) {
-                    triggerPushNotification("â ï¸ SEUIL MINIMUM DE BIBERONS NON ATTEINT", `Aujourd'hui : seulement ${bibToday} biberons (Min configurÃ© : ${thresholds.bibMin})`);
+                    triggerPushNotification("⚠️ SEUIL MINIMUM DE BIBERONS NON ATTEINT", `Aujourd'hui : seulement ${bibToday} biberons (Min configuré : ${thresholds.bibMin})`);
                 }
 
                 if (diaperToday > thresholds.diaperMax && thresholds.diaperMax > 0) {
-                    triggerPushNotification("ð§· SEUIL MAXIMUM DE COUCHES DÃPASSÃ", `Aujourd'hui : ${diaperToday} couches (Max configurÃ© : ${thresholds.diaperMax})`);
+                    triggerPushNotification("🧷 SEUIL MAXIMUM DE COUCHES DÉPASSÉ", `Aujourd'hui : ${diaperToday} couches (Max configuré : ${thresholds.diaperMax})`);
                 } else if (diaperToday < thresholds.diaperMin && thresholds.diaperMin > 0 && now.getHours() >= 20) {
-                    triggerPushNotification("â ï¸ SEUIL MINIMUM DE COUCHES NON ATTEINT", `Aujourd'hui : seulement ${diaperToday} couches (Min configurÃ© : ${thresholds.diaperMin})`);
+                    triggerPushNotification("⚠️ SEUIL MINIMUM DE COUCHES NON ATTEINT", `Aujourd'hui : seulement ${diaperToday} couches (Min configuré : ${thresholds.diaperMin})`);
                 }
 
                 document.getElementById('last-meal').innerText = lastMealText;
@@ -1365,18 +1365,18 @@
                     if(latestTempBb < 36.5) {
                         alertBox.className = "p-4 rounded-2xl border flex items-center gap-3 bg-blue-500/10 border-blue-500/30 text-blue-300";
                         document.getElementById('temp-alert-icon').className = "fas fa-temperature-low text-2xl text-blue-400 animate-bounce";
-                        document.getElementById('temp-alert-title').innerText = "â ï¸ TempÃ©rature basse (Hypothermie)";
-                        document.getElementById('temp-alert-msg').innerText = `DerniÃ¨re mesure: ${latestTempBb}Â°C. Couvrir le bÃ©bÃ©.`;
+                        document.getElementById('temp-alert-title').innerText = "⚠️ Température basse (Hypothermie)";
+                        document.getElementById('temp-alert-msg').innerText = `Dernière mesure: ${latestTempBb}°C. Couvrir le bébé.`;
                     } else if(latestTempBb > 37.5) {
                         alertBox.className = "p-4 rounded-2xl border flex items-center gap-3 bg-red-500/10 border-red-500/30 text-red-300";
                         document.getElementById('temp-alert-icon').className = "fas fa-temperature-high text-2xl text-red-400 animate-pulse";
-                        document.getElementById('temp-alert-title').innerText = "ð¥ Alerte FiÃ¨vre";
-                        document.getElementById('temp-alert-msg').innerText = `DerniÃ¨re mesure: ${latestTempBb}Â°C. Surveiller l'Ã©volution.`;
+                        document.getElementById('temp-alert-title').innerText = "🔥 Alerte Fièvre";
+                        document.getElementById('temp-alert-msg').innerText = `Dernière mesure: ${latestTempBb}°C. Surveiller l'évolution.`;
                     } else {
                         alertBox.className = "p-4 rounded-2xl border flex items-center gap-3 bg-green-500/10 border-green-500/30 text-green-300";
                         document.getElementById('temp-alert-icon').className = "fas fa-check-circle text-2xl text-green-400";
-                        document.getElementById('temp-alert-title').innerText = "â TempÃ©rature Normale";
-                        document.getElementById('temp-alert-msg').innerText = `DerniÃ¨re mesure: ${latestTempBb}Â°C. BÃ©bÃ© est en zone de confort !`;
+                        document.getElementById('temp-alert-title').innerText = "✅ Température Normale";
+                        document.getElementById('temp-alert-msg').innerText = `Dernière mesure: ${latestTempBb}°C. Bébé est en zone de confort !`;
                     }
                 } else alertBox.className = "hidden";
 
@@ -1437,7 +1437,7 @@
                     labels: labels,
                     datasets: [
                         {
-                            label: 'TÂ° BÃ©bÃ© (Â°C)',
+                            label: 'T° Bébé (°C)',
                             data: bbData,
                             borderColor: '#ec4899',
                             backgroundColor: 'rgba(236, 72, 153, 0.1)',
@@ -1449,7 +1449,7 @@
                             pointBackgroundColor: '#f472b6'
                         },
                         {
-                            label: 'TÂ° Incubateur (Â°C)',
+                            label: 'T° Incubateur (°C)',
                             data: incData,
                             borderColor: '#a855f7',
                             borderDash: [5, 5],
@@ -1526,7 +1526,7 @@
 
         document.getElementById('btn-manual-add').onclick = () => {
             if(!isAdmin) return;
-            const targetUser = prompt("Nom/PrÃ©nom du proche :");
+            const targetUser = prompt("Nom/Prénom du proche :");
             if(!targetUser || targetUser.trim().length < 2) return alert("Nom invalide");
 
             const modal = document.getElementById('admin-modal-gender');
@@ -1534,25 +1534,25 @@
 
             const savePrediction = async (sexe) => {
                 modal.classList.add('hidden');
-                const prenom = prompt("IdÃ©e de prÃ©nom :");
-                const passion = prompt("Future passion estimÃ©e :") || "MystÃ¨re ð®";
-                const poids = parseFloat(prompt("Poids estimÃ© (kg) :"));
-                const taille = parseFloat(prompt("Taille estimÃ©e (cm) :"));
-                const date = prompt("Date estimÃ©e (AAAA-MM-JJ) :") || "--";
-                const heure = prompt("Heure estimÃ©e (HH:MM) :") || "--";
+                const prenom = prompt("Idée de prénom :");
+                const passion = prompt("Future passion estimée :") || "Mystère 🔮";
+                const poids = parseFloat(prompt("Poids estimé (kg) :"));
+                const taille = parseFloat(prompt("Taille estimée (cm) :"));
+                const date = prompt("Date estimée (AAAA-MM-JJ) :") || "--";
+                const heure = prompt("Heure estimée (HH:MM) :") || "--";
 
-                if(!prenom || isNaN(poids) || isNaN(taille)) return alert("DonnÃ©es incomplÃ¨tes.");
+                if(!prenom || isNaN(poids) || isNaN(taille)) return alert("Données incomplètes.");
 
                 await setDoc(doc(db, "predictions", targetUser.trim()), {
                     user: targetUser.trim(), sexe: sexe, prenom: prenom, passion: passion, poids: poids, taille: taille, date: date, heure: heure, timestamp: serverTimestamp()
                 });
 
-                await triggerPushNotification("ð¶ Nouveau Pronostic (par Admin) !", `Un prono a Ã©tÃ© ajoutÃ© pour ${targetUser} !`);
-                alert(`Pronostic de ${targetUser} ajoutÃ© avec succÃ¨s !`);
+                await triggerPushNotification("👶 Nouveau Pronostic (par Admin) !", `Un prono a été ajouté pour ${targetUser} !`);
+                alert(`Pronostic de ${targetUser} ajouté avec succès !`);
             };
 
             document.getElementById('admin-btn-girl').onclick = () => savePrediction("Fille");
-            document.getElementById('admin-btn-boy').onclick = () => savePrediction("GarÃ§on");
+            document.getElementById('admin-btn-boy').onclick = () => savePrediction("Garçon");
             document.getElementById('admin-btn-cancel').onclick = () => modal.classList.add('hidden');
         };
 
@@ -1586,7 +1586,7 @@
                     totalVotes++;
 
                     if(item.sexe === 'Fille') girlVotes++;
-                    if(item.sexe === 'GarÃ§on') boyVotes++;
+                    if(item.sexe === 'Garçon') boyVotes++;
 
                     if(item.poids) { sumWeight += item.poids; countWeight++; }
                     if(item.taille) { sumHeight += item.taille; countHeight++; }
@@ -1606,11 +1606,11 @@
                                 <span class="text-[10px] font-bold px-3 py-1 rounded-full border ${genderBadge} ${genderColor}">${item.sexe}</span>
                             </div>
                             <div class="grid grid-cols-2 gap-2 text-xs">
-                                <p class="text-slate-400">PrÃ©nom : <b class="text-white">${item.prenom || '--'}</b></p>
+                                <p class="text-slate-400">Prénom : <b class="text-white">${item.prenom || '--'}</b></p>
                                 <p class="text-slate-400">Passion : <b class="text-white">${item.passion || '--'}</b></p>
                                 <p class="text-slate-400">Poids : <b class="text-white">${item.poids ? item.poids + ' kg' : '--'}</b></p>
                                 <p class="text-slate-400">Taille : <b class="text-white">${item.taille ? item.taille + ' cm' : '--'}</b></p>
-                                <p class="text-slate-400 col-span-2">Estimation : <b class="text-purple-300">${item.date || '--'} Ã  ${item.heure || '--'}</b></p>
+                                <p class="text-slate-400 col-span-2">Estimation : <b class="text-purple-300">${item.date || '--'} à ${item.heure || '--'}</b></p>
                             </div>
                         </div>
                     `;
@@ -1687,8 +1687,8 @@
             }
 
             await setDoc(doc(db, "results", "final"), { sexe, prenom, poids, taille, date, heure, timestamp: serverTimestamp() });
-            await triggerPushNotification("ð BÃBÃ EST LÃ !", `${prenom} est nÃ©(e) ! Venez dÃ©couvrir le gagnant !`);
-            alert("RÃ©sultat final publiÃ© avec succÃ¨s !");
+            await triggerPushNotification("🎉 BÉBÉ EST LÀ !", `${prenom} est né(e) ! Venez découvrir le gagnant !`);
+            alert("Résultat final publié avec succès !");
         };
 
         function setupChatListener() {
@@ -1737,10 +1737,10 @@
 
         document.getElementById('btn-urgent').onclick = async () => {
             if(!isAdmin) return;
-            const text = prompt("Message d'alerte urgente (ex: En route pour la maternitÃ© !) :");
+            const text = prompt("Message d'alerte urgente (ex: En route pour la maternité !) :");
             if(text) {
-                await addDoc(collection(db, "chat"), { user: userName, text: `ð¨ ALERTE NAISSANCE : ${text}`, urgent: true, timestamp: serverTimestamp() });
-                await triggerPushNotification("ð¨ ALERTE NAISSANCE !", text);
+                await addDoc(collection(db, "chat"), { user: userName, text: `🚨 ALERTE NAISSANCE : ${text}`, urgent: true, timestamp: serverTimestamp() });
+                await triggerPushNotification("🚨 ALERTE NAISSANCE !", text);
             }
         };
 
