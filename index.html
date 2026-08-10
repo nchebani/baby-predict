@@ -161,8 +161,12 @@
             <i class="fa-solid fa-pen-to-square text-pink-500"></i> Faire un pronostic
           </h3>
           <form id="predictionForm" onsubmit="addPrediction(event)" class="space-y-4">
+            <div id="adminUserOverride" class="hidden">
+              <label class="block text-xs font-bold text-purple-600 mb-1">Nom du participant (Mode Admin)</label>
+              <input type="text" id="predUserAdmin" placeholder="Saisir pour quelqu'un d'autre..." class="w-full px-3 py-2 rounded-xl border border-purple-300 bg-purple-50/50 text-sm focus:ring-2 focus:ring-purple-400 outline-none">
+            </div>
             <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1">Prénom estimé</label>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Prénom estimé du bébé</label>
               <input type="text" id="predName" required placeholder="ex: Emma, Leo..." class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-pink-300 outline-none">
             </div>
             <div class="grid grid-cols-2 gap-2">
@@ -189,7 +193,7 @@
               </div>
             </div>
             <button type="submit" class="w-full py-3 bg-pink-500 hover:bg-pink-600 text-white font-bold rounded-xl shadow-md transition text-sm">
-              Enregistrer mon pronostic
+              Enregistrer le pronostic
             </button>
           </form>
         </div>
@@ -209,6 +213,7 @@
                   <th class="pb-3 font-semibold">Poids</th>
                   <th class="pb-3 font-semibold">Taille</th>
                   <th class="pb-3 font-semibold">Date</th>
+                  <th class="pb-3 font-semibold text-right admin-only hidden">Action</th>
                 </tr>
               </thead>
               <tbody id="predictionsTableBody" class="divide-y divide-slate-100"></tbody>
@@ -246,7 +251,7 @@
         </div>
       </div>
 
-      <!-- MODULE CHRONOMÈTRE (SEIN / BIBERON / CONTRACTIONS) -->
+      <!-- MODULE CHRONOMÈTRE -->
       <div class="glassmorphism p-6 rounded-3xl border border-white/50">
         <div class="flex flex-col md:flex-row items-center justify-between gap-4">
           <div class="flex items-center gap-3">
@@ -286,7 +291,6 @@
         </div>
       </div>
 
-      <!-- Statistiques globales de soins -->
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div class="glassmorphism p-4 rounded-2xl">
           <div class="flex justify-between items-center mb-1">
@@ -571,17 +575,26 @@
       if (code.toUpperCase() === 'ADMIN2026') {
         isAdmin = true;
         document.getElementById('adminPanel').classList.remove('hidden');
+        document.getElementById('adminUserOverride').classList.remove('hidden');
+      } else {
+        isAdmin = false;
+        document.getElementById('adminPanel').classList.add('hidden');
+        document.getElementById('adminUserOverride').classList.add('hidden');
       }
 
       document.getElementById('userBadge').innerHTML = `<i class="fa-solid fa-user-check text-emerald-500 mr-1"></i> ${currentUser} ${isAdmin ? '<span class="text-xs text-purple-600 font-bold">(Admin)</span>' : ''}`;
       document.getElementById('loginPage').classList.add('hidden');
+
+      renderPredictions();
     }
 
     function logout() {
       currentUser = null;
       isAdmin = false;
       document.getElementById('adminPanel').classList.add('hidden');
+      document.getElementById('adminUserOverride').classList.add('hidden');
       document.getElementById('loginPage').classList.remove('hidden');
+      renderPredictions();
     }
 
     function switchTab(tab) {
@@ -607,8 +620,16 @@
       e.preventDefault();
       if (!currentUser) return;
 
+      let targetUser = currentUser;
+      if (isAdmin) {
+        const adminOverride = document.getElementById('predUserAdmin').value.trim();
+        if (adminOverride) {
+          targetUser = adminOverride;
+        }
+      }
+
       const newPred = {
-        user: currentUser,
+        user: targetUser,
         name: document.getElementById('predName').value.trim(),
         gender: document.getElementById('predGender').value,
         weight: parseFloat(document.getElementById('predWeight').value),
@@ -623,15 +644,29 @@
       document.getElementById('predDate').value = todayStr;
     }
 
+    function deletePrediction(index) {
+      if (!isAdmin) return;
+      if (confirm(`Voulez-vous vraiment supprimer le pronostic de "${predictions[index].user}" ?`)) {
+        predictions.splice(index, 1);
+        renderPredictions();
+      }
+    }
+
     function renderPredictions() {
       const tbody = document.getElementById('predictionsTableBody');
       tbody.innerHTML = '';
+
+      const adminHeaders = document.querySelectorAll('.admin-only');
+      adminHeaders.forEach(el => {
+        if (isAdmin) el.classList.remove('hidden');
+        else el.classList.add('hidden');
+      });
 
       let countFille = 0;
       let totalWeight = 0;
       let totalHeight = 0;
 
-      predictions.forEach(p => {
+      predictions.forEach((p, idx) => {
         if (p.gender === 'Fille') countFille++;
         totalWeight += p.weight;
         totalHeight += p.height;
@@ -645,6 +680,7 @@
           <td class="py-3 font-medium">${p.weight.toFixed(3)} kg</td>
           <td class="py-3 font-medium">${p.height} cm</td>
           <td class="py-3 text-slate-500">${p.date}</td>
+          ${isAdmin ? `<td class="py-3 text-right"><button onclick="deletePrediction(${idx})" class="p-1.5 text-slate-400 hover:text-red-500 transition rounded-lg hover:bg-red-50" title="Supprimer ce pronostic"><i class="fa-solid fa-trash-can"></i></button></td>` : ''}
         `;
         tbody.appendChild(tr);
       });
@@ -656,6 +692,10 @@
         document.getElementById('statGender').innerText = `${girlPct}% Fille / ${100 - girlPct}% Garçon`;
         document.getElementById('statAvgWeight').innerText = `${(totalWeight / predictions.length).toFixed(3)} kg`;
         document.getElementById('statAvgHeight').innerText = `${(totalHeight / predictions.length).toFixed(1)} cm`;
+      } else {
+        document.getElementById('statGender').innerText = `--`;
+        document.getElementById('statAvgWeight').innerText = `-- kg`;
+        document.getElementById('statAvgHeight').innerText = `-- cm`;
       }
     }
 
