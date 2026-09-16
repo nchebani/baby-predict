@@ -82,12 +82,12 @@
         <i class="fa-solid fa-baby"></i>
       </div>
       <h1 class="text-2xl font-black text-slate-800 mb-2">BABY PREDICT 2026</h1>
-      <p class="text-sm text-slate-500 mb-6">Connectez-vous pour accéder au tableau de bord et à la fiche de soins.</p>
+      <p class="text-sm text-slate-500 mb-6">Connectez-vous pour accéder au tableau de bord, à la fiche de soins et à l'agenda partagé.</p>
       
       <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4 text-left">
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Votre Prénom / Pseudo</label>
-          <input type="text" id="usernameInput" required placeholder="ex: Julie, Oncle Marc..." class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-400 bg-white/80">
+          <input type="text" id="usernameInput" required placeholder="ex: Papa, Maman, Julie..." class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-400 bg-white/80">
         </div>
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Code d'accès</label>
@@ -101,6 +101,24 @@
     </div>
   </div>
 
+  <!-- BANNIÈRE DE NOTIFICATION NOUVEL ÉVÉNEMENT -->
+  <div id="agendaNotificationBanner" class="hidden fixed top-4 right-4 left-4 md:left-auto md:max-w-md z-40 bg-indigo-600 text-white p-4 rounded-2xl shadow-2xl border border-indigo-400 backdrop-blur-md animate-bounce">
+    <div class="flex items-start justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="p-2 bg-white/20 rounded-xl text-xl">
+          <i class="fa-solid fa-bell"></i>
+        </div>
+        <div>
+          <h4 class="font-bold text-sm">Nouveaux événements agenda !</h4>
+          <p class="text-xs text-indigo-100" id="agendaNotificationText">De nouveaux rendez-vous ou activités ont été ajoutés.</p>
+        </div>
+      </div>
+      <button onclick="dismissAgendaNotification()" class="text-white/80 hover:text-white p-1">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+  </div>
+
   <!-- NAVIGATION PRINCIPALE -->
   <header class="max-w-6xl mx-auto px-4 pt-6">
     <div class="glassmorphism rounded-2xl p-4 shadow-sm flex flex-wrap items-center justify-between gap-4">
@@ -110,7 +128,7 @@
         </div>
         <div>
           <h1 class="font-extrabold text-lg text-slate-800">BABY PREDICT 2026</h1>
-          <p class="text-xs text-slate-500">Espace Suivi Maternité, Pronostics & Agenda</p>
+          <p class="text-xs text-slate-500">Espace Suivi Maternité, Pronostics & Agenda Partagé</p>
         </div>
       </div>
 
@@ -121,8 +139,9 @@
         <button onclick="switchTab('maternite')" id="tab-maternite" class="px-3 py-2 text-sm font-semibold text-slate-600 hover:text-pink-600 transition flex items-center gap-2 whitespace-nowrap">
           <i class="fa-solid fa-heart-pulse"></i> Suivi Maternité & Soins
         </button>
-        <button onclick="switchTab('agenda')" id="tab-agenda" class="px-3 py-2 text-sm font-semibold text-slate-600 hover:text-pink-600 transition flex items-center gap-2 whitespace-nowrap">
+        <button onclick="switchTab('agenda')" id="tab-agenda" class="px-3 py-2 text-sm font-semibold text-slate-600 hover:text-pink-600 transition flex items-center gap-2 whitespace-nowrap relative">
           <i class="fa-solid fa-calendar-days"></i> Agenda Partagé
+          <span id="agendaBadgeDot" class="hidden absolute top-1 right-1 w-2.5 h-2.5 bg-indigo-500 rounded-full ring-2 ring-white"></span>
         </button>
       </nav>
 
@@ -702,13 +721,39 @@
       </div>
     </div>
 
-    <!-- SECTION 3 : AGENDA PARTAGÉ PARENTS -->
+    <!-- SECTION 3 : AGENDA PARTAGÉ PARENTS (ENRICHIE ET SÉCURISÉE) -->
     <div id="section-agenda" class="hidden space-y-6">
+      
+      <!-- LÉGENDE PARENTS ET COULEURS -->
+      <div class="glassmorphism p-4 rounded-2xl border border-white/50 flex flex-wrap items-center justify-between gap-4 bg-white/70">
+        <div class="flex items-center gap-3">
+          <div class="p-2.5 bg-indigo-100 text-indigo-600 rounded-xl text-lg font-bold">
+            <i class="fa-solid fa-users"></i>
+          </div>
+          <div>
+            <h4 class="font-extrabold text-slate-800 text-sm">Organisation Familiale Synchronisée</h4>
+            <p class="text-xs text-slate-500">Chaque parent peut ajouter, modifier ou supprimer un événement. Couleurs distinctes instantanées.</p>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3 text-xs font-bold">
+          <span class="px-3 py-1.5 rounded-xl bg-blue-100 text-blue-800 border border-blue-200 flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-blue-500"></span> Papa
+          </span>
+          <span class="px-3 py-1.5 rounded-xl bg-pink-100 text-pink-800 border border-pink-200 flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-pink-500"></span> Maman
+          </span>
+          <span class="px-3 py-1.5 rounded-xl bg-purple-100 text-purple-800 border border-purple-200 flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-purple-500"></span> Les deux / Famille
+          </span>
+        </div>
+      </div>
+
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         <!-- FORMULAIRE SAISIE AGENDA -->
-        <div class="glassmorphism p-6 rounded-3xl border border-white/50 h-fit">
-          <div class="flex justify-between items-center mb-4">
+        <div class="glassmorphism p-6 rounded-3xl border border-white/50 h-fit space-y-4">
+          <div class="flex justify-between items-center">
             <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2" id="formAgendaTitle">
               <i class="fa-solid fa-calendar-plus text-indigo-500"></i> Ajouter un événement
             </h3>
@@ -720,21 +765,33 @@
 
             <div>
               <label class="block text-xs font-semibold text-slate-600 mb-1">Intitulé de l'activité / RDV</label>
-              <input type="text" id="agendaTitle" required placeholder="ex: RDV Dentiste, Séance Fitness, Poste du matin..." class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-300 outline-none">
+              <input type="text" id="agendaTitle" required placeholder="ex: RDV Pédiatre, Repas Famille, Postes du matin..." class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-300 outline-none">
             </div>
 
             <div>
               <label class="block text-xs font-semibold text-slate-600 mb-1">Catégorie</label>
-              <select id="agendaCategory" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-300 outline-none">
-                <option value="RDV / Consultation"> RDV / Consultation Médicale ou Pro</option>
-                <option value="Activité Sportive"> Activité Sportive / Loisir</option>
-                <option value="Travail (Matin)"> Travail - Matin</option>
-                <option value="Travail (Midi)"> Travail - Midi</option>
-                <option value="Travail (Soir)"> Travail - Soir</option>
-                <option value="Travail (Nuit)"> Travail - Nuit</option>
-                <option value="Travail (Régulier)"> Travail - Régulier / Horaires classiques</option>
-                <option value="Garde & Quotidien"> Garde & Quotidien (Nounou, Crèche...)</option>
-                <option value="Autre"> Autre</option>
+              <select id="agendaCategory" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-300 outline-none font-medium">
+                <option value="RDV Médical Bébé">🩺 RDV Médical Bébé (Pédiatre, Vaccin, Pesée)</option>
+                <option value="RDV / Consultation">🩺 RDV / Consultation Médicale Parent ou Pro</option>
+                <option value="Repas en Famille">🍽️ Repas en Famille / Sortie Resto</option>
+                <option value="Activité Sportive">⚽ Activité Sportive / Loisirs Parent</option>
+                <option value="Loisirs Bébé">👶 Loisirs / Éveil Bébé (Bébés Nageurs, Parc)</option>
+                <option value="Travail (Matin)">💼 Travail - Matin</option>
+                <option value="Travail (Midi)">💼 Travail - Midi</option>
+                <option value="Travail (Soir)">💼 Travail - Soir</option>
+                <option value="Travail (Nuit)">💼 Travail - Nuit</option>
+                <option value="Travail (Régulier)">💼 Travail - Horaires Classiques</option>
+                <option value="Garde & Quotidien">🍼 Garde & Quotidien (Crèche, Nounou, Mamie)</option>
+                <option value="Autre">📌 Autre événement</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Parent concerné / Responsable (Couleur)</label>
+              <select id="agendaAssignee" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-300 outline-none font-bold">
+                <option value="Papa" class="text-blue-600">🔵 Papa (Couleur Bleu)</option>
+                <option value="Maman" class="text-pink-600">🩷 Maman (Couleur Rose)</option>
+                <option value="Les deux" class="text-purple-600 font-extrabold">🟣 Les deux / Famille (Couleur Violet)</option>
               </select>
             </div>
 
@@ -761,21 +818,12 @@
             </div>
 
             <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1">Responsable / Code Couleur</label>
-              <select id="agendaAssignee" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-300 outline-none font-bold">
-                <option value="Papa" class="text-blue-600"> Papa (Code couleur Bleu)</option>
-                <option value="Maman" class="text-pink-600"> Maman (Code couleur Rose)</option>
-                <option value="Les deux" class="text-purple-600"> Les deux (Code couleur Violet)</option>
-              </select>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Notes / Rappels / Emplacement</label>
+              <textarea id="agendaNotes" rows="2" placeholder="ex: Cabinet du Dr. Martin, apporter le carnet de santé, prévoir sac à langer..." class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-300 outline-none"></textarea>
             </div>
 
-            <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1">Notes / Rappels</label>
-              <textarea id="agendaNotes" rows="2" placeholder="ex: Lieu, matériel à prévoir, remarques..." class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-300 outline-none"></textarea>
-            </div>
-
-            <button type="submit" id="btnSubmitAgenda" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md transition text-sm">
-              Ajouter à l'agenda
+            <button type="submit" id="btnSubmitAgenda" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md transition text-sm flex items-center justify-center gap-2">
+              <i class="fa-solid fa-plus"></i> Ajouter à l'agenda
             </button>
           </form>
         </div>
@@ -795,38 +843,34 @@
                 <label class="text-xs font-bold text-slate-500 uppercase">Filtrer :</label>
                 <select id="agendaFilterCat" onchange="renderAgendaEntries()" class="px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold bg-white outline-none">
                   <option value="TOUS">Toutes les catégories</option>
-                  <option value="RDV / Consultation"> RDV / Consultation</option>
-                  <option value="Activité Sportive"> Sport / Loisir</option>
-                  <option value="Travail (Matin)"> Travail - Matin</option>
-                  <option value="Travail (Midi)"> Travail - Midi</option>
-                  <option value="Travail (Soir)"> Travail - Soir</option>
-                  <option value="Travail (Nuit)"> Travail - Nuit</option>
-                  <option value="Travail (Régulier)"> Travail - Régulier</option>
-                  <option value="Garde & Quotidien"> Garde & Quotidien</option>
-                  <option value="Autre"> Autre</option>
+                  <option value="RDV Médical Bébé">🩺 RDV Médical Bébé</option>
+                  <option value="RDV / Consultation">🩺 RDV Consultation Pro/Parent</option>
+                  <option value="Repas en Famille">🍽️ Repas en Famille</option>
+                  <option value="Activité Sportive">⚽ Sport / Loisir Parent</option>
+                  <option value="Loisirs Bébé">👶 Loisirs Bébé</option>
+                  <option value="Travail (Matin)">💼 Travail - Matin</option>
+                  <option value="Travail (Midi)">💼 Travail - Midi</option>
+                  <option value="Travail (Soir)">💼 Travail - Soir</option>
+                  <option value="Travail (Nuit)">💼 Travail - Nuit</option>
+                  <option value="Travail (Régulier)">💼 Travail - Régulier</option>
+                  <option value="Garde & Quotidien">🍼 Garde & Quotidien</option>
+                  <option value="Autre">📌 Autre</option>
                 </select>
               </div>
 
-              <button onclick="exportAgendaICS()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs shadow-md transition flex items-center gap-1.5" title="Télécharger le fichier .ics compatible Apple Calendrier / iOS">
+              <button onclick="exportAgendaICS()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs shadow-md transition flex items-center gap-1.5" title="Télécharger le fichier .ics compatible Apple Calendrier / Google Calendar">
                 <i class="fa-brands fa-apple text-sm"></i> Exporter (.ics)
               </button>
             </div>
           </div>
 
-          <div class="flex flex-wrap items-center gap-4 text-xs font-bold bg-white/60 p-3 rounded-2xl border border-slate-100">
-            <span class="text-slate-400 font-normal">Code Couleur :</span>
-            <span class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded-full bg-blue-500 shadow-sm"></span> Papa (Bleu)</span>
-            <span class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded-full bg-pink-500 shadow-sm"></span> Maman (Rose)</span>
-            <span class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded-full bg-purple-500 shadow-sm"></span> Les deux (Violet)</span>
-          </div>
-
-          <div id="fullCalendarContainer" class="bg-white/90 p-4 rounded-2xl border border-slate-200 shadow-inner"></div>
+          <div id="fullCalendarContainer" class="bg-white/90 p-4 rounded-2xl border border-slate-200 shadow-inner min-h-[400px]"></div>
 
           <hr class="border-slate-200/60">
 
           <div>
             <h4 class="font-bold text-slate-700 text-sm mb-3 flex items-center gap-2">
-              <i class="fa-solid fa-list-check text-indigo-500"></i> Vue Liste Chronologique
+              <i class="fa-solid fa-list-check text-indigo-500"></i> Vue Liste Chronologique Détaillée
             </h4>
             <div id="agendaListContainer" class="space-y-3 max-h-[400px] overflow-y-auto pr-1"></div>
           </div>
@@ -936,7 +980,7 @@
     </div>
   </div>
 
-  <!-- INTÉGRATION FIREBASE -->
+  <!-- INTÉGRATION FIREBASE TEMPS RÉEL SÉCURISÉE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -958,6 +1002,8 @@
       set(ref(db, path), data);
     };
 
+    let initialAgendaLoaded = false;
+
     const nodes = [
       { key: 'predictions', render: () => renderPredictions() },
       { key: 'officialResult', render: () => displayOfficialBanner() },
@@ -965,7 +1011,17 @@
       { key: 'dailyArchive', render: () => { renderDailyTracker(); updateMealsChart(); } },
       { key: 'tempHistory', render: () => { updateTempChart(); renderTempList(); } },
       { key: 'weightHistory', render: () => { updateWeightChart(); renderWeightList(); } },
-      { key: 'agendaEntries', render: () => renderAgendaEntries() },
+      { 
+        key: 'agendaEntries', 
+        render: () => {
+          renderAgendaEntries();
+          // Déclencher une notification pour l'autre parent si connecté
+          if (initialAgendaLoaded && window.currentUser) {
+            checkNewAgendaEventsNotification();
+          }
+          initialAgendaLoaded = true;
+        } 
+      },
       { key: 'statsGoals', render: () => updateGoalsBadges() }
     ];
 
@@ -986,6 +1042,7 @@
     let currentUser = null;
     let isAdmin = false;
     let fullCalendarInstance = null;
+    let lastSeenAgendaCount = parseInt(localStorage.getItem('bp_lastAgendaCount') || '0');
 
     const parentColors = {
       'Papa':     { bg: '#3b82f6', border: '#2563eb', text: 'text-blue-700', bgLight: 'bg-blue-50', borderClass: 'border-blue-200', dot: 'bg-blue-500' },
@@ -1024,9 +1081,9 @@
     ];
 
     window.agendaEntries = JSON.parse(localStorage.getItem('bp_agendaEntries')) || [
-      { title: "Planning Travail (Matin)", category: "Travail (Matin)", startDate: "2026-08-20", startTime: "06:00", endDate: "2026-08-20", endTime: "14:00", assignee: "Papa", notes: "Shift du matin", author: "Papa" },
-      { title: "Séance Natation / Sport", category: "Activité Sportive", startDate: "2026-08-21", startTime: "18:00", endDate: "2026-08-21", endTime: "19:30", assignee: "Maman", notes: "Reprise du sport", author: "Maman" },
-      { title: "RDV Pédiatre 1er mois", category: "RDV / Consultation", startDate: "2026-08-22", startTime: "10:00", endDate: "2026-08-22", endTime: "11:00", assignee: "Les deux", notes: "Apporter le carnet de santé", author: "Maman" }
+      { title: "Planning Travail (Poste Matin)", category: "Travail (Matin)", startDate: todayIsoStr, startTime: "06:00", endDate: todayIsoStr, endTime: "14:00", assignee: "Papa", notes: "Shift du matin à l'usine", author: "Papa" },
+      { title: "RDV Pédiatre 1er mois", category: "RDV Médical Bébé", startDate: todayIsoStr, startTime: "15:00", endDate: todayIsoStr, endTime: "16:00", assignee: "Les deux", notes: "Vaccins + carnet de santé à prendre", author: "Maman" },
+      { title: "Séance Natation / Sport", category: "Activité Sportive", startDate: todayIsoStr, startTime: "18:00", endDate: todayIsoStr, endTime: "19:30", assignee: "Maman", notes: "Reprise natation", author: "Maman" }
     ];
 
     let chartTempInstance = null;
@@ -1073,6 +1130,11 @@
       if (activeBtn) activeBtn.classList.add('active-tab');
 
       if (tabName === 'agenda') {
+        // Enlever le badge de notification
+        document.getElementById('agendaBadgeDot')?.classList.add('hidden');
+        lastSeenAgendaCount = (window.agendaEntries || []).length;
+        localStorage.setItem('bp_lastAgendaCount', lastSeenAgendaCount.toString());
+
         setTimeout(() => {
           if (!fullCalendarInstance) {
             initFullCalendar();
@@ -1084,7 +1146,7 @@
       }
     }
 
-    // --- AUTHENTIFICATION ---
+    // --- AUTHENTIFICATION & NOTIFICATION À LA CONNEXION ---
     function handleLogin(e) {
       e.preventDefault();
       const username = document.getElementById('usernameInput').value.trim();
@@ -1103,11 +1165,19 @@
         document.getElementById('adminUserOverride').classList.remove('hidden');
       }
 
+      // Initialisations graphiques et listes
       renderPredictions();
       renderCareEntries();
       renderDailyTracker();
       renderAgendaEntries();
       updateGoalsBadges();
+      initCharts();
+
+      // Pré-remplir la date du formulaire agenda
+      cancelAgendaEdit();
+
+      // Vérification des nouveautés agenda pour afficher notification
+      checkNewAgendaEventsNotification();
     }
 
     function logout() {
@@ -1115,6 +1185,32 @@
       isAdmin = false;
       document.getElementById('loginPage').classList.remove('hidden');
       document.getElementById('loginForm').reset();
+    }
+
+    function checkNewAgendaEventsNotification() {
+      const currentCount = (window.agendaEntries || []).length;
+      const lastCount = parseInt(localStorage.getItem('bp_lastAgendaCount') || '0');
+
+      if (currentCount > lastCount) {
+        const diff = currentCount - lastCount;
+        const banner = document.getElementById('agendaNotificationBanner');
+        const bannerText = document.getElementById('agendaNotificationText');
+        const badgeDot = document.getElementById('agendaBadgeDot');
+
+        if (banner && bannerText) {
+          bannerText.innerText = `${diff} nouveau(x) événement(s) ajouté(s) à l'agenda partagé depuis votre dernière visite !`;
+          banner.classList.remove('hidden');
+        }
+        if (badgeDot) {
+          badgeDot.classList.remove('hidden');
+        }
+      }
+    }
+
+    function dismissAgendaNotification() {
+      document.getElementById('agendaNotificationBanner')?.classList.add('hidden');
+      lastSeenAgendaCount = (window.agendaEntries || []).length;
+      localStorage.setItem('bp_lastAgendaCount', lastSeenAgendaCount.toString());
     }
 
     // --- INITIALISATION DU CALENDRIER FULLCALENDAR ---
@@ -1164,12 +1260,12 @@
             end: end,
             backgroundColor: colorObj.bg,
             borderColor: colorObj.border,
-            extendedProps: { index: index, category: entry.category, notes: entry.notes }
+            extendedProps: { index: index, category: entry.category, notes: entry.notes, author: entry.author }
           };
         });
     }
 
-    // --- GESTION DE L'AGENDA & SYNCHRONISATION ---
+    // --- GESTION DE L'AGENDA PARTAGÉ & SYNCHRONISATION ---
     function renderAgendaEntries() {
       const container = document.getElementById('agendaListContainer');
       if (container) {
@@ -1180,7 +1276,7 @@
           .filter(({ entry }) => filterCat === 'TOUS' || entry.category === filterCat);
 
         if (filtered.length === 0) {
-          container.innerHTML = `<p class="text-xs text-slate-400 italic p-4 text-center">Aucun événement enregistré.</p>`;
+          container.innerHTML = `<p class="text-xs text-slate-400 italic p-4 text-center bg-white/50 rounded-2xl">Aucun événement enregistré pour cette recherche.</p>`;
         } else {
           filtered.forEach(({ entry, index }) => {
             const colorObj = parentColors[entry.assignee] || parentColors['Les deux'];
@@ -1189,7 +1285,7 @@
             div.innerHTML = `
               <div class="space-y-1">
                 <div class="flex items-center gap-2 flex-wrap">
-                  <span class="w-2.5 h-2.5 rounded-full ${colorObj.dot}"></span>
+                  <span class="w-3 h-3 rounded-full ${colorObj.dot} shadow-sm"></span>
                   <span class="font-bold text-sm text-slate-800">${entry.title}</span>
                   <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-white border border-slate-200 text-slate-600">${entry.category}</span>
                   <span class="text-xs font-bold ${colorObj.text}">(${entry.assignee})</span>
@@ -1198,7 +1294,8 @@
                   <i class="fa-regular fa-clock mr-1"></i>
                   Du <strong>${entry.startDate}</strong> (${entry.startTime}) au <strong>${entry.endDate}</strong> (${entry.endTime})
                 </p>
-                ${entry.notes ? `<p class="text-xs text-slate-600 italic bg-white/60 p-2 rounded-xl mt-1 border border-slate-100">${entry.notes}</p>` : ''}
+                ${entry.notes ? `<p class="text-xs text-slate-600 italic bg-white/70 p-2 rounded-xl mt-1 border border-slate-100"><i class="fa-solid fa-sticky-note text-amber-500 mr-1"></i>${entry.notes}</p>` : ''}
+                <p class="text-[10px] text-slate-400">Créé par : <strong>${entry.author || 'Parent'}</strong></p>
               </div>
               <div class="flex items-center gap-2 self-end sm:self-center">
                 <button onclick="editAgendaEntry(${index})" class="p-2 text-indigo-600 hover:bg-indigo-100 rounded-xl transition" title="Modifier">
@@ -1263,8 +1360,11 @@
       document.getElementById('agendaNotes').value = entry.notes || '';
 
       document.getElementById('formAgendaTitle').innerHTML = `<i class="fa-solid fa-pen text-indigo-500"></i> Modifier l'événement`;
-      document.getElementById('btnSubmitAgenda').innerText = "Mettre à jour l'événement";
+      document.getElementById('btnSubmitAgenda').innerHTML = `<i class="fa-solid fa-rotate mr-1"></i> Mettre à jour l'événement`;
       document.getElementById('btnCancelAgendaEdit').classList.remove('hidden');
+
+      // Basculer automatiquement sur l'onglet agenda si appelé depuis un autre endroit
+      switchTab('agenda');
     }
 
     function cancelAgendaEdit() {
@@ -1277,12 +1377,12 @@
       document.getElementById('agendaEndTime').value = "10:00";
 
       document.getElementById('formAgendaTitle').innerHTML = `<i class="fa-solid fa-calendar-plus text-indigo-500"></i> Ajouter un événement`;
-      document.getElementById('btnSubmitAgenda').innerText = "Ajouter à l'agenda";
+      document.getElementById('btnSubmitAgenda').innerHTML = `<i class="fa-solid fa-plus"></i> Ajouter à l'agenda`;
       document.getElementById('btnCancelAgendaEdit').classList.add('hidden');
     }
 
     function deleteAgendaEntry(index) {
-      if (confirm("Voulez-vous supprimer cet événement de l'agenda ?")) {
+      if (confirm("Voulez-vous supprimer cet événement de l'agenda partagé ?")) {
         window.agendaEntries.splice(index, 1);
         saveAllToStorage();
         renderAgendaEntries();
@@ -1531,7 +1631,7 @@
     // --- INITIALISATION DES GRAPHIQUES ---
     function initCharts() {
       const ctxTemp = document.getElementById('chartTemp')?.getContext('2d');
-      if (ctxTemp) {
+      if (ctxTemp && !chartTempInstance) {
         chartTempInstance = new Chart(ctxTemp, {
           type: 'line',
           data: {
@@ -1546,7 +1646,7 @@
       }
 
       const ctxWeight = document.getElementById('chartWeight')?.getContext('2d');
-      if (ctxWeight) {
+      if (ctxWeight && !chartWeightInstance) {
         chartWeightInstance = new Chart(ctxWeight, {
           type: 'line',
           data: {
@@ -1558,7 +1658,7 @@
       }
 
       const ctxMeals = document.getElementById('chartMeals')?.getContext('2d');
-      if (ctxMeals) {
+      if (ctxMeals && !chartMealsInstance) {
         chartMealsInstance = new Chart(ctxMeals, {
           type: 'bar',
           data: {
@@ -1577,6 +1677,10 @@
           }
         });
       }
+
+      updateTempChart();
+      updateWeightChart();
+      updateMealsChart();
     }
 
     function updateTempChart() {
@@ -2107,8 +2211,8 @@
     }
 
     function saveTimerToCare() {
-      if (timerSeconds === 0) return alert("Le chrono est à 00:00.");
-      const timerType = document.getElementById('timerType').value;
+      if (timerSeconds === 0) return alert("Le chronomètre est à 0.");
+      const type = document.getElementById('timerType').value;
       const mins = Math.floor(timerSeconds / 60);
       const secs = timerSeconds % 60;
       const durationStr = `${mins}m ${secs}s`;
@@ -2121,7 +2225,7 @@
         tempIncubator: null,
         diaper: "Propre / Rien",
         feeding: 0,
-        notes: `Chrono ${timerType} : ${durationStr}`,
+        notes: `Chronomètre [${type}] : Durée ${durationStr}`,
         author: currentUser || "Parent"
       };
 
@@ -2129,10 +2233,10 @@
       saveAllToStorage();
       renderCareEntries();
       resetTimer();
-      alert(`Session enregistrée dans la fiche de soin (${durationStr}).`);
+      alert(`Activité "${type}" enregistrée dans la fiche de soins (${durationStr}) !`);
     }
 
-    // --- MODALE ABONNEMENT ---
+    // --- MODALES D'ABONNEMENT ET D'OFFRES ---
     function openSubscribeModal() {
       document.getElementById('subscribeModal').classList.remove('hidden');
     }
@@ -2141,84 +2245,10 @@
       document.getElementById('subscribeModal').classList.add('hidden');
     }
 
-    function selectPlan(planName) {
-      alert(`Merci ! Redirection vers la passerelle de paiement sécurisée pour le plan ${planName}.`);
+    function selectPlan(plan) {
+      alert(`Merci d'avoir choisi le plan ${plan} ! Vous allez être redirigé vers l'espace de paiement sécurisé.`);
       closeSubscribeModal();
     }
-
-    // --- RÉSULTAT OFFICIEL ADMIN ---
-    function saveOfficialResults(e) {
-      e.preventDefault();
-      window.officialResult = {
-        name: document.getElementById('officialName').value.trim(),
-        gender: document.getElementById('officialGender').value,
-        weight: parseFloat(document.getElementById('officialWeight').value),
-        height: parseFloat(document.getElementById('officialHeight').value)
-      };
-
-      let bestWinner = "--";
-      let minDiff = Infinity;
-
-      window.predictions.forEach(p => {
-        if (p.gender === window.officialResult.gender) {
-          const diffW = Math.abs(p.weight - window.officialResult.weight);
-          const diffH = Math.abs(p.height - window.officialResult.height);
-          const score = diffW + diffH;
-          if (score < minDiff) {
-            minDiff = score;
-            bestWinner = p.user;
-          }
-        }
-      });
-
-      window.officialResult.winner = bestWinner;
-      saveAllToStorage();
-      displayOfficialBanner();
-    }
-
-    function displayOfficialBanner() {
-      if (!window.officialResult) return;
-      const banner = document.getElementById('resultBanner');
-      if (banner) {
-        banner.classList.remove('hidden');
-        document.getElementById('resBabyName').innerText = `Bienvenue à ${window.officialResult.name} !`;
-        document.getElementById('resBabyDetails').innerText = `${window.officialResult.gender} | ${window.officialResult.weight} kg | ${window.officialResult.height} cm`;
-        document.getElementById('resWinnerName').innerText = window.officialResult.winner || "--";
-      }
-    }
-
-    function traiterFichier(e) {
-      const file = e.target.files[0];
-      if (file) {
-        alert(`Document "${file.name}" importé avec succès. Analyse en cours...`);
-      }
-    }
-
-    // --- INITIALISATION AUTOMATIQUE ---
-    window.addEventListener('DOMContentLoaded', () => {
-      const now = new Date();
-      const todayStr = now.toISOString().split('T')[0];
-      const timeStr = now.toTimeString().substring(0, 5);
-
-      if (document.getElementById('careDate')) document.getElementById('careDate').value = todayStr;
-      if (document.getElementById('careTime')) document.getElementById('careTime').value = timeStr;
-      if (document.getElementById('predDate')) document.getElementById('predDate').value = todayStr;
-      if (document.getElementById('agendaStartDate')) document.getElementById('agendaStartDate').value = todayStr;
-      if (document.getElementById('agendaEndDate')) document.getElementById('agendaEndDate').value = todayStr;
-      if (document.getElementById('agendaStartTime')) document.getElementById('agendaStartTime').value = "09:00";
-      if (document.getElementById('agendaEndTime')) document.getElementById('agendaEndTime').value = "10:00";
-      if (document.getElementById('weightPointDate')) document.getElementById('weightPointDate').value = todayStr;
-
-      initCharts();
-      updateTempChart();
-      renderTempList();
-      updateWeightChart();
-      renderWeightList();
-      renderDailyTracker();
-      updateMealsChart();
-      updateGoalsBadges();
-      displayOfficialBanner();
-    });
   </script>
 </body>
 </html>
