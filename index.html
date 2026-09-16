@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BABY PREDICT 2026 - Pro, Suivi Maternité & Agenda Partagé</title>
+  <title>BABY PREDICT 2026 - Pro, Suivi Maternité & Agenda</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   
-  <!-- FullCalendar v6 -->
+  <!-- Intégration de FullCalendar v6 -->
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
   
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -82,12 +82,12 @@
         <i class="fa-solid fa-baby"></i>
       </div>
       <h1 class="text-2xl font-black text-slate-800 mb-2">BABY PREDICT 2026</h1>
-      <p class="text-sm text-slate-500 mb-6">Connectez-vous pour accéder à l'Agenda Partagé et au Suivi.</p>
+      <p class="text-sm text-slate-500 mb-6">Connectez-vous pour accéder au tableau de bord, à la fiche de soins et à l'agenda partagé.</p>
       
       <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4 text-left">
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Votre Prénom / Pseudo</label>
-          <input type="text" id="usernameInput" required placeholder="ex: Papa, Maman..." class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-400 bg-white/80">
+          <input type="text" id="usernameInput" required placeholder="ex: Papa, Maman, Julie..." class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-400 bg-white/80">
         </div>
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Code d'accès</label>
@@ -98,24 +98,6 @@
           Accéder à l'application
         </button>
       </form>
-    </div>
-  </div>
-
-  <!-- BANNIÈRE DE NOTIFICATION SYNCHRO -->
-  <div id="syncNotificationBanner" class="hidden max-w-6xl mx-auto px-4 pt-4">
-    <div class="glassmorphism bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-4 rounded-2xl shadow-lg flex items-center justify-between gap-4">
-      <div class="flex items-center gap-3">
-        <div class="p-2.5 bg-white/20 rounded-xl text-xl">
-          <i class="fa-solid fa-bell animate-bounce"></i>
-        </div>
-        <div>
-          <h4 class="font-bold text-sm">Nouveautés dans l'Agenda !</h4>
-          <p class="text-xs text-white/90" id="syncNotificationText">Des événements ont été ajoutés ou modifiés depuis votre dernière visite.</p>
-        </div>
-      </div>
-      <button onclick="dismissNotificationBanner()" class="px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-xl text-xs font-bold transition">
-        Fermer
-      </button>
     </div>
   </div>
 
@@ -162,6 +144,22 @@
 
   <!-- CONTENU PRINCIPAL -->
   <main class="max-w-6xl mx-auto px-4 mt-6">
+
+    <!-- BANNIÈRE NOTIFICATION NOUVEAUTÉS AGENDA -->
+    <div id="agendaNotificationBanner" class="hidden glassmorphism p-4 rounded-2xl bg-indigo-600 text-white mb-6 shadow-lg flex items-center justify-between gap-4 transition duration-300">
+      <div class="flex items-center gap-3">
+        <div class="p-3 bg-white/20 rounded-xl text-xl">
+          <i class="fa-solid fa-bell text-amber-300"></i>
+        </div>
+        <div>
+          <h4 class="font-bold text-sm">Nouveautés dans l'Agenda Partagé</h4>
+          <p class="text-xs text-indigo-100" id="agendaNotificationText">Des événements ont été ajoutés ou modifiés depuis votre dernière session.</p>
+        </div>
+      </div>
+      <button onclick="dismissAgendaNotification()" class="px-3 py-1.5 bg-white/20 hover:bg-white/30 text-white font-bold text-xs rounded-xl transition">
+        J'ai compris
+      </button>
+    </div>
 
     <!-- BANNIÈRE PROMOTIONNELLE -->
     <div class="glassmorphism p-4 rounded-2xl bg-gradient-to-r from-purple-600 via-pink-500 to-amber-500 text-white mb-6 shadow-md flex flex-col md:flex-row items-center justify-between gap-4">
@@ -720,15 +718,15 @@
       </div>
     </div>
 
-    <!-- SECTION 3 : AGENDA PARTAGÉ PARENTS (REFONDU & SYNCHRONISÉ EN TEMPS RÉEL) -->
+    <!-- SECTION 3 : AGENDA PARTAGÉ PARENTS (REFONTE CIBLÉE) -->
     <div id="section-agenda" class="hidden space-y-6">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         <!-- FORMULAIRE SAISIE AGENDA -->
-        <div class="glassmorphism p-6 rounded-3xl border border-white/50 h-fit shadow-sm">
+        <div class="glassmorphism p-6 rounded-3xl border border-white/50 h-fit">
           <div class="flex justify-between items-center mb-4">
             <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2" id="formAgendaTitle">
-              <i class="fa-solid fa-calendar-plus text-indigo-500"></i> Créer un événement
+              <i class="fa-solid fa-calendar-plus text-indigo-500"></i> Ajouter un événement
             </h3>
             <button id="btnCancelAgendaEdit" onclick="cancelAgendaEdit()" class="hidden text-xs text-red-500 hover:underline font-bold">Annuler modification</button>
           </div>
@@ -737,28 +735,22 @@
             <input type="hidden" id="editAgendaIndex" value="-1">
 
             <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1">Intitulé de l'événement</label>
-              <input type="text" id="agendaTitle" required placeholder="ex: Pédiatre Bébé, Shift Garde Matin, Foot..." class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-300 outline-none">
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Intitulé de l'activité / RDV</label>
+              <input type="text" id="agendaTitle" required placeholder="ex: RDV Pédiatre, Vaccination, Poste du matin..." class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-300 outline-none">
             </div>
 
             <div>
               <label class="block text-xs font-semibold text-slate-600 mb-1">Catégorie</label>
               <select id="agendaCategory" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-300 outline-none">
-                <optgroup label="Bébé">
-                  <option value="RDV Médical Bébé">👶 RDV Médical Bébé (Pédiatre, Vaccin...)</option>
-                  <option value="Repas Famille / Bébé">🍼 Repas / Alimentation Bébé</option>
-                  <option value="Garde & Quotidien">🧸 Garde / Crèche / Nounou</option>
-                </optgroup>
-                <optgroup label="Parents / Travail">
-                  <option value="Travail (Shift Matin)">💼 Travail - Shift Matin</option>
-                  <option value="Travail (Shift Midi)">💼 Travail - Shift Midi</option>
-                  <option value="Travail (Shift Soir)">💼 Travail - Shift Soir</option>
-                  <option value="Travail (Shift Nuit)">💼 Travail - Shift Nuit</option>
-                  <option value="Travail (Régulier)">💼 Travail - Horaires Classiques</option>
-                  <option value="RDV Perso / Pro">🏥 RDV Perso / Pro / Santé</option>
-                  <option value="Loisirs / Sports">🚴 Loisirs / Sports / Détente</option>
-                  <option value="Autre">📌 Autre</option>
-                </optgroup>
+                <option value="RDV / Consultation"> RDV / Consultation Médicale (Pédiatre, Vaccins) / Pro</option>
+                <option value="Activité Sportive"> Activité Sportive / Sortie Bébé & Loisir</option>
+                <option value="Travail (Matin)"> Travail - Matin (Shift)</option>
+                <option value="Travail (Midi)"> Travail - Midi (Shift)</option>
+                <option value="Travail (Soir)"> Travail - Soir (Shift)</option>
+                <option value="Travail (Nuit)"> Travail - Nuit (Shift)</option>
+                <option value="Travail (Régulier)"> Travail - Régulier / Horaires classiques</option>
+                <option value="Garde & Quotidien"> Garde & Quotidien (Nounou, Crèche, Repas...)</option>
+                <option value="Autre"> Autre</option>
               </select>
             </div>
 
@@ -785,75 +777,73 @@
             </div>
 
             <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1">Attribution & Couleur dédiée</label>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Attribution / Code Couleur Renforcé</label>
               <select id="agendaAssignee" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-300 outline-none font-bold">
-                <option value="Papa" class="text-blue-600">🟦 Papa (Code Couleur Bleu)</option>
-                <option value="Maman" class="text-pink-600">🟥 Maman (Code Couleur Rose)</option>
-                <option value="Les deux" class="text-purple-600">🟪 Les deux (Code Couleur Violet)</option>
+                <option value="Papa" class="text-blue-600"> 🟦 Papa (Bleu)</option>
+                <option value="Maman" class="text-pink-600"> 🟥 Maman (Rose)</option>
+                <option value="Les deux" class="text-purple-600"> 🟪 Les deux (Violet)</option>
               </select>
             </div>
 
             <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1">Notes / Remarques pour Bébé ou le couple</label>
-              <textarea id="agendaNotes" rows="2" placeholder="Lieu, documents à apporter, ordonnance..." class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-300 outline-none"></textarea>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Notes / Rappels Bébé</label>
+              <textarea id="agendaNotes" rows="2" placeholder="ex: Apporter le carnet de santé, prévoir doudou, lieu..." class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-300 outline-none"></textarea>
             </div>
 
             <button type="submit" id="btnSubmitAgenda" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md transition text-sm">
-              Enregistrer l'événement
+              Ajouter à l'agenda
             </button>
           </form>
         </div>
 
-        <!-- AFFICHAGE FULLCALENDAR & LISTE CHRONOLOGIQUE -->
+        <!-- LISTE & AGENDA VISUEL FULLCALENDAR -->
         <div class="lg:col-span-2 glassmorphism p-6 rounded-3xl border border-white/50 space-y-6">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">
                 <i class="fa-solid fa-calendar-days text-indigo-500"></i> Planning Familial Temps Réel
               </h3>
-              <p class="text-xs text-slate-500">Géré à deux, mis à jour instantanément sur tous vos appareils</p>
+              <p class="text-xs text-slate-500">Synchronisé en temps réel sur Firebase DB</p>
             </div>
 
             <div class="flex flex-wrap items-center gap-2">
               <div class="flex items-center gap-2">
                 <label class="text-xs font-bold text-slate-500 uppercase">Parent :</label>
-                <select id="agendaFilterParent" onchange="renderAgendaEntries()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold bg-white outline-none">
+                <select id="agendaFilterAssignee" onchange="renderAgendaEntries()" class="px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-bold bg-white outline-none">
                   <option value="TOUS">Tous les parents</option>
-                  <option value="Papa">Papa</option>
-                  <option value="Maman">Maman</option>
-                  <option value="Les deux">Les deux</option>
+                  <option value="Papa">🟦 Papa</option>
+                  <option value="Maman">🟥 Maman</option>
+                  <option value="Les deux">🟪 Les deux</option>
                 </select>
               </div>
 
               <div class="flex items-center gap-2">
                 <label class="text-xs font-bold text-slate-500 uppercase">Catégorie :</label>
-                <select id="agendaFilterCat" onchange="renderAgendaEntries()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold bg-white outline-none">
+                <select id="agendaFilterCat" onchange="renderAgendaEntries()" class="px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold bg-white outline-none">
                   <option value="TOUS">Toutes les catégories</option>
-                  <option value="RDV Médical Bébé">RDV Médical Bébé</option>
-                  <option value="Repas Famille / Bébé">Repas Famille / Bébé</option>
-                  <option value="Garde & Quotidien">Garde & Quotidien</option>
-                  <option value="Travail (Shift Matin)">Travail - Matin</option>
-                  <option value="Travail (Shift Midi)">Travail - Midi</option>
-                  <option value="Travail (Shift Soir)">Travail - Soir</option>
-                  <option value="Travail (Shift Nuit)">Travail - Nuit</option>
-                  <option value="Travail (Régulier)">Travail - Classique</option>
-                  <option value="RDV Perso / Pro">RDV Perso / Pro</option>
-                  <option value="Loisirs / Sports">Loisirs / Sports</option>
-                  <option value="Autre">Autre</option>
+                  <option value="RDV / Consultation"> RDV / Consultation</option>
+                  <option value="Activité Sportive"> Sport / Loisir</option>
+                  <option value="Travail (Matin)"> Travail - Matin</option>
+                  <option value="Travail (Midi)"> Travail - Midi</option>
+                  <option value="Travail (Soir)"> Travail - Soir</option>
+                  <option value="Travail (Nuit)"> Travail - Nuit</option>
+                  <option value="Travail (Régulier)"> Travail - Régulier</option>
+                  <option value="Garde & Quotidien"> Garde & Quotidien</option>
+                  <option value="Autre"> Autre</option>
                 </select>
               </div>
 
-              <button onclick="exportAgendaICS()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs shadow-md transition flex items-center gap-1.5" title="Exporter au format .ics pour iOS/Apple/Google Calendar">
+              <button onclick="exportAgendaICS()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs shadow-md transition flex items-center gap-1.5" title="Exporter le calendrier au format .ics">
                 <i class="fa-brands fa-apple text-sm"></i> Exporter (.ics)
               </button>
             </div>
           </div>
 
           <div class="flex flex-wrap items-center gap-4 text-xs font-bold bg-white/60 p-3 rounded-2xl border border-slate-100">
-            <span class="text-slate-400 font-normal">Légende :</span>
-            <span class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded-full bg-blue-500 shadow-sm"></span> Papa (Bleu)</span>
-            <span class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded-full bg-pink-500 shadow-sm"></span> Maman (Rose)</span>
-            <span class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded-full bg-purple-500 shadow-sm"></span> Les deux (Violet)</span>
+            <span class="text-slate-400 font-normal">Attribution Parents :</span>
+            <span class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded-full bg-blue-500 shadow-sm"></span> 🟦 Papa</span>
+            <span class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded-full bg-pink-500 shadow-sm"></span> 🟥 Maman</span>
+            <span class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded-full bg-purple-500 shadow-sm"></span> 🟪 Les deux</span>
           </div>
 
           <div id="fullCalendarContainer" class="bg-white/90 p-4 rounded-2xl border border-slate-200 shadow-inner"></div>
@@ -862,7 +852,7 @@
 
           <div>
             <h4 class="font-bold text-slate-700 text-sm mb-3 flex items-center gap-2">
-              <i class="fa-solid fa-list-check text-indigo-500"></i> Événements à venir
+              <i class="fa-solid fa-list-check text-indigo-500"></i> Vue Liste Chronologique
             </h4>
             <div id="agendaListContainer" class="space-y-3 max-h-[400px] overflow-y-auto pr-1"></div>
           </div>
@@ -972,7 +962,7 @@
     </div>
   </div>
 
-  <!-- INTÉGRATION FIREBASE TEMPS RÉEL SÉCURISÉE -->
+  <!-- INTÉGRATION FIREBASE TEMPS RÉEL (MODULE) -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -994,8 +984,6 @@
       set(ref(db, path), data);
     };
 
-    let isInitialLoad = true;
-
     const nodes = [
       { key: 'predictions', render: () => renderPredictions() },
       { key: 'officialResult', render: () => displayOfficialBanner() },
@@ -1003,12 +991,12 @@
       { key: 'dailyArchive', render: () => { renderDailyTracker(); updateMealsChart(); } },
       { key: 'tempHistory', render: () => { updateTempChart(); renderTempList(); } },
       { key: 'weightHistory', render: () => { updateWeightChart(); renderWeightList(); } },
-      { key: 'agendaEntries', render: () => {
-          renderAgendaEntries();
-          if (!isInitialLoad && window.currentUser) {
-            checkAgendaSyncNotifications();
-          }
-        }
+      { 
+        key: 'agendaEntries', 
+        render: () => { 
+          renderAgendaEntries(); 
+          checkAgendaUpdates();
+        } 
       },
       { key: 'statsGoals', render: () => updateGoalsBadges() }
     ];
@@ -1023,15 +1011,14 @@
         }
       });
     });
-
-    setTimeout(() => { isInitialLoad = false; }, 2000);
   </script>
 
-  <!-- LOGIQUE APPLICATIVE COMPLÈTE & NON-RÉGRESSION -->
+  <!-- LOGIQUE APPLICATIVE PRINCIPALE -->
   <script>
     let currentUser = null;
     let isAdmin = false;
     let fullCalendarInstance = null;
+    let lastSeenAgendaTimestamp = localStorage.getItem('bp_lastSeenAgendaTimestamp') || 0;
 
     const parentColors = {
       'Papa':     { bg: '#3b82f6', border: '#2563eb', text: 'text-blue-700', bgLight: 'bg-blue-50', borderClass: 'border-blue-200', dot: 'bg-blue-500' },
@@ -1044,28 +1031,42 @@
       diapersDay: 6
     };
 
-    window.predictions = JSON.parse(localStorage.getItem('bp_predictions')) || [];
+    window.predictions = JSON.parse(localStorage.getItem('bp_predictions')) || [
+      { user: "Mamie Chantal", name: "Alice", hobby: "Jardinage & Chant", gender: "Fille", weight: 3.200, height: 49.5, date: "2026-08-15" },
+      { user: "Oncle Lucas", name: "Hugo", hobby: "Football", gender: "Garçon", weight: 3.600, height: 51.0, date: "2026-08-18" }
+    ];
+
     window.officialResult = JSON.parse(localStorage.getItem('bp_officialResult')) || null;
-    window.tempHistory = JSON.parse(localStorage.getItem('bp_tempHistory')) || [];
+
+    window.tempHistory = JSON.parse(localStorage.getItem('bp_tempHistory')) || [
+      { time: "08:00", tempBaby: 36.7, tempIncubator: 31.0 },
+      { time: "12:00", tempBaby: 36.9, tempIncubator: 30.5 }
+    ];
 
     const todayIsoStr = new Date().toISOString().split('T')[0];
-    window.careEntries = JSON.parse(localStorage.getItem('bp_careEntries')) || [];
+    window.careEntries = JSON.parse(localStorage.getItem('bp_careEntries')) || [
+      { date: todayIsoStr, time: "08:00", tempBaby: 36.7, tempIncubator: 31.0, diaper: "Urine", feeding: 60, notes: "Réveil calme, bon biberon.", author: "Infirmière Sophie" }
+    ];
+
     window.dailyArchive = JSON.parse(localStorage.getItem('bp_dailyArchive')) || {};
     window.lastActiveDate = localStorage.getItem('bp_lastActiveDate') || todayIsoStr;
-    window.weightHistory = JSON.parse(localStorage.getItem('bp_weightHistory')) || [];
+
+    window.weightHistory = JSON.parse(localStorage.getItem('bp_weightHistory')) || [
+      { date: "2026-08-01", weight: 3.10 },
+      { date: "2026-08-05", weight: 3.28 }
+    ];
 
     window.agendaEntries = JSON.parse(localStorage.getItem('bp_agendaEntries')) || [
-      { title: "RDV Pédiatre - Bilan 1er mois", category: "RDV Médical Bébé", startDate: todayIsoStr, startTime: "10:00", endDate: todayIsoStr, endTime: "11:00", assignee: "Les deux", notes: "Prendre le carnet de santé et le carnet de vaccination", author: "Maman", lastModified: Date.now() },
-      { title: "Shift du Matin", category: "Travail (Shift Matin)", startDate: todayIsoStr, startTime: "06:00", endDate: todayIsoStr, endTime: "14:00", assignee: "Papa", notes: "Poste matin usine", author: "Papa", lastModified: Date.now() }
+      { id: "1", title: "Shift Posté Matin", category: "Travail (Matin)", startDate: "2026-08-20", startTime: "06:00", endDate: "2026-08-20", endTime: "14:00", assignee: "Papa", notes: "Shift du matin", author: "Papa", updatedAt: Date.now() },
+      { id: "2", title: "Séance Fit / Sport", category: "Activité Sportive", startDate: "2026-08-21", startTime: "18:00", endDate: "2026-08-21", endTime: "19:30", assignee: "Maman", notes: "Reprise du sport", author: "Maman", updatedAt: Date.now() },
+      { id: "3", title: "RDV Pédiatre & Vaccin", category: "RDV / Consultation", startDate: "2026-08-22", startTime: "10:00", endDate: "2026-08-22", endTime: "11:00", assignee: "Les deux", notes: "Carnet de santé à prévoir", author: "Maman", updatedAt: Date.now() }
     ];
 
     let chartTempInstance = null;
     let chartWeightInstance = null;
     let chartMealsInstance = null;
-    let timerInterval = null;
-    let timerSeconds = 0;
 
-    // --- SAUVEGARDE GLOBALE SUR FIREBASE & LOCALSTORAGE ---
+    // --- SAUVEGARDE GLOBALE SUR STORAGE ET FIREBASE RTDB ---
     function saveAllToStorage() {
       localStorage.setItem('bp_predictions', JSON.stringify(window.predictions));
       localStorage.setItem('bp_officialResult', JSON.stringify(window.officialResult));
@@ -1086,22 +1087,6 @@
         window.saveToFirebase('statsGoals', window.statsGoals);
         window.saveToFirebase('dailyArchive', window.dailyArchive);
       }
-    }
-
-    // --- NOTIFICATIONS & BANNIÈRE DE SYNCHRONISATION ---
-    function checkAgendaSyncNotifications() {
-      const lastLoginTime = localStorage.getItem(`bp_lastLoginTime_${currentUser}`) || 0;
-      const recentEntries = (window.agendaEntries || []).filter(e => e.lastModified && e.lastModified > lastLoginTime && e.author !== currentUser);
-
-      if (recentEntries.length > 0) {
-        const text = `Il y a ${recentEntries.length} nouvel(le)s événement(s) ajouté(s) ou modifié(s) par votre conjoint(e).`;
-        document.getElementById('syncNotificationText').innerText = text;
-        document.getElementById('syncNotificationBanner').classList.remove('hidden');
-      }
-    }
-
-    function dismissNotificationBanner() {
-      document.getElementById('syncNotificationBanner').classList.add('hidden');
     }
 
     // --- NAVIGATION PAR ONGLETS ---
@@ -1130,7 +1115,7 @@
       }
     }
 
-    // --- AUTHENTIFICATION ---
+    // --- AUTHENTIFICATION ET DÉTECTION DES NOUVEAUTÉS ---
     function handleLogin(e) {
       e.preventDefault();
       const username = document.getElementById('usernameInput').value.trim();
@@ -1149,14 +1134,12 @@
         document.getElementById('adminUserOverride').classList.remove('hidden');
       }
 
-      checkAgendaSyncNotifications();
-      localStorage.setItem(`bp_lastLoginTime_${currentUser}`, Date.now());
-
       renderPredictions();
       renderCareEntries();
       renderDailyTracker();
       renderAgendaEntries();
       updateGoalsBadges();
+      checkAgendaUpdates();
     }
 
     function logout() {
@@ -1164,6 +1147,30 @@
       isAdmin = false;
       document.getElementById('loginPage').classList.remove('hidden');
       document.getElementById('loginForm').reset();
+    }
+
+    // --- DÉTECTION & BANNIÈRE DE NOTIFICATIONS ---
+    function checkAgendaUpdates() {
+      if (!currentUser || !window.agendaEntries) return;
+
+      const newOrUpdatedEvents = window.agendaEntries.filter(entry => {
+        return entry.author !== currentUser && entry.updatedAt && entry.updatedAt > lastSeenAgendaTimestamp;
+      });
+
+      const banner = document.getElementById('agendaNotificationBanner');
+      const text = document.getElementById('agendaNotificationText');
+
+      if (newOrUpdatedEvents.length > 0 && banner && text) {
+        text.innerText = `${newOrUpdatedEvents.length} événement(s) récent(s) ajouté(s) ou modifié(s) par l'autre parent.`;
+        banner.classList.remove('hidden');
+      }
+    }
+
+    function dismissAgendaNotification() {
+      lastSeenAgendaTimestamp = Date.now();
+      localStorage.setItem('bp_lastSeenAgendaTimestamp', lastSeenAgendaTimestamp);
+      const banner = document.getElementById('agendaNotificationBanner');
+      if (banner) banner.classList.add('hidden');
     }
 
     // --- INITIALISATION DU CALENDRIER FULLCALENDAR ---
@@ -1199,13 +1206,13 @@
     }
 
     function getFullCalendarEvents() {
-      const filterParent = document.getElementById('agendaFilterParent')?.value || 'TOUS';
       const filterCat = document.getElementById('agendaFilterCat')?.value || 'TOUS';
+      const filterAssignee = document.getElementById('agendaFilterAssignee')?.value || 'TOUS';
 
       return (window.agendaEntries || [])
         .map((entry, index) => ({ entry, index }))
-        .filter(({ entry }) => (filterParent === 'TOUS' || entry.assignee === filterParent))
         .filter(({ entry }) => (filterCat === 'TOUS' || entry.category === filterCat))
+        .filter(({ entry }) => (filterAssignee === 'TOUS' || entry.assignee === filterAssignee))
         .map(({ entry, index }) => {
           const colorObj = parentColors[entry.assignee] || parentColors['Les deux'];
           const start = entry.startTime ? `${entry.startDate}T${entry.startTime}` : entry.startDate;
@@ -1226,13 +1233,13 @@
       const container = document.getElementById('agendaListContainer');
       if (container) {
         container.innerHTML = '';
-        const filterParent = document.getElementById('agendaFilterParent')?.value || 'TOUS';
         const filterCat = document.getElementById('agendaFilterCat')?.value || 'TOUS';
+        const filterAssignee = document.getElementById('agendaFilterAssignee')?.value || 'TOUS';
 
         const filtered = (window.agendaEntries || [])
           .map((entry, index) => ({ entry, index }))
-          .filter(({ entry }) => (filterParent === 'TOUS' || entry.assignee === filterParent))
-          .filter(({ entry }) => (filterCat === 'TOUS' || entry.category === filterCat));
+          .filter(({ entry }) => filterCat === 'TOUS' || entry.category === filterCat)
+          .filter(({ entry }) => filterAssignee === 'TOUS' || entry.assignee === filterAssignee);
 
         if (filtered.length === 0) {
           container.innerHTML = `<p class="text-xs text-slate-400 italic p-4 text-center">Aucun événement ne correspond aux critères.</p>`;
@@ -1254,6 +1261,7 @@
                   Du <strong>${entry.startDate}</strong> (${entry.startTime}) au <strong>${entry.endDate}</strong> (${entry.endTime})
                 </p>
                 ${entry.notes ? `<p class="text-xs text-slate-600 italic bg-white/60 p-2 rounded-xl mt-1 border border-slate-100">${entry.notes}</p>` : ''}
+                <p class="text-[10px] text-slate-400">Ajouté / Modifié par : <strong>${entry.author || 'Parent'}</strong></p>
               </div>
               <div class="flex items-center gap-2 self-end sm:self-center">
                 <button onclick="editAgendaEntry(${index})" class="p-2 text-indigo-600 hover:bg-indigo-100 rounded-xl transition" title="Modifier">
@@ -1279,6 +1287,7 @@
       const editIdx = parseInt(document.getElementById('editAgendaIndex').value);
 
       const entry = {
+        id: editIdx >= 0 ? window.agendaEntries[editIdx].id : Date.now().toString(),
         title: document.getElementById('agendaTitle').value.trim(),
         category: document.getElementById('agendaCategory').value,
         startDate: document.getElementById('agendaStartDate').value,
@@ -1288,7 +1297,7 @@
         assignee: document.getElementById('agendaAssignee').value,
         notes: document.getElementById('agendaNotes').value.trim(),
         author: currentUser || "Parent",
-        lastModified: Date.now()
+        updatedAt: Date.now()
       };
 
       if (!window.agendaEntries) window.agendaEntries = [];
@@ -1332,8 +1341,8 @@
       document.getElementById('agendaStartTime').value = "09:00";
       document.getElementById('agendaEndTime').value = "10:00";
 
-      document.getElementById('formAgendaTitle').innerHTML = `<i class="fa-solid fa-calendar-plus text-indigo-500"></i> Créer un événement`;
-      document.getElementById('btnSubmitAgenda').innerText = "Enregistrer l'événement";
+      document.getElementById('formAgendaTitle').innerHTML = `<i class="fa-solid fa-calendar-plus text-indigo-500"></i> Ajouter un événement`;
+      document.getElementById('btnSubmitAgenda').innerText = "Ajouter à l'agenda";
       document.getElementById('btnCancelAgendaEdit').classList.add('hidden');
     }
 
@@ -1351,7 +1360,7 @@
         return;
       }
 
-      let icsContent = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//BabyPredict2026//AgendaFamille//FR\nCALSCALE:GREGORIAN\n";
+      let icsContent = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//BabyPredict2026//NONSGML v1.0//FR\nCALSCALE:GREGORIAN\n";
 
       window.agendaEntries.forEach(entry => {
         const startClean = (entry.startDate + 'T' + (entry.startTime || '00:00') + ':00').replace(/[-:]/g, '');
@@ -1361,7 +1370,7 @@
         icsContent += `SUMMARY:[${entry.assignee}] ${entry.title}\n`;
         icsContent += `DTSTART:${startClean}\n`;
         icsContent += `DTEND:${endClean}\n`;
-        icsContent += `DESCRIPTION:Catégorie : ${entry.category} | Notes : ${entry.notes || 'Aucune'}\n`;
+        icsContent += `DESCRIPTION:Catégorie : ${entry.category} | Remarques : ${entry.notes || 'Aucune'}\n`;
         icsContent += "END:VEVENT\n";
       });
 
@@ -1370,13 +1379,13 @@
       const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
       const link = document.createElement('a');
       link.href = window.URL.createObjectURL(blob);
-      link.setAttribute('download', 'agenda_partage_baby_predict.ics');
+      link.setAttribute('download', 'agenda_famille_baby_predict.ics');
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
     }
 
-    // --- NON-RÉGRESSION ET CALCULS MATERNITÉ & PRONOSTICS ---
+    // --- FONCTIONS PRONOSTICS & MATERNITÉ PRE-EXISTANTES ---
     function renderPredictions() {
       const tbody = document.getElementById('predictionsTableBody');
       if (!tbody) return;
@@ -1409,7 +1418,7 @@
         tbody.appendChild(tr);
       });
 
-      const total = (window.predictions || []).length;
+      const total = window.predictions.length;
       document.getElementById('predCount').innerText = `${total} participation(s)`;
 
       if (total > 0) {
@@ -1433,8 +1442,6 @@
         height: parseFloat(document.getElementById('predHeight').value),
         date: document.getElementById('predDate').value
       };
-
-      if (!window.predictions) window.predictions = [];
 
       if (editIdx >= 0) {
         window.predictions[editIdx] = pred;
@@ -1523,8 +1530,6 @@
         author: currentUser || "Parent"
       };
 
-      if (!window.careEntries) window.careEntries = [];
-
       if (editIdx >= 0) {
         window.careEntries[editIdx] = entry;
       } else {
@@ -1558,295 +1563,6 @@
         updateMealsChart();
       }
     }
-
-    function updateNextFeedingReminder() {
-      if (!window.careEntries || window.careEntries.length === 0) return;
-      const meals = window.careEntries.filter(c => c.feeding > 0);
-      if (meals.length === 0) return;
-
-      const lastMeal = meals[meals.length - 1];
-      document.getElementById('nextFeedingTimer').innerText = `Dernier repas enregistré : ${lastMeal.time} (${lastMeal.feeding} ml)`;
-    }
-
-    function quickAddMeal() {
-      const vol = prompt("Volume du biberon (en ml) :", "90");
-      if (vol === null) return;
-      const now = new Date();
-      const entry = {
-        date: now.toISOString().split('T')[0],
-        time: now.toTimeString().substring(0, 5),
-        diaper: "Propre / Rien",
-        feeding: parseInt(vol) || 0,
-        notes: "Ajout rapide Biberon",
-        author: currentUser || "Parent"
-      };
-      if (!window.careEntries) window.careEntries = [];
-      window.careEntries.push(entry);
-      saveAllToStorage();
-      renderCareEntries();
-      renderDailyTracker();
-      updateMealsChart();
-    }
-
-    function quickAddDiaper() {
-      const now = new Date();
-      const entry = {
-        date: now.toISOString().split('T')[0],
-        time: now.toTimeString().substring(0, 5),
-        diaper: "Urine + Selles",
-        feeding: 0,
-        notes: "Ajout rapide Couche",
-        author: currentUser || "Parent"
-      };
-      if (!window.careEntries) window.careEntries = [];
-      window.careEntries.push(entry);
-      saveAllToStorage();
-      renderCareEntries();
-      renderDailyTracker();
-      updateMealsChart();
-    }
-
-    function renderDailyTracker() {
-      const today = new Date().toISOString().split('T')[0];
-      document.getElementById('currentTrackingDate').innerText = `Date du jour : ${today}`;
-
-      const todayCare = (window.careEntries || []).filter(c => c.date === today);
-      const mealsToday = todayCare.filter(c => c.feeding > 0);
-      const diapersToday = todayCare.filter(c => c.diaper !== "Propre / Rien");
-
-      const totalMealsCount = mealsToday.length;
-      const totalMealsVol = mealsToday.reduce((acc, c) => acc + (c.feeding || 0), 0);
-      const totalDiapersCount = diapersToday.length;
-
-      document.getElementById('quickMealCount').innerText = totalMealsCount;
-      document.getElementById('quickMealVolume').innerText = totalMealsVol;
-      document.getElementById('quickDiaperCount').innerText = totalDiapersCount;
-
-      document.getElementById('statMealsToday').innerText = totalMealsCount;
-      document.getElementById('statMealsVolToday').innerText = `${totalMealsVol} ml`;
-      document.getElementById('statDiapersToday').innerText = totalDiapersCount;
-
-      const histDiv = document.getElementById('quickEntriesHistory');
-      if (histDiv) {
-        histDiv.innerHTML = '';
-        todayCare.slice().reverse().forEach(c => {
-          const item = document.createElement('div');
-          item.className = 'p-2 bg-white/60 rounded-xl border border-slate-100 flex justify-between items-center';
-          item.innerHTML = `
-            <span><strong>${c.time}</strong> - ${c.feeding > 0 ? `🍼 ${c.feeding}ml` : ''} ${c.diaper !== 'Propre / Rien' ? `👶 ${c.diaper}` : ''}</span>
-            <span class="text-[10px] text-slate-400">${c.author || ''}</span>
-          `;
-          histDiv.appendChild(item);
-        });
-      }
-    }
-
-    function updateGoalsBadges() {
-      const g = window.statsGoals || { mealsDay: 8, diapersDay: 6 };
-      document.getElementById('badgeMealsGoal').innerText = `Obj: ${g.mealsDay}/j`;
-      document.getElementById('badgeDiapersGoal').innerText = `Obj: ${g.diapersDay}/j`;
-    }
-
-    function openEditStatsModal() {
-      document.getElementById('goalMealsDayInput').value = window.statsGoals.mealsDay || 8;
-      document.getElementById('goalDiapersDayInput').value = window.statsGoals.diapersDay || 6;
-      document.getElementById('editStatsModal').classList.remove('hidden');
-    }
-
-    function closeEditStatsModal() {
-      document.getElementById('editStatsModal').classList.add('hidden');
-    }
-
-    function saveStatsGoals(e) {
-      e.preventDefault();
-      window.statsGoals = {
-        mealsDay: parseInt(document.getElementById('goalMealsDayInput').value) || 8,
-        diapersDay: parseInt(document.getElementById('goalDiapersDayInput').value) || 6
-      };
-      saveAllToStorage();
-      updateGoalsBadges();
-      closeEditStatsModal();
-    }
-
-    function openSubscribeModal() { document.getElementById('subscribeModal').classList.remove('hidden'); }
-    function closeSubscribeModal() { document.getElementById('subscribeModal').classList.add('hidden'); }
-    function selectPlan(plan) { alert(`Merci d'avoir choisi le plan ${plan} ! Redirection sécurisée...`); closeSubscribeModal(); }
-
-    function updateMealsChart() {
-      const ctx = document.getElementById('chartMeals')?.getContext('2d');
-      if (!ctx) return;
-
-      const days = ['J-6', 'J-5', 'J-4', 'J-3', 'J-2', 'Hier', 'Aujourd\'hui'];
-      const mealsData = [6, 7, 8, 7, 8, 7, parseInt(document.getElementById('quickMealCount')?.innerText || 0)];
-      const diapersData = [5, 6, 6, 7, 6, 5, parseInt(document.getElementById('quickDiaperCount')?.innerText || 0)];
-
-      if (chartMealsInstance) chartMealsInstance.destroy();
-
-      chartMealsInstance = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: days,
-          datasets: [
-            { label: 'Biberons', data: mealsData, backgroundColor: '#ec4899', borderRadius: 6 },
-            { label: 'Couches', data: diapersData, backgroundColor: '#3b82f6', borderRadius: 6 }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { position: 'bottom' } }
-        }
-      });
-    }
-
-    function updateTempChart() {
-      const ctx = document.getElementById('chartTemp')?.getContext('2d');
-      if (!ctx) return;
-
-      const labels = (window.tempHistory || []).map(t => t.time);
-      const temps = (window.tempHistory || []).map(t => t.tempBaby);
-
-      if (chartTempInstance) chartTempInstance.destroy();
-
-      chartTempInstance = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: labels,
-          datasets: [{
-            label: 'T° Bébé (°C)',
-            data: temps,
-            borderColor: '#ef4444',
-            backgroundColor: 'rgba(239, 68, 68, 0.1)',
-            fill: true,
-            tension: 0.3
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } }
-        }
-      });
-    }
-
-    function updateWeightChart() {
-      const ctx = document.getElementById('chartWeight')?.getContext('2d');
-      if (!ctx) return;
-
-      const labels = (window.weightHistory || []).map(w => w.date);
-      const weights = (window.weightHistory || []).map(w => w.weight);
-
-      if (chartWeightInstance) chartWeightInstance.destroy();
-
-      chartWeightInstance = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: labels,
-          datasets: [{
-            label: 'Poids (kg)',
-            data: weights,
-            borderColor: '#3b82f6',
-            backgroundColor: 'rgba(59, 130, 246, 0.1)',
-            fill: true,
-            tension: 0.3
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } }
-        }
-      });
-    }
-
-    function addTempPoint(e) {
-      e.preventDefault();
-      const time = document.getElementById('tempPointTime').value;
-      const baby = parseFloat(document.getElementById('tempPointBaby').value);
-      const inc = parseFloat(document.getElementById('tempPointIncubator').value) || null;
-
-      if (!window.tempHistory) window.tempHistory = [];
-      window.tempHistory.push({ time, tempBaby: baby, tempIncubator: inc });
-      saveAllToStorage();
-      updateTempChart();
-      renderTempList();
-      document.getElementById('tempPointTime').value = '';
-      document.getElementById('tempPointBaby').value = '';
-    }
-
-    function renderTempList() {
-      const container = document.getElementById('tempPointsList');
-      if (!container) return;
-      container.innerHTML = '';
-      (window.tempHistory || []).forEach((t, i) => {
-        const div = document.createElement('div');
-        div.className = 'flex justify-between items-center p-2 bg-white/60 rounded-xl border border-slate-100';
-        div.innerHTML = `<span><strong>${t.time}</strong> : ${t.tempBaby} °C</span><button onclick="deleteTempPoint(${i})" class="text-red-500"><i class="fa-solid fa-xmark"></i></button>`;
-        container.appendChild(div);
-      });
-    }
-
-    function deleteTempPoint(i) {
-      window.tempHistory.splice(i, 1);
-      saveAllToStorage();
-      updateTempChart();
-      renderTempList();
-    }
-
-    function addWeightPoint(e) {
-      e.preventDefault();
-      const date = document.getElementById('weightPointDate').value;
-      const val = parseFloat(document.getElementById('weightPointVal').value);
-
-      if (!window.weightHistory) window.weightHistory = [];
-      window.weightHistory.push({ date, weight: val });
-      saveAllToStorage();
-      updateWeightChart();
-      renderWeightList();
-      document.getElementById('weightPointVal').value = '';
-    }
-
-    function renderWeightList() {
-      const container = document.getElementById('weightPointsList');
-      if (!container) return;
-      container.innerHTML = '';
-      (window.weightHistory || []).forEach((w, i) => {
-        const div = document.createElement('div');
-        div.className = 'flex justify-between items-center p-2 bg-white/60 rounded-xl border border-slate-100';
-        div.innerHTML = `<span><strong>${w.date}</strong> : ${w.weight} kg</span><button onclick="deleteWeightPoint(${i})" class="text-red-500"><i class="fa-solid fa-xmark"></i></button>`;
-        container.appendChild(div);
-      });
-    }
-
-    function deleteWeightPoint(i) {
-      window.weightHistory.splice(i, 1);
-      saveAllToStorage();
-      updateWeightChart();
-      renderWeightList();
-    }
-
-    // --- INITIALISATION AU CHARGEMENT DE LA PAGE ---
-    window.addEventListener('DOMContentLoaded', () => {
-      const now = new Date();
-      const todayStr = now.toISOString().split('T')[0];
-      const timeStr = now.toTimeString().substring(0, 5);
-
-      if (document.getElementById('careDate')) document.getElementById('careDate').value = todayStr;
-      if (document.getElementById('careTime')) document.getElementById('careTime').value = timeStr;
-      if (document.getElementById('agendaStartDate')) document.getElementById('agendaStartDate').value = todayStr;
-      if (document.getElementById('agendaEndDate')) document.getElementById('agendaEndDate').value = todayStr;
-
-      renderPredictions();
-      renderCareEntries();
-      renderDailyTracker();
-      renderAgendaEntries();
-      updateGoalsBadges();
-      updateMealsChart();
-      updateTempChart();
-      updateWeightChart();
-      renderTempList();
-      renderWeightList();
-    });
   </script>
 </body>
 </html>
