@@ -1,2181 +1,281 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BABY PREDICT 2026 - Pro, Suivi Maternité & Agenda</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  
-  <!-- Intégration de FullCalendar v6 -->
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
-  
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-  <style>
-    .glassmorphism {
-      background: rgba(255, 255, 255, 0.85);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-    }
-    .active-tab {
-      border-bottom: 3px solid #ec4899;
-      color: #db2777;
-      font-weight: 700;
-    }
-    .pdf-compact {
-      background: white !important;
-      padding: 15px !important;
-      font-size: 11px !important;
-      color: #1e293b !important;
-    }
-    .pdf-compact table {
-      font-size: 10px !important;
-    }
-    .pdf-compact th, .pdf-compact td {
-      padding: 4px 6px !important;
-    }
-    .pdf-compact .no-pdf {
-      display: none !important;
-    }
-    .fc {
-      font-family: inherit;
-    }
-    .fc .fc-toolbar-title {
-      font-size: 1.1rem !important;
-      font-weight: 800;
-      color: #1e293b;
-    }
-    .fc .fc-button-primary {
-      background-color: #4f46e5 !important;
-      border-color: #4f46e5 !important;
-      border-radius: 0.75rem !important;
-      font-size: 0.75rem !important;
-      font-weight: 700 !important;
-      text-transform: capitalize !important;
-    }
-    .fc .fc-button-primary:hover {
-      background-color: #4338ca !important;
-    }
-    .fc .fc-button-active {
-      background-color: #3730a3 !important;
-    }
-    .fc-theme-standard td, .fc-theme-standard th {
-      border-color: rgba(226, 232, 240, 0.8) !important;
-    }
-    .fc-event {
-      border-radius: 6px !important;
-      padding: 2px 4px !important;
-      font-size: 0.75rem !important;
-      border: none !important;
-      cursor: pointer;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suivi Bébé & Famille</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50 min-h-screen text-slate-800 font-sans pb-12">
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen pb-12">
 
-  <!-- PAGE DE CONNEXION -->
-  <div id="loginPage" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-md p-4">
-    <div class="glassmorphism p-8 rounded-3xl shadow-2xl max-w-md w-full border border-white/50 text-center">
-      <div class="inline-flex p-4 rounded-full bg-pink-100 text-pink-500 mb-4 text-3xl">
-        <i class="fa-solid fa-baby"></i>
-      </div>
-      <h1 class="text-2xl font-black text-slate-800 mb-2">BABY PREDICT 2026</h1>
-      <p class="text-sm text-slate-500 mb-6">Connectez-vous pour accéder au tableau de bord et à la fiche de soins.</p>
-      
-      <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4 text-left">
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Votre Prénom / Pseudo</label>
-          <input type="text" id="usernameInput" required placeholder="ex: Julie, Oncle Marc..." class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-400 bg-white/80">
-        </div>
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Code d'accès</label>
-          <input type="password" id="accessCodeInput" required placeholder="Clé famille ou admin" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-400 bg-white/80">
-          <p class="text-xs text-slate-400 mt-1">Saisissez <code class="bg-slate-100 px-1 rounded text-pink-600 font-bold">ADMIN2026</code> pour le mode administration.</p>
-        </div>
-        <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold rounded-xl shadow-lg hover:opacity-95 transition">
-          Accéder à l'application
-        </button>
-      </form>
-    </div>
-  </div>
-
-  <!-- NAVIGATION PRINCIPALE -->
-  <header class="max-w-6xl mx-auto px-4 pt-6">
-    <div class="glassmorphism rounded-2xl p-4 shadow-sm flex flex-wrap items-center justify-between gap-4">
-      <div class="flex items-center gap-3">
-        <div class="p-3 bg-pink-500 text-white rounded-xl shadow-md">
-          <i class="fa-solid fa-baby-carriage text-xl"></i>
-        </div>
-        <div>
-          <h1 class="font-extrabold text-lg text-slate-800">BABY PREDICT 2026</h1>
-          <p class="text-xs text-slate-500">Espace Suivi Maternité, Pronostics & Agenda</p>
-        </div>
-      </div>
-
-      <nav class="flex gap-2 border-b md:border-b-0 border-slate-200 pb-2 md:pb-0 overflow-x-auto">
-        <button onclick="switchTab('pronostics')" id="tab-pronostics" class="px-3 py-2 text-sm font-semibold text-slate-600 hover:text-pink-600 active-tab transition flex items-center gap-2 whitespace-nowrap">
-          <i class="fa-solid fa-chart-pie"></i> Pronostics
-        </button>
-        <button onclick="switchTab('maternite')" id="tab-maternite" class="px-3 py-2 text-sm font-semibold text-slate-600 hover:text-pink-600 transition flex items-center gap-2 whitespace-nowrap">
-          <i class="fa-solid fa-heart-pulse"></i> Suivi Maternité & Soins
-        </button>
-        <button onclick="switchTab('agenda')" id="tab-agenda" class="px-3 py-2 text-sm font-semibold text-slate-600 hover:text-pink-600 transition flex items-center gap-2 whitespace-nowrap">
-          <i class="fa-solid fa-calendar-days"></i> Agenda Partagé
-        </button>
-      </nav>
-
-      <div class="flex items-center gap-3 text-sm">
-        <button onclick="openSubscribeModal()" class="px-3.5 py-2 bg-gradient-to-r from-amber-500 to-pink-500 hover:from-amber-600 hover:to-pink-600 text-white font-bold rounded-xl shadow-md hover:shadow-lg transition flex items-center gap-2 text-xs">
-          <i class="fa-solid fa-crown text-amber-200"></i>
-          <span>S'abonner</span>
-        </button>
-
-        <span class="px-3 py-1.5 rounded-full bg-slate-100 font-medium text-slate-700 border border-slate-200" id="userBadge">
-          <i class="fa-regular fa-user mr-1"></i> Invité
-        </span>
-        <button onclick="logout()" class="p-2 text-slate-400 hover:text-red-500 transition" title="Déconnexion">
-          <i class="fa-solid fa-right-from-bracket"></i>
-        </button>
-      </div>
-    </div>
-  </header>
-
-  <!-- CONTENU PRINCIPAL -->
-  <main class="max-w-6xl mx-auto px-4 mt-6">
-
-    <!-- BANNIÈRE PROMOTIONNELLE -->
-    <div class="glassmorphism p-4 rounded-2xl bg-gradient-to-r from-purple-600 via-pink-500 to-amber-500 text-white mb-6 shadow-md flex flex-col md:flex-row items-center justify-between gap-4">
-      <div class="flex items-center gap-3">
-        <div class="p-3 bg-white/20 backdrop-blur-md rounded-xl text-2xl">
-          <i class="fa-solid fa-gem text-amber-300"></i>
-        </div>
-        <div>
-          <h3 class="font-bold text-base">Passez à Baby Predict Premium</h3>
-          <p class="text-xs text-white/90">Accédez aux fonctionnalités IA illimitées, aux rappels SMS et au stockage sécurisé HD.</p>
-        </div>
-      </div>
-      <button onclick="openSubscribeModal()" class="px-5 py-2.5 bg-white text-pink-600 font-extrabold rounded-xl shadow hover:bg-slate-100 transition text-xs whitespace-nowrap">
-        Découvrir les offres
-      </button>
-    </div>
-
-    <!-- SECTION 1 : PRONOSTICS -->
-    <div id="section-pronostics" class="space-y-6">
-      <div id="resultBanner" class="hidden glassmorphism bg-gradient-to-r from-amber-100 via-pink-100 to-purple-100 p-6 rounded-3xl border-2 border-amber-300 shadow-md">
-        <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-          <div>
-            <span class="px-3 py-1 bg-amber-500 text-white font-bold text-xs rounded-full uppercase tracking-wider">Naissance Confirmée !</span>
-            <h2 class="text-2xl font-black text-slate-800 mt-2" id="resBabyName">Bébé Arrivé !</h2>
-            <p class="text-sm text-slate-600" id="resBabyDetails">Né(e) le -- à -- | -- kg | -- cm</p>
-          </div>
-          <div class="text-right">
-            <p class="text-xs font-bold text-slate-500 uppercase">Grand Gagnant du Pronostic</p>
-            <p class="text-xl font-extrabold text-pink-600" id="resWinnerName">--</p>
-          </div>
-        </div>
-      </div>
-
-      <div id="adminPanel" class="hidden glassmorphism p-6 rounded-3xl border-2 border-purple-200">
-        <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
-          <i class="fa-solid fa-lock text-purple-600"></i> Panneau Administration : Publier les résultats officiels
-        </h3>
-        <form onsubmit="saveOfficialResults(event)" class="grid grid-cols-1 md:grid-cols-5 gap-3">
-          <input type="text" id="officialName" placeholder="Prénom" required class="px-3 py-2 rounded-xl border border-slate-200 text-sm">
-          <select id="officialGender" class="px-3 py-2 rounded-xl border border-slate-200 text-sm">
-            <option value="Fille">Fille</option>
-            <option value="Garçon">Garçon</option>
-          </select>
-          <input type="number" step="0.01" id="officialWeight" placeholder="Poids (kg)" required class="px-3 py-2 rounded-xl border border-slate-200 text-sm">
-          <input type="number" step="0.5" id="officialHeight" placeholder="Taille (cm)" required class="px-3 py-2 rounded-xl border border-slate-200 text-sm">
-          <button type="submit" class="bg-purple-600 text-white text-sm font-bold rounded-xl py-2 hover:bg-purple-700 transition">
-            Clôturer & Calculer Gagnant
-          </button>
-        </form>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div class="glassmorphism p-5 rounded-2xl flex items-center gap-4">
-          <div class="p-3 bg-pink-100 text-pink-500 rounded-xl text-xl"><i class="fa-solid fa-venus-mars"></i></div>
-          <div>
-            <p class="text-xs font-bold text-slate-400 uppercase">Tendance Sexe</p>
-            <p class="text-lg font-black text-slate-700" id="statGender">--</p>
-          </div>
-        </div>
-        <div class="glassmorphism p-5 rounded-2xl flex items-center gap-4">
-          <div class="p-3 bg-blue-100 text-blue-500 rounded-xl text-xl"><i class="fa-solid fa-weight-scale"></i></div>
-          <div>
-            <p class="text-xs font-bold text-slate-400 uppercase">Poids Moyen Prédit</p>
-            <p class="text-lg font-black text-slate-700" id="statAvgWeight">-- kg</p>
-          </div>
-        </div>
-        <div class="glassmorphism p-5 rounded-2xl flex items-center gap-4">
-          <div class="p-3 bg-purple-100 text-purple-500 rounded-xl text-xl"><i class="fa-solid fa-ruler-vertical"></i></div>
-          <div>
-            <p class="text-xs font-bold text-slate-400 uppercase">Taille Moyenne Prédite</p>
-            <p class="text-lg font-black text-slate-700" id="statAvgHeight">-- cm</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- FORMULAIRE PRONOSTIC -->
-        <div class="glassmorphism p-6 rounded-3xl border border-white/50 h-fit">
-          <div class="flex justify-between items-center mb-4">
-            <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2" id="formPredTitle">
-              <i class="fa-solid fa-pen-to-square text-pink-500"></i> Faire un pronostic
-            </h3>
-            <button id="btnCancelPredEdit" onclick="cancelPredEdit()" class="hidden text-xs text-red-500 hover:underline font-bold">Annuler modification</button>
-          </div>
-          <form id="predictionForm" onsubmit="addPrediction(event)" class="space-y-4">
-            <input type="hidden" id="editPredIndex" value="-1">
-            <div id="adminUserOverride" class="hidden">
-              <label class="block text-xs font-bold text-purple-600 mb-1">Nom du participant (Mode Admin)</label>
-              <input type="text" id="predUserAdmin" placeholder="Saisir pour quelqu'un d'autre..." class="w-full px-3 py-2 rounded-xl border border-purple-300 bg-purple-50/50 text-sm focus:ring-2 focus:ring-purple-400 outline-none">
+    <!-- En-tête -->
+    <header class="bg-indigo-600 text-white shadow-md p-4 sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold flex items-center gap-2">
+                <i class="fa-solid fa-baby"></i> Suivi Bébé & Famille
+            </h1>
+            <div class="flex items-center gap-3">
+                <span id="userBadge" class="bg-indigo-700 text-xs px-2,5 py-1 rounded-full font-medium">Parent</span>
             </div>
-            <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1">Prénom estimé du bébé</label>
-              <input type="text" id="predName" required placeholder="ex: Emma, Leo..." class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-pink-300 outline-none">
-            </div>
-            
-            <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1"><i class="fa-solid fa-heart text-pink-500 mr-1"></i>Futurs Passions / Hobbies</label>
-              <input type="text" id="predHobby" placeholder="ex: Football, Guitare, Astrophysique..." class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-pink-300 outline-none">
-            </div>
+        </div>
+    </header>
 
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <label class="block text-xs font-semibold text-slate-600 mb-1">Sexe</label>
-                <select id="predGender" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-pink-300 outline-none">
-                  <option value="Fille">Fille</option>
-                  <option value="Garçon">Garçon</option>
-                </select>
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-slate-600 mb-1">Poids (kg)</label>
-                <input type="number" step="0.05" min="1.5" max="5.5" id="predWeight" required placeholder="3.25" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-pink-300 outline-none">
-              </div>
-            </div>
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <label class="block text-xs font-semibold text-slate-600 mb-1">Taille (cm)</label>
-                <input type="number" step="0.5" min="40" max="60" id="predHeight" required placeholder="50.0" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-pink-300 outline-none">
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-slate-600 mb-1">Date estimée</label>
-                <input type="date" id="predDate" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-pink-300 outline-none">
-              </div>
-            </div>
-            <button type="submit" id="btnSubmitPred" class="w-full py-3 bg-pink-500 hover:bg-pink-600 text-white font-bold rounded-xl shadow-md transition text-sm">
-              Enregistrer le pronostic
+    <!-- Conteneur Principal -->
+    <main class="max-w-4xl mx-auto p-4 space-y-6">
+
+        <!-- Navigation par onglets -->
+        <div class="flex border-b border-slate-200 bg-white rounded-t-xl overflow-hidden shadow-sm">
+            <button onclick="switchTab('agenda')" id="tab-agenda" class="flex-1 py-3 px-4 font-semibold text-center border-b-2 border-indigo-600 text-indigo-600 transition">
+                <i class="fa-solid fa-calendar-days mr-1"></i> Agenda
             </button>
-          </form>
-        </div>
-
-        <!-- TABLEAU DES PRONOSTICS -->
-        <div class="lg:col-span-2 glassmorphism p-6 rounded-3xl border border-white/50">
-          <h3 class="font-bold text-slate-800 text-lg mb-4 flex items-center justify-between">
-            <span><i class="fa-solid fa-list-ol text-purple-500 mr-2"></i>Pronostics de la famille</span>
-            <span class="text-xs bg-slate-200 text-slate-700 px-2.5 py-1 rounded-full" id="predCount">0 participation(s)</span>
-          </h3>
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-sm">
-              <thead>
-                <tr class="border-b border-slate-200 text-slate-400 text-xs uppercase">
-                  <th class="pb-3 font-semibold">Participant</th>
-                  <th class="pb-3 font-semibold">Prénom estimé</th>
-                  <th class="pb-3 font-semibold">Passion prédite</th>
-                  <th class="pb-3 font-semibold">Sexe</th>
-                  <th class="pb-3 font-semibold">Poids</th>
-                  <th class="pb-3 font-semibold">Taille</th>
-                  <th class="pb-3 font-semibold">Date</th>
-                  <th class="pb-3 font-semibold text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody id="predictionsTableBody" class="divide-y divide-slate-100"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- SECTION 2 : SUIVI MATERNITÉ & SOINS -->
-    <div id="section-maternite" class="hidden space-y-6">
-      
-      <!-- MODULE : SAISIE RAPIDE & SUIVI QUOTIDIEN -->
-      <div class="glassmorphism p-6 rounded-3xl border border-white/50 space-y-4">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">
-              <i class="fa-solid fa-bolt text-amber-500"></i> Suivi Quotidien Direct
-            </h3>
-            <p class="text-xs text-slate-500" id="currentTrackingDate">Date du jour : --/--/----</p>
-          </div>
-          <div class="flex items-center gap-2 flex-wrap">
-            <button onclick="resetStatsPeriod()" class="px-3.5 py-2 bg-purple-50 hover:bg-purple-100 text-purple-600 font-bold rounded-xl text-xs border border-purple-200 transition flex items-center gap-2">
-              <i class="fa-solid fa-filter-circle-xmark"></i> Initialiser (Semaine / Mois)
+            <button onclick="switchTab('suivi')" id="tab-suivi" class="flex-1 py-3 px-4 font-semibold text-center text-slate-500 hover:text-slate-700 transition">
+                <i class="fa-solid fa-baby-carriage mr-1"></i> Suivi Bébé
             </button>
-            <button onclick="resetDailyTracker()" class="px-3.5 py-2 bg-red-50 hover:bg-red-100 text-red-600 font-bold rounded-xl text-xs border border-red-200 transition flex items-center gap-2">
-              <i class="fa-solid fa-rotate-right"></i> Réinitialiser la journée
-            </button>
-          </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="p-4 bg-white/70 rounded-2xl border border-pink-100 flex items-center justify-between gap-4 shadow-sm">
-            <div>
-              <span class="text-xs font-bold text-pink-600 uppercase tracking-wider block mb-1"><i class="fa-solid fa-bottle-droplet mr-1"></i> Biberons du jour</span>
-              <div class="text-2xl font-black text-slate-800">
-                <span id="quickMealCount">0</span> <span class="text-sm font-normal text-slate-500">prise(s)</span>
-              </div>
-              <p class="text-xs font-semibold text-pink-500 mt-0.5">Volume total : <span id="quickMealVolume">0</span> ml</p>
-            </div>
-            <button onclick="quickAddMeal()" class="px-4 py-3 bg-pink-500 hover:bg-pink-600 text-white font-extrabold rounded-2xl shadow-md transition flex items-center gap-2 text-xs">
-              <i class="fa-solid fa-plus text-base"></i> +1 Biberon
-            </button>
-          </div>
+        <!-- SECTION AGENDA -->
+        <section id="section-agenda" class="space-y-6">
+            <!-- Formulaire Agenda -->
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100">
+                <h2 id="formAgendaTitle" class="text-lg font-bold mb-4 text-slate-700 flex items-center gap-2">
+                    <i class="fa-solid fa-calendar-plus text-indigo-500"></i> Ajouter un événement
+                </h2>
+                <form id="agendaForm" onsubmit="addAgendaEntry(event)" class="space-y-4">
+                    <input type="hidden" id="editAgendaIndex" value="-1">
+                    
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Titre</label>
+                        <input type="text" id="agendaTitle" required placeholder="Rendez-vous pédiatre, Nounou..." class="w-full p-2,5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    </div>
 
-          <div class="p-4 bg-white/70 rounded-2xl border border-blue-100 flex items-center justify-between gap-4 shadow-sm">
-            <div>
-              <span class="text-xs font-bold text-blue-600 uppercase tracking-wider block mb-1"><i class="fa-solid fa-baby mr-1"></i> Couches du jour</span>
-              <div class="text-2xl font-black text-slate-800">
-                <span id="quickDiaperCount">0</span> <span class="text-sm font-normal text-slate-500">changée(s)</span>
-              </div>
-              <p class="text-xs text-slate-400 mt-0.5">Capture l'heure courante</p>
-            </div>
-            <button onclick="quickAddDiaper()" class="px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white font-extrabold rounded-2xl shadow-md transition flex items-center gap-2 text-xs">
-              <i class="fa-solid fa-plus text-base"></i> +1 Couche
-            </button>
-          </div>
-        </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Catégorie</label>
+                            <select id="agendaCategory" class="w-full p-2,5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                                <option value="Medical">Medical</option>
+                                <option value="Garde">Garde / Nounou</option>
+                                <option value="Activité">Activité</option>
+                                <option value="Rappel">Rappel</option>
+                                <option value="Autre">Autre</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Attribué à</label>
+                            <select id="agendaAssignee" class="w-full p-2,5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                                <option value="Papa">Papa</option>
+                                <option value="Maman">Maman</option>
+                                <option value="Les deux">Les deux</option>
+                            </select>
+                        </div>
+                    </div>
 
-        <div class="pt-2">
-          <h4 class="font-bold text-slate-700 text-xs uppercase tracking-wider mb-2 flex items-center gap-1.5">
-            <i class="fa-solid fa-clock-rotate-left text-slate-400"></i> Historique de la journée en cours
-          </h4>
-          <div id="quickEntriesHistory" class="max-h-40 overflow-y-auto space-y-1.5 pr-1 text-xs"></div>
-        </div>
-      </div>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Date début</label>
+                            <input type="date" id="agendaStartDate" required class="w-full p-2 border border-slate-300 rounded-lg text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Heure début</label>
+                            <input type="time" id="agendaStartTime" required class="w-full p-2 border border-slate-300 rounded-lg text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Date fin</label>
+                            <input type="date" id="agendaEndDate" required class="w-full p-2 border border-slate-300 rounded-lg text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Heure fin</label>
+                            <input type="time" id="agendaEndTime" required class="w-full p-2 border border-slate-300 rounded-lg text-sm">
+                        </div>
+                    </div>
 
-      <div class="glassmorphism p-6 rounded-3xl border border-white/50 flex flex-wrap items-center justify-between gap-4">
-        <div class="flex items-center gap-4">
-          <div class="p-4 bg-amber-100 text-amber-600 rounded-2xl text-2xl">
-            <i class="fa-solid fa-bottle-droplet"></i>
-          </div>
-          <div>
-            <h3 class="font-bold text-slate-800">Plage Horaire Repas Bébé</h3>
-            <p class="text-sm text-slate-500" id="nextFeedingTimer">Dernier repas enregistré : --:--</p>
-          </div>
-        </div>
-        <div class="flex items-center gap-3 flex-wrap">
-          <div class="flex items-center gap-2 bg-white/80 px-3 py-2 rounded-xl border border-slate-200 text-xs">
-            <span>Intervalle :</span>
-            <select id="feedingInterval" onchange="updateNextFeedingReminder()" class="font-bold text-slate-700 bg-transparent outline-none">
-              <option value="2">Toutes les 2h</option>
-              <option value="3" selected>Toutes les 3h</option>
-              <option value="4">Toutes les 4h</option>
-            </select>
-          </div>
-          
-          <div class="flex items-center gap-2 flex-wrap">
-            <button onclick="document.getElementById('fileInput').click()" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs shadow-md transition flex items-center gap-1.5">
-              <i class="fa-solid fa-camera"></i> Scanner / Importer Document
-            </button>
-            <input type="file" id="fileInput" accept="image/*,.pdf,.txt" style="display: none;" onchange="traiterFichier(event)">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Notes / Détails</label>
+                        <textarea id="agendaNotes" rows="2" placeholder="Adresse, documents à prendre..." class="w-full p-2,5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"></textarea>
+                    </div>
 
-            <button onclick="exportCareCSV()" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow-md transition flex items-center gap-1.5">
-              <i class="fa-solid fa-file-csv"></i> Export CSV
-            </button>
-            <button onclick="exportCareExcel()" class="px-3 py-2 bg-green-700 hover:bg-green-800 text-white font-bold rounded-xl text-xs shadow-md transition flex items-center gap-1.5">
-              <i class="fa-solid fa-file-excel"></i> Export Excel
-            </button>
-            <button onclick="exportCarePDF()" class="px-3 py-2 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl text-xs shadow-md transition flex items-center gap-1.5">
-              <i class="fa-solid fa-file-pdf text-red-400"></i> Export PDF
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- CHRONOMÈTRE -->
-      <div class="glassmorphism p-6 rounded-3xl border border-white/50">
-        <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-          <div class="flex items-center gap-3">
-            <div class="p-3 bg-purple-100 text-purple-600 rounded-2xl text-xl">
-              <i class="fa-solid fa-stopwatch"></i>
-            </div>
-            <div>
-              <h3 class="font-bold text-slate-800">Chronomètre Repas & Contractions</h3>
-              <p class="text-xs text-slate-500">Mesurer la durée d'un biberon, d'une tétée au sein ou la fréquence d'une contraction</p>
-            </div>
-          </div>
-
-          <div class="flex flex-wrap items-center gap-3">
-            <select id="timerType" class="px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold bg-white outline-none">
-              <option value="Repas (Biberon)">Repas (Biberon)</option>
-              <option value="Tétée Sein Gauche">Tétée (Sein Gauche)</option>
-              <option value="Tétée Sein Droit">Tétée (Sein Droit)</option>
-              <option value="Contraction">Contraction</option>
-            </select>
-
-            <div class="bg-slate-900 text-emerald-400 font-mono text-2xl font-bold px-4 py-1.5 rounded-xl border border-slate-700 shadow-inner" id="timerDisplay">
-              00:00
+                    <div class="flex gap-2 pt-2">
+                        <button type="submit" id="btnSubmitAgenda" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2,5 rounded-lg shadow transition">
+                            Ajouter à l'agenda
+                        </button>
+                        <button type="button" id="btnCancelAgendaEdit" onclick="cancelAgendaEdit()" class="hidden bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold px-4 py-2,5 rounded-lg transition">
+                            Annuler
+                        </button>
+                    </div>
+                </form>
             </div>
 
-            <div class="flex gap-1.5">
-              <button onclick="toggleTimer()" id="btnStartTimer" class="px-3 py-2 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold rounded-xl shadow transition">
-                <i class="fa-solid fa-play"></i> Démarrer
-              </button>
-              <button onclick="resetTimer()" class="px-3 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold rounded-xl transition">
-                <i class="fa-solid fa-rotate-left"></i>
-              </button>
-              <button onclick="saveTimerToCare()" class="px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded-xl shadow transition">
-                <i class="fa-solid fa-plus"></i> Enregistrer
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- PERSONNALISATION OBJECTIFS -->
-      <div class="flex justify-between items-center bg-white/60 p-3 rounded-2xl border border-slate-200">
-        <span class="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center gap-2">
-          <i class="fa-solid fa-chart-simple text-pink-500"></i> Bilan Statistiques & Objectifs
-        </span>
-        <div class="flex items-center gap-2">
-          <button onclick="resetStatsPeriod()" class="px-3 py-1.5 bg-purple-100 hover:bg-purple-200 text-purple-700 font-bold rounded-xl text-xs transition flex items-center gap-1.5">
-            <i class="fa-solid fa-rotate-left"></i> Initialiser Semaine/Mois
-          </button>
-          <button onclick="openEditStatsModal()" class="px-3 py-1.5 bg-gradient-to-r from-pink-500 to-purple-600 hover:opacity-95 text-white font-bold rounded-xl text-xs shadow-md transition flex items-center gap-1.5">
-            <i class="fa-solid fa-sliders"></i> Modifier Objectifs & Valeurs
-          </button>
-        </div>
-      </div>
-
-      <!-- STATISTIQUES REPAS & COUCHES -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div class="glassmorphism p-4 rounded-2xl">
-          <div class="flex justify-between items-center mb-1">
-            <span class="text-xs font-bold text-slate-400 uppercase">Biberons / Repas</span>
-            <span class="text-xs bg-pink-100 text-pink-600 font-bold px-2 py-0.5 rounded-full" id="badgeMealsGoal">Obj: 8/j</span>
-          </div>
-          <div class="space-y-1 mt-2">
-            <p class="text-sm text-slate-700"><strong>Aujourd'hui :</strong> <span id="statMealsToday" class="font-bold text-pink-600">0</span> (<span id="statMealsVolToday">0 ml</span>)</p>
-            <p class="text-xs text-slate-500"><strong>7 derniers jours :</strong> <span id="statMealsWeek" class="font-bold text-slate-700">0</span> (<span id="statMealsVolWeek">0 ml</span>)</p>
-            <p class="text-xs text-slate-500"><strong>30 derniers jours :</strong> <span id="statMealsMonth" class="font-bold text-slate-700">0</span> (<span id="statMealsVolMonth">0 ml</span>)</p>
-          </div>
-        </div>
-
-        <div class="glassmorphism p-4 rounded-2xl">
-          <div class="flex justify-between items-center mb-1">
-            <span class="text-xs font-bold text-slate-400 uppercase">Couches</span>
-            <span class="text-xs bg-blue-100 text-blue-600 font-bold px-2 py-0.5 rounded-full" id="badgeDiapersGoal">Obj: 6/j</span>
-          </div>
-          <div class="space-y-1 mt-2">
-            <p class="text-sm text-slate-700"><strong>Aujourd'hui :</strong> <span id="statDiapersToday" class="font-bold text-blue-600">0</span></p>
-            <p class="text-xs text-slate-500"><strong>7 derniers jours :</strong> <span id="statDiapersWeek" class="font-bold text-slate-700">0</span></p>
-            <p class="text-xs text-slate-500"><strong>30 derniers jours :</strong> <span id="statDiapersMonth" class="font-bold text-slate-700">0</span></p>
-          </div>
-        </div>
-
-        <div class="glassmorphism p-4 rounded-2xl border transition duration-300" id="cardTempStatus">
-          <span class="text-xs font-bold text-slate-400 uppercase">Température Bébé</span>
-          <p class="text-2xl font-black text-slate-800" id="statLastTemp">-- °C</p>
-          <p class="text-xs font-bold mt-1 text-emerald-600" id="statTempStatus">Statut : Normal</p>
-        </div>
-
-        <div class="glassmorphism p-4 rounded-2xl">
-          <span class="text-xs font-bold text-slate-400 uppercase">Dernier Poids</span>
-          <p class="text-2xl font-black text-slate-800" id="statCurrentWeight">-- kg</p>
-          <p class="text-xs text-slate-400 mt-1" id="statWeightDiff">Aucune donnée</p>
-        </div>
-      </div>
-
-      <!-- HISTORIQUE QUOTIDIEN DÉTAILLÉ -->
-      <div class="glassmorphism p-6 rounded-3xl border border-white/50">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
-            <i class="fa-solid fa-calendar-week text-purple-600"></i> Historique Quotidien Détaillé (Cette Semaine)
-          </h3>
-          <span class="text-xs text-slate-500 font-semibold">Mise à jour automatique</span>
-        </div>
-        <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2" id="dailyStatsGrid"></div>
-      </div>
-
-      <!-- COURBES INTERACTIVES -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-        <div class="glassmorphism p-6 rounded-3xl border border-white/50 space-y-4">
-          <div class="flex items-center justify-between flex-wrap gap-2">
-            <h4 class="font-bold text-slate-800 text-sm flex items-center gap-2">
-              <i class="fa-solid fa-chart-column text-pink-500"></i> Suivi Repas & Couches
-            </h4>
-            <div class="flex items-center gap-1">
-              <select id="mealsChartMode" onchange="updateMealsChart()" class="text-xs px-2 py-1 bg-white rounded-lg border border-slate-200 outline-none font-bold text-slate-700">
-                <option value="day">Comparaison : Jours (7d)</option>
-                <option value="week">Comparaison : Semaines (4w)</option>
-                <option value="month">Comparaison : Mois (6m)</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="h-52">
-            <canvas id="chartMeals"></canvas>
-          </div>
-
-          <div class="text-[11px] text-slate-500 bg-white/50 p-2.5 rounded-xl border border-slate-100 space-y-1">
-            <div class="flex justify-between items-center">
-              <span>Moyenne Biberons / période :</span>
-              <strong id="avgMealsPeriod" class="text-pink-600">--</strong>
-            </div>
-            <div class="flex justify-between items-center">
-              <span>Moyenne Couches / période :</span>
-              <strong id="avgDiapersPeriod" class="text-blue-600">--</strong>
-            </div>
-          </div>
-        </div>
-
-        <div class="glassmorphism p-6 rounded-3xl border border-white/50 space-y-4">
-          <div class="flex items-center justify-between">
-            <h4 class="font-bold text-slate-800 text-sm flex items-center gap-2">
-              <i class="fa-solid fa-temperature-half text-red-500"></i> Courbe de Température Interactive
-            </h4>
-            <span class="text-xs font-semibold bg-red-50 text-red-600 px-2.5 py-1 rounded-full border border-red-200">Ajustement automatique</span>
-          </div>
-
-          <form onsubmit="addTempPoint(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-2 bg-white/60 p-3 rounded-2xl border border-slate-200">
-            <div>
-              <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Heure/Date</label>
-              <input type="text" id="tempPointTime" required placeholder="08:00" class="w-full px-2 py-1.5 rounded-lg border border-slate-200 text-xs focus:ring-2 focus:ring-red-300 outline-none">
-            </div>
-            <div>
-              <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">T° Bébé (°C)</label>
-              <input type="number" step="0.1" min="30" max="43" id="tempPointBaby" required placeholder="36.8" class="w-full px-2 py-1.5 rounded-lg border border-slate-200 text-xs focus:ring-2 focus:ring-red-300 outline-none">
-            </div>
-            <div>
-              <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">T° Couv. (°C)</label>
-              <input type="number" step="0.1" min="20" max="40" id="tempPointIncubator" placeholder="31.5" class="w-full px-2 py-1.5 rounded-lg border border-slate-200 text-xs focus:ring-2 focus:ring-red-300 outline-none">
-            </div>
-            <div class="flex items-end">
-              <button type="submit" class="w-full py-1.5 bg-red-500 hover:bg-red-600 text-white font-bold text-xs rounded-lg shadow-sm transition flex items-center justify-center gap-1">
-                <i class="fa-solid fa-plus"></i> Ajouter
-              </button>
-            </div>
-          </form>
-
-          <div class="h-52">
-            <canvas id="chartTemp"></canvas>
-          </div>
-
-          <div>
-            <p class="text-xs font-bold text-slate-600 mb-2 uppercase tracking-wider">Points de température enregistrés</p>
-            <div id="tempPointsList" class="max-h-36 overflow-y-auto space-y-1.5 pr-1 text-xs"></div>
-          </div>
-        </div>
-
-        <div class="glassmorphism p-6 rounded-3xl border border-white/50 space-y-4">
-          <div class="flex items-center justify-between">
-            <h4 class="font-bold text-slate-800 text-sm flex items-center gap-2">
-              <i class="fa-solid fa-chart-line text-blue-500"></i> Courbe de Poids Interactive
-            </h4>
-            <span class="text-xs font-semibold bg-blue-50 text-blue-600 px-2.5 py-1 rounded-full border border-blue-200">Ajustement automatique</span>
-          </div>
-
-          <form onsubmit="addWeightPoint(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-2 bg-white/60 p-3 rounded-2xl border border-slate-200">
-            <div>
-              <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Date</label>
-              <input type="date" id="weightPointDate" required class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs focus:ring-2 focus:ring-blue-300 outline-none">
-            </div>
-            <div>
-              <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Poids (kg)</label>
-              <input type="number" step="0.01" min="0.5" max="10" id="weightPointVal" required placeholder="3.25" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs focus:ring-2 focus:ring-blue-300 outline-none">
-            </div>
-            <div class="flex items-end">
-              <button type="submit" class="w-full py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg shadow-sm transition flex items-center justify-center gap-1">
-                <i class="fa-solid fa-plus"></i> Ajouter
-              </button>
-            </div>
-          </form>
-
-          <div class="h-52">
-            <canvas id="chartWeight"></canvas>
-          </div>
-
-          <div>
-            <p class="text-xs font-bold text-slate-600 mb-2 uppercase tracking-wider">Points de mesure enregistrés</p>
-            <div id="weightPointsList" class="max-h-36 overflow-y-auto space-y-1.5 pr-1 text-xs"></div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- TRANSMISSIONS & JOURNAL DE SOINS -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="glassmorphism p-6 rounded-3xl border border-white/50 h-fit">
-          <div class="flex justify-between items-center mb-4">
-            <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2" id="formCareTitle">
-              <i class="fa-solid fa-notes-medical text-emerald-500"></i> Nouvelle Transmission Soin
-            </h3>
-            <button id="btnCancelCareEdit" onclick="cancelCareEdit()" class="hidden text-xs text-red-500 hover:underline font-bold">Annuler modification</button>
-          </div>
-
-          <form id="careForm" onsubmit="addCareEntry(event)" class="space-y-3">
-            <input type="hidden" id="editCareIndex" value="-1">
-
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <label class="block text-xs font-semibold text-slate-600 mb-1">Date du soin</label>
-                <input type="date" id="careDate" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-300 outline-none">
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-slate-600 mb-1">Heure du soin</label>
-                <input type="time" id="careTime" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-300 outline-none">
-              </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <label class="block text-xs font-semibold text-slate-600 mb-1">Temp. Bébé (°C)</label>
-                <input type="number" step="0.1" id="careTempBaby" placeholder="36.8" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-300 outline-none">
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-slate-600 mb-1">Temp. Couveuse</label>
-                <input type="number" step="0.1" id="careTempIncubator" placeholder="31.5" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-300 outline-none">
-              </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <label class="block text-xs font-semibold text-slate-600 mb-1">Couche</label>
-                <select id="careDiaper" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-300 outline-none">
-                  <option value="Propre / Rien">Propre</option>
-                  <option value="Urine">Urine</option>
-                  <option value="Selles">Selles</option>
-                  <option value="Urine + Selles">Urine + Selles</option>
-                </select>
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-slate-600 mb-1">Repas (ml)</label>
-                <input type="number" id="careFeeding" placeholder="60" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-300 outline-none">
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1">Observations / Remarques</label>
-              <textarea id="careNotes" rows="2" placeholder="Bébé tonique, bien bu, peau saine..." class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-300 outline-none"></textarea>
-            </div>
-
-            <button type="submit" id="btnSubmitCare" class="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl shadow-md transition text-sm">
-              Enregistrer l'observation
-            </button>
-          </form>
-        </div>
-
-        <div class="lg:col-span-2 glassmorphism p-6 rounded-3xl border border-white/50" id="careJournalContainer">
-          <div class="flex items-center justify-between mb-4">
-            <div>
-              <h3 class="font-bold text-slate-800 text-lg">
-                <i class="fa-solid fa-clipboard-list text-emerald-500 mr-2"></i>Fiche de Soins Hospitalière / Maternité
-              </h3>
-              <p class="text-xs text-slate-400">Transmissions quotidiennes de l'équipe et des parents</p>
-            </div>
-            <span class="text-xs font-bold text-slate-500 bg-slate-100 px-3 py-1 rounded-full" id="careDateHeader">Aujourd'hui</span>
-          </div>
-
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-sm">
-              <thead>
-                <tr class="border-b border-slate-200 text-slate-400 text-xs uppercase">
-                  <th class="pb-3 font-semibold">Date & Heure</th>
-                  <th class="pb-3 font-semibold">T° Bébé / Couv.</th>
-                  <th class="pb-3 font-semibold">Couche</th>
-                  <th class="pb-3 font-semibold">Repas</th>
-                  <th class="pb-3 font-semibold">Observations</th>
-                  <th class="pb-3 font-semibold">Auteur</th>
-                  <th class="pb-3 font-semibold text-right no-pdf">Actions</th>
-                </tr>
-              </thead>
-              <tbody id="careTableBody" class="divide-y divide-slate-100"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- SECTION 3 : AGENDA PARTAGÉ PARENTS -->
-    <div id="section-agenda" class="hidden space-y-6">
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        <!-- FORMULAIRE SAISIE AGENDA -->
-        <div class="glassmorphism p-6 rounded-3xl border border-white/50 h-fit">
-          <div class="flex justify-between items-center mb-4">
-            <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2" id="formAgendaTitle">
-              <i class="fa-solid fa-calendar-plus text-indigo-500"></i> Ajouter un événement
-            </h3>
-            <button id="btnCancelAgendaEdit" onclick="cancelAgendaEdit()" class="hidden text-xs text-red-500 hover:underline font-bold">Annuler modification</button>
-          </div>
-
-          <form id="agendaForm" onsubmit="addAgendaEntry(event)" class="space-y-3">
-            <input type="hidden" id="editAgendaIndex" value="-1">
-
-            <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1">Intitulé de l'activité / RDV</label>
-              <input type="text" id="agendaTitle" required placeholder="ex: RDV Dentiste, Séance Fitness, Poste du matin..." class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-300 outline-none">
-            </div>
-
-            <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1">Catégorie</label>
-              <select id="agendaCategory" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-300 outline-none">
-                <option value="RDV / Consultation"> RDV / Consultation Médicale ou Pro</option>
-                <option value="Activité Sportive"> Activité Sportive / Loisir</option>
-                <option value="Travail (Matin)"> Travail - Matin</option>
-                <option value="Travail (Midi)"> Travail - Midi</option>
-                <option value="Travail (Soir)"> Travail - Soir</option>
-                <option value="Travail (Nuit)"> Travail - Nuit</option>
-                <option value="Travail (Régulier)"> Travail - Régulier / Horaires classiques</option>
-                <option value="Garde & Quotidien"> Garde & Quotidien (Nounou, Crèche...)</option>
-                <option value="Autre"> Autre</option>
-              </select>
-            </div>
-
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <label class="block text-xs font-semibold text-slate-600 mb-1">Date début</label>
-                <input type="date" id="agendaStartDate" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-300 outline-none">
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-slate-600 mb-1">Heure début</label>
-                <input type="time" id="agendaStartTime" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-300 outline-none">
-              </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <label class="block text-xs font-semibold text-slate-600 mb-1">Date fin</label>
-                <input type="date" id="agendaEndDate" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-300 outline-none">
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-slate-600 mb-1">Heure fin</label>
-                <input type="time" id="agendaEndTime" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-300 outline-none">
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1">Responsable / Code Couleur</label>
-              <select id="agendaAssignee" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-300 outline-none font-bold">
-                <option value="Papa" class="text-blue-600"> Papa (Code couleur Bleu)</option>
-                <option value="Maman" class="text-pink-600"> Maman (Code couleur Rose)</option>
-                <option value="Les deux" class="text-purple-600"> Les deux (Code couleur Violet)</option>
-              </select>
-            </div>
-
-            <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1">Notes / Rappels</label>
-              <textarea id="agendaNotes" rows="2" placeholder="ex: Lieu, matériel à prévoir, remarques..." class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-300 outline-none"></textarea>
-            </div>
-
-            <button type="submit" id="btnSubmitAgenda" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md transition text-sm">
-              Ajouter à l'agenda
-            </button>
-          </form>
-        </div>
-
-        <!-- LISTE & AGENDA VISUEL FULLCALENDAR -->
-        <div class="lg:col-span-2 glassmorphism p-6 rounded-3xl border border-white/50 space-y-6">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">
-                <i class="fa-solid fa-calendar-days text-indigo-500"></i> Planning Familial
-              </h3>
-              <p class="text-xs text-slate-500">Vue calendrier interactif et liste chronologique</p>
-            </div>
-
-            <div class="flex flex-wrap items-center gap-2">
-              <div class="flex items-center gap-2">
-                <label class="text-xs font-bold text-slate-500 uppercase">Filtrer :</label>
-                <select id="agendaFilterCat" onchange="renderAgendaEntries()" class="px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold bg-white outline-none">
-                  <option value="TOUS">Toutes les catégories</option>
-                  <option value="RDV / Consultation"> RDV / Consultation</option>
-                  <option value="Activité Sportive"> Sport / Loisir</option>
-                  <option value="Travail (Matin)"> Travail - Matin</option>
-                  <option value="Travail (Midi)"> Travail - Midi</option>
-                  <option value="Travail (Soir)"> Travail - Soir</option>
-                  <option value="Travail (Nuit)"> Travail - Nuit</option>
-                  <option value="Travail (Régulier)"> Travail - Régulier</option>
-                  <option value="Garde & Quotidien"> Garde & Quotidien</option>
-                  <option value="Autre"> Autre</option>
-                </select>
-              </div>
-
-              <button onclick="exportAgendaICS()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs shadow-md transition flex items-center gap-1.5" title="Télécharger le fichier .ics compatible Apple Calendrier / iOS">
-                <i class="fa-brands fa-apple text-sm"></i> Exporter (.ics)
-              </button>
-            </div>
-          </div>
-
-          <div class="flex flex-wrap items-center gap-4 text-xs font-bold bg-white/60 p-3 rounded-2xl border border-slate-100">
-            <span class="text-slate-400 font-normal">Code Couleur :</span>
-            <span class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded-full bg-blue-500 shadow-sm"></span> Papa (Bleu)</span>
-            <span class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded-full bg-pink-500 shadow-sm"></span> Maman (Rose)</span>
-            <span class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded-full bg-purple-500 shadow-sm"></span> Les deux (Violet)</span>
-          </div>
-
-          <div id="fullCalendarContainer" class="bg-white/90 p-4 rounded-2xl border border-slate-200 shadow-inner"></div>
-
-          <hr class="border-slate-200/60">
-
-          <div>
-            <h4 class="font-bold text-slate-700 text-sm mb-3 flex items-center gap-2">
-              <i class="fa-solid fa-list-check text-indigo-500"></i> Vue Liste Chronologique
-            </h4>
-            <div id="agendaListContainer" class="space-y-3 max-h-[400px] overflow-y-auto pr-1"></div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-  </main>
-
-  <!-- MODALE MODIFICATION DES OBJECTIFS STATS -->
-  <div id="editStatsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-md p-4 overflow-y-auto">
-    <div class="glassmorphism p-6 rounded-3xl shadow-2xl max-w-md w-full border border-white/50 relative my-8">
-      <button onclick="closeEditStatsModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-xl font-bold">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-
-      <div class="text-center mb-6">
-        <span class="px-3 py-1 bg-pink-100 text-pink-700 font-bold text-xs rounded-full uppercase tracking-wider">Configuration</span>
-        <h2 class="text-xl font-black text-slate-800 mt-2">Ajuster les Objectifs & Stats</h2>
-        <p class="text-xs text-slate-500">Modifiez les objectifs cibles quotidiens pour l'affichage des repères.</p>
-      </div>
-
-      <form onsubmit="saveStatsGoals(event)" class="space-y-4">
-        <div class="p-4 bg-white/70 rounded-2xl border border-pink-100 space-y-3">
-          <h3 class="font-bold text-sm text-pink-600 flex items-center gap-2">
-            <i class="fa-solid fa-bottle-droplet"></i> Objectifs Repas / Biberons
-          </h3>
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">Objectif par jour (nombre)</label>
-            <input type="number" min="1" max="20" id="goalMealsDayInput" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm">
-          </div>
-        </div>
-
-        <div class="p-4 bg-white/70 rounded-2xl border border-blue-100 space-y-3">
-          <h3 class="font-bold text-sm text-blue-600 flex items-center gap-2">
-            <i class="fa-solid fa-baby text-blue-500"></i> Objectifs Couches
-          </h3>
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">Objectif par jour (nombre)</label>
-            <input type="number" min="1" max="20" id="goalDiapersDayInput" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm">
-          </div>
-        </div>
-
-        <div class="flex gap-2 pt-2">
-          <button type="button" onclick="closeEditStatsModal()" class="w-1/2 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl text-xs transition">
-            Annuler
-          </button>
-          <button type="submit" class="w-1/2 py-2.5 bg-pink-500 hover:bg-pink-600 text-white font-bold rounded-xl text-xs shadow transition">
-            Enregistrer
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- MODALE TARIFS D'ABONNEMENT -->
-  <div id="subscribeModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-md p-4 overflow-y-auto">
-    <div class="glassmorphism p-8 rounded-3xl shadow-2xl max-w-2xl w-full border border-white/50 relative my-8">
-      <button onclick="closeSubscribeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-xl font-bold">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-
-      <div class="text-center mb-8">
-        <span class="px-3 py-1 bg-amber-100 text-amber-700 font-bold text-xs rounded-full uppercase tracking-wider">Offres d'abonnement</span>
-        <h2 class="text-2xl font-black text-slate-800 mt-2">Choisissez votre formule</h2>
-        <p class="text-sm text-slate-500">Débloquez le potentiel complet pour toute la famille.</p>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="bg-white/90 rounded-2xl p-6 border-2 border-slate-200 hover:border-pink-400 transition flex flex-col justify-between">
-          <div>
-            <h3 class="font-bold text-lg text-slate-800">Abonnement Mensuel</h3>
-            <p class="text-xs text-slate-500 mb-4">Sans engagement, résiliable à tout moment.</p>
-            <div class="text-3xl font-black text-slate-800 mb-4">4,99 € <span class="text-xs font-normal text-slate-500">/ mois</span></div>
-            <ul class="space-y-2 text-xs text-slate-600 mb-6">
-              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-500"></i> Scanner IA illimité pour ordonnances</li>
-              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-500"></i> Synchro Firebase temps réel</li>
-              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-500"></i> Exports PDF, CSV & Excel</li>
-              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-500"></i> Synchronisation Calendrier iOS / ICS</li>
-            </ul>
-          </div>
-          <button onclick="selectPlan('Mensuel')" class="w-full py-3 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl text-xs transition">
-            Choisir le plan Mensuel
-          </button>
-        </div>
-
-        <div class="bg-gradient-to-b from-pink-500/10 to-purple-500/10 rounded-2xl p-6 border-2 border-pink-500 relative flex flex-col justify-between shadow-lg">
-          <span class="absolute -top-3 right-6 bg-gradient-to-r from-pink-500 to-purple-600 text-white text-[10px] font-extrabold uppercase px-3 py-1 rounded-full shadow">Meilleure offre (-20%)</span>
-          <div>
-            <h3 class="font-bold text-lg text-slate-800">Abonnement Annuel</h3>
-            <p class="text-xs text-slate-500 mb-4">Accès complet pendant 12 mois.</p>
-            <div class="text-3xl font-black text-pink-600 mb-4">3,99 € <span class="text-xs font-normal text-slate-500">/ mois</span></div>
-            <p class="text-[11px] text-pink-700 font-semibold mb-4">Facturé 47,88 € / an</p>
-            <ul class="space-y-2 text-xs text-slate-600 mb-6">
-              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-pink-500"></i> <strong>Toutes les fonctions Premium</strong></li>
-              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-pink-500"></i> Support prioritaire 7j/7</li>
-              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-pink-500"></i> Sauvegarde Cloud sécurisée HD</li>
-              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-pink-500"></i> Accès partagé illimité famille</li>
-            </ul>
-          </div>
-          <button onclick="selectPlan('Annuel')" class="w-full py-3 bg-gradient-to-r from-pink-500 to-purple-600 hover:opacity-95 text-white font-bold rounded-xl shadow-md transition">
-            S'abonner pour 1 an
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- INTÉGRATION FIREBASE -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyCozjk7u0rgP1iK7cR-5x_WDVYg7SJWVt0",
-      authDomain: "baby-predict-292f1.firebaseapp.com",
-      databaseURL: "https://baby-predict-292f1-default-rtdb.europe-west1.firebasedatabase.app",
-      projectId: "baby-predict-292f1",
-      storageBucket: "baby-predict-292f1.firebasestorage.app",
-      messagingSenderId: "1000428556931",
-      appId: "1:1000428556931:web:9cf6b2d306ec3114a381b6",
-      measurementId: "G-5WHQLHH4C8"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
-    window.saveToFirebase = function(path, data) {
-      set(ref(db, path), data);
-    };
-
-    const nodes = [
-      { key: 'predictions', render: () => renderPredictions() },
-      { key: 'officialResult', render: () => displayOfficialBanner() },
-      { key: 'careEntries', render: () => { renderCareEntries(); renderDailyTracker(); updateMealsChart(); } },
-      { key: 'dailyArchive', render: () => { renderDailyTracker(); updateMealsChart(); } },
-      { key: 'tempHistory', render: () => { updateTempChart(); renderTempList(); } },
-      { key: 'weightHistory', render: () => { updateWeightChart(); renderWeightList(); } },
-      { key: 'agendaEntries', render: () => renderAgendaEntries() },
-      { key: 'statsGoals', render: () => updateGoalsBadges() }
-    ];
-
-    nodes.forEach(node => {
-      onValue(ref(db, node.key), (snapshot) => {
-        const data = snapshot.val();
-        if (data !== null) {
-          window[node.key] = data;
-          localStorage.setItem(`bp_${node.key}`, JSON.stringify(data));
-          if (typeof node.render === 'function') node.render();
-        }
-      });
-    });
-  </script>
-
-  <!-- LOGIQUE APPLICATIVE PRINCIPALE -->
-  <script>
-    let currentUser = null;
-    let isAdmin = false;
-    let fullCalendarInstance = null;
-
-    const parentColors = {
-      'Papa':     { bg: '#3b82f6', border: '#2563eb', text: 'text-blue-700', bgLight: 'bg-blue-50', borderClass: 'border-blue-200', dot: 'bg-blue-500' },
-      'Maman':    { bg: '#ec4899', border: '#db2777', text: 'text-pink-700', bgLight: 'bg-pink-50', borderClass: 'border-pink-200', dot: 'bg-pink-500' },
-      'Les deux': { bg: '#a855f7', border: '#9333ea', text: 'text-purple-700', bgLight: 'bg-purple-50', borderClass: 'border-purple-200', dot: 'bg-purple-500' }
-    };
-
-    window.statsGoals = JSON.parse(localStorage.getItem('bp_statsGoals')) || {
-      mealsDay: 8,
-      diapersDay: 6
-    };
-
-    window.predictions = JSON.parse(localStorage.getItem('bp_predictions')) || [
-      { user: "Mamie Chantal", name: "Alice", hobby: "Jardinage & Chant", gender: "Fille", weight: 3.200, height: 49.5, date: "2026-08-15" },
-      { user: "Oncle Lucas", name: "Hugo", hobby: "Football", gender: "Garçon", weight: 3.600, height: 51.0, date: "2026-08-18" }
-    ];
-
-    window.officialResult = JSON.parse(localStorage.getItem('bp_officialResult')) || null;
-
-    window.tempHistory = JSON.parse(localStorage.getItem('bp_tempHistory')) || [
-      { time: "08:00", tempBaby: 36.7, tempIncubator: 31.0 },
-      { time: "12:00", tempBaby: 36.9, tempIncubator: 30.5 }
-    ];
-
-    const todayIsoStr = new Date().toISOString().split('T')[0];
-    window.careEntries = JSON.parse(localStorage.getItem('bp_careEntries')) || [
-      { date: todayIsoStr, time: "08:00", tempBaby: 36.7, tempIncubator: 31.0, diaper: "Urine", feeding: 60, notes: "Réveil calme, bon biberon.", author: "Infirmière Sophie" }
-    ];
-
-    window.dailyArchive = JSON.parse(localStorage.getItem('bp_dailyArchive')) || {};
-    window.lastActiveDate = localStorage.getItem('bp_lastActiveDate') || todayIsoStr;
-
-    window.weightHistory = JSON.parse(localStorage.getItem('bp_weightHistory')) || [
-      { date: "2026-08-01", weight: 3.10 },
-      { date: "2026-08-05", weight: 3.28 }
-    ];
-
-    window.agendaEntries = JSON.parse(localStorage.getItem('bp_agendaEntries')) || [
-      { title: "Planning Travail (Matin)", category: "Travail (Matin)", startDate: "2026-08-20", startTime: "06:00", endDate: "2026-08-20", endTime: "14:00", assignee: "Papa", notes: "Shift du matin", author: "Papa" },
-      { title: "Séance Natation / Sport", category: "Activité Sportive", startDate: "2026-08-21", startTime: "18:00", endDate: "2026-08-21", endTime: "19:30", assignee: "Maman", notes: "Reprise du sport", author: "Maman" },
-      { title: "RDV Pédiatre 1er mois", category: "RDV / Consultation", startDate: "2026-08-22", startTime: "10:00", endDate: "2026-08-22", endTime: "11:00", assignee: "Les deux", notes: "Apporter le carnet de santé", author: "Maman" }
-    ];
-
-    let chartTempInstance = null;
-    let chartWeightInstance = null;
-    let chartMealsInstance = null;
-    let timerInterval = null;
-    let timerSeconds = 0;
-
-    // --- SAUVEGARDE GLOBALE ---
-    function saveAllToStorage() {
-      localStorage.setItem('bp_predictions', JSON.stringify(window.predictions));
-      localStorage.setItem('bp_officialResult', JSON.stringify(window.officialResult));
-      localStorage.setItem('bp_careEntries', JSON.stringify(window.careEntries));
-      localStorage.setItem('bp_tempHistory', JSON.stringify(window.tempHistory));
-      localStorage.setItem('bp_weightHistory', JSON.stringify(window.weightHistory));
-      localStorage.setItem('bp_agendaEntries', JSON.stringify(window.agendaEntries));
-      localStorage.setItem('bp_statsGoals', JSON.stringify(window.statsGoals));
-      localStorage.setItem('bp_dailyArchive', JSON.stringify(window.dailyArchive));
-
-      if (typeof window.saveToFirebase === 'function') {
-        window.saveToFirebase('predictions', window.predictions);
-        window.saveToFirebase('officialResult', window.officialResult);
-        window.saveToFirebase('careEntries', window.careEntries);
-        window.saveToFirebase('tempHistory', window.tempHistory);
-        window.saveToFirebase('weightHistory', window.weightHistory);
-        window.saveToFirebase('agendaEntries', window.agendaEntries);
-        window.saveToFirebase('statsGoals', window.statsGoals);
-        window.saveToFirebase('dailyArchive', window.dailyArchive);
-      }
-    }
-
-    // --- NAVIGATION PAR ONGLETS ---
-    function switchTab(tabName) {
-      ['pronostics', 'maternite', 'agenda'].forEach(tab => {
-        const sec = document.getElementById(`section-${tab}`);
-        const btn = document.getElementById(`tab-${tab}`);
-        if (sec) sec.classList.add('hidden');
-        if (btn) btn.classList.remove('active-tab');
-      });
-
-      const activeSec = document.getElementById(`section-${tabName}`);
-      const activeBtn = document.getElementById(`tab-${tabName}`);
-      if (activeSec) activeSec.classList.remove('hidden');
-      if (activeBtn) activeBtn.classList.add('active-tab');
-
-      if (tabName === 'agenda') {
-        setTimeout(() => {
-          if (!fullCalendarInstance) {
-            initFullCalendar();
-          } else {
-            fullCalendarInstance.updateSize();
-            fullCalendarInstance.refetchEvents();
-          }
-        }, 100);
-      }
-    }
-
-    // --- AUTHENTIFICATION ---
-    function handleLogin(e) {
-      e.preventDefault();
-      const username = document.getElementById('usernameInput').value.trim();
-      const code = document.getElementById('accessCodeInput').value.trim();
-
-      if (!username) return;
-
-      currentUser = username;
-      isAdmin = (code === "ADMIN2026");
-
-      document.getElementById('userBadge').innerHTML = `<i class="fa-regular fa-user mr-1"></i> ${currentUser} ${isAdmin ? '<span class="bg-purple-100 text-purple-700 font-bold px-1.5 py-0.5 rounded text-[10px] ml-1">ADMIN</span>' : ''}`;
-      document.getElementById('loginPage').classList.add('hidden');
-
-      if (isAdmin) {
-        document.getElementById('adminPanel').classList.remove('hidden');
-        document.getElementById('adminUserOverride').classList.remove('hidden');
-      }
-
-      renderPredictions();
-      renderCareEntries();
-      renderDailyTracker();
-      renderAgendaEntries();
-      updateGoalsBadges();
-      initCharts();
-    }
-
-    function logout() {
-      currentUser = null;
-      isAdmin = false;
-      document.getElementById('loginPage').classList.remove('hidden');
-      document.getElementById('loginForm').reset();
-    }
-
-    // --- INITIALISATION DU CALENDRIER FULLCALENDAR ---
-    function initFullCalendar() {
-      const calendarEl = document.getElementById('fullCalendarContainer');
-      if (!calendarEl) return;
-
-      fullCalendarInstance = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth',
-        locale: 'fr',
-        headerToolbar: {
-          left: 'prev,next today',
-          center: 'title',
-          right: 'dayGridMonth,timeGridWeek,listWeek'
-        },
-        buttonText: {
-          today: "Aujourd'hui",
-          month: 'Mois',
-          week: 'Semaine',
-          list: 'Liste'
-        },
-        events: function(fetchInfo, successCallback, failureCallback) {
-          successCallback(getFullCalendarEvents());
-        },
-        eventClick: function(info) {
-          const idx = info.event.extendedProps.index;
-          if (idx !== undefined && idx !== null) {
-            editAgendaEntry(idx);
-          }
-        }
-      });
-      fullCalendarInstance.render();
-    }
-
-    function getFullCalendarEvents() {
-      const filterCat = document.getElementById('agendaFilterCat')?.value || 'TOUS';
-      return (window.agendaEntries || [])
-        .map((entry, index) => ({ entry, index }))
-        .filter(({ entry }) => filterCat === 'TOUS' || entry.category === filterCat)
-        .map(({ entry, index }) => {
-          const colorObj = parentColors[entry.assignee] || parentColors['Les deux'];
-          const start = entry.startTime ? `${entry.startDate}T${entry.startTime}` : entry.startDate;
-          const end = entry.endTime ? `${entry.endDate}T${entry.endTime}` : entry.endDate;
-          return {
-            title: `[${entry.assignee}] ${entry.title}`,
-            start: start,
-            end: end,
-            backgroundColor: colorObj.bg,
-            borderColor: colorObj.border,
-            extendedProps: { index: index, category: entry.category, notes: entry.notes }
-          };
-        });
-    }
-
-    // --- GESTION DE L'AGENDA & SYNCHRONISATION ---
-    function renderAgendaEntries() {
-      const container = document.getElementById('agendaListContainer');
-      if (container) {
-        container.innerHTML = '';
-        const filterCat = document.getElementById('agendaFilterCat')?.value || 'TOUS';
-        const filtered = (window.agendaEntries || [])
-          .map((entry, index) => ({ entry, index }))
-          .filter(({ entry }) => filterCat === 'TOUS' || entry.category === filterCat);
-
-        if (filtered.length === 0) {
-          container.innerHTML = `<p class="text-xs text-slate-400 italic p-4 text-center">Aucun événement enregistré.</p>`;
-        } else {
-          filtered.forEach(({ entry, index }) => {
-            const colorObj = parentColors[entry.assignee] || parentColors['Les deux'];
-            const div = document.createElement('div');
-            div.className = `p-4 rounded-2xl border ${colorObj.borderClass} ${colorObj.bgLight} flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 transition shadow-sm hover:shadow-md`;
-            div.innerHTML = `
-              <div class="space-y-1">
-                <div class="flex items-center gap-2 flex-wrap">
-                  <span class="w-2.5 h-2.5 rounded-full ${colorObj.dot}"></span>
-                  <span class="font-bold text-sm text-slate-800">${entry.title}</span>
-                  <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-white border border-slate-200 text-slate-600">${entry.category}</span>
-                  <span class="text-xs font-bold ${colorObj.text}">(${entry.assignee})</span>
+            <!-- Liste des événements Agenda -->
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100">
+                <h3 class="text-md font-bold mb-3 text-slate-700">Événements à venir</h3>
+                <div id="agendaList" class="space-y-3">
+                    <!-- Généré dynamiquement -->
                 </div>
-                <p class="text-xs text-slate-500">
-                  <i class="fa-regular fa-clock mr-1"></i>
-                  Du <strong>${entry.startDate}</strong> (${entry.startTime}) au <strong>${entry.endDate}</strong> (${entry.endTime})
-                </p>
-                ${entry.notes ? `<p class="text-xs text-slate-600 italic bg-white/60 p-2 rounded-xl mt-1 border border-slate-100">${entry.notes}</p>` : ''}
-              </div>
-              <div class="flex items-center gap-2 self-end sm:self-center">
-                <button onclick="editAgendaEntry(${index})" class="p-2 text-indigo-600 hover:bg-indigo-100 rounded-xl transition" title="Modifier">
-                  <i class="fa-solid fa-pen-to-square"></i>
-                </button>
-                <button onclick="deleteAgendaEntry(${index})" class="p-2 text-red-500 hover:bg-red-100 rounded-xl transition" title="Supprimer">
-                  <i class="fa-solid fa-trash"></i>
-                </button>
-              </div>
-            `;
-            container.appendChild(div);
-          });
-        }
-      }
+            </div>
+        </section>
 
-      if (fullCalendarInstance) {
-        fullCalendarInstance.refetchEvents();
-      }
-    }
+        <!-- SECTION SUIVI (Masquée par défaut) -->
+        <section id="section-suivi" class="hidden space-y-6">
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 text-center py-8 text-slate-500">
+                <i class="fa-solid fa-baby-carriage text-4xl mb-2 text-indigo-300"></i>
+                <p>Module de suivi bébé actif.</p>
+            </div>
+        </section>
 
-    function addAgendaEntry(e) {
-      e.preventDefault();
-      const editIdx = parseInt(document.getElementById('editAgendaIndex').value);
+    </main>
 
-      const entry = {
-        title: document.getElementById('agendaTitle').value.trim(),
-        category: document.getElementById('agendaCategory').value,
-        startDate: document.getElementById('agendaStartDate').value,
-        startTime: document.getElementById('agendaStartTime').value,
-        endDate: document.getElementById('agendaEndDate').value,
-        endTime: document.getElementById('agendaEndTime').value,
-        assignee: document.getElementById('agendaAssignee').value,
-        notes: document.getElementById('agendaNotes').value.trim(),
-        author: currentUser || "Parent"
-      };
+    <!-- JavaScript Principal -->
+    <script>
+        // Données globales
+        let currentUser = "Parent";
+        window.agendaEntries = JSON.parse(localStorage.getItem('agendaEntries')) || [];
 
-      if (!window.agendaEntries) window.agendaEntries = [];
+        // Gestion de l'affichage des onglets
+        function switchTab(tabName) {
+            const agendaSec = document.getElementById('section-agenda');
+            const suiviSec = document.getElementById('section-suivi');
+            const tabAgenda = document.getElementById('tab-agenda');
+            const tabSuivi = document.getElementById('tab-suivi');
 
-      if (editIdx >= 0) {
-        window.agendaEntries[editIdx] = entry;
-      } else {
-        window.agendaEntries.push(entry);
-      }
-
-      saveAllToStorage();
-      renderAgendaEntries();
-      cancelAgendaEdit();
-    }
-
-    function editAgendaEntry(index) {
-      const entry = window.agendaEntries[index];
-      if (!entry) return;
-
-      document.getElementById('editAgendaIndex').value = index;
-      document.getElementById('agendaTitle').value = entry.title;
-      document.getElementById('agendaCategory').value = entry.category;
-      document.getElementById('agendaStartDate').value = entry.startDate;
-      document.getElementById('agendaStartTime').value = entry.startTime;
-      document.getElementById('agendaEndDate').value = entry.endDate;
-      document.getElementById('agendaEndTime').value = entry.endTime;
-      document.getElementById('agendaAssignee').value = entry.assignee;
-      document.getElementById('agendaNotes').value = entry.notes || '';
-
-      document.getElementById('formAgendaTitle').innerHTML = `<i class="fa-solid fa-pen text-indigo-500"></i> Modifier l'événement`;
-      document.getElementById('btnSubmitAgenda').innerText = "Mettre à jour l'événement";
-      document.getElementById('btnCancelAgendaEdit').classList.remove('hidden');
-    }
-
-    function cancelAgendaEdit() {
-      document.getElementById('editAgendaIndex').value = "-1";
-      document.getElementById('agendaForm').reset();
-      const todayStr = new Date().toISOString().split('T')[0];
-      document.getElementById('agendaStartDate').value = todayStr;
-      document.getElementById('agendaEndDate').value = todayStr;
-      document.getElementById('agendaStartTime').value = "09:00";
-      document.getElementById('agendaEndTime').value = "10:00";
-
-      document.getElementById('formAgendaTitle').innerHTML = `<i class="fa-solid fa-calendar-plus text-indigo-500"></i> Ajouter un événement`;
-      document.getElementById('btnSubmitAgenda').innerText = "Ajouter à l'agenda";
-      document.getElementById('btnCancelAgendaEdit').classList.add('hidden');
-    }
-
-    function deleteAgendaEntry(index) {
-      if (confirm("Voulez-vous supprimer cet événement de l'agenda ?")) {
-        window.agendaEntries.splice(index, 1);
-        saveAllToStorage();
-        renderAgendaEntries();
-      }
-    }
-
-    function exportAgendaICS() {
-      if (!window.agendaEntries || window.agendaEntries.length === 0) {
-        alert("Aucun événement à exporter.");
-        return;
-      }
-
-      let icsContent = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//BabyPredict2026//NONSGML v1.0//FR\nCALSCALE:GREGORIAN\n";
-
-      window.agendaEntries.forEach(entry => {
-        const startClean = (entry.startDate + 'T' + (entry.startTime || '00:00') + ':00').replace(/[-:]/g, '');
-        const endClean = (entry.endDate + 'T' + (entry.endTime || '00:00') + ':00').replace(/[-:]/g, '');
-
-        icsContent += "BEGIN:VEVENT\n";
-        icsContent += `SUMMARY:[${entry.assignee}] ${entry.title}\n`;
-        icsContent += `DTSTART:${startClean}\n`;
-        icsContent += `DTEND:${endClean}\n`;
-        icsContent += `DESCRIPTION:Catégorie : ${entry.category} | Notes : ${entry.notes || 'Aucune'}\n`;
-        icsContent += "END:VEVENT\n";
-      });
-
-      icsContent += "END:VCALENDAR";
-
-      const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
-      const link = document.createElement('a');
-      link.href = window.URL.createObjectURL(blob);
-      link.setAttribute('download', 'agenda_famille_baby_predict.ics');
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-
-    // --- PRONOSTICS ---
-    function renderPredictions() {
-      const tbody = document.getElementById('predictionsTableBody');
-      if (!tbody) return;
-      tbody.innerHTML = '';
-
-      let countGirl = 0, countBoy = 0, sumWeight = 0, sumHeight = 0;
-
-      (window.predictions || []).forEach((pred, idx) => {
-        if (pred.gender === 'Fille') countGirl++; else countBoy++;
-        sumWeight += parseFloat(pred.weight) || 0;
-        sumHeight += parseFloat(pred.height) || 0;
-
-        const tr = document.createElement('tr');
-        tr.className = 'hover:bg-slate-50/50 transition';
-        tr.innerHTML = `
-          <td class="py-3 font-semibold text-slate-800">${pred.user}</td>
-          <td class="py-3 font-bold text-pink-600">${pred.name}</td>
-          <td class="py-3 text-slate-600">${pred.hobby || '-'}</td>
-          <td class="py-3"><span class="px-2 py-0.5 rounded-full text-xs font-bold ${pred.gender === 'Fille' ? 'bg-pink-100 text-pink-600' : 'bg-blue-100 text-blue-600'}">${pred.gender}</span></td>
-          <td class="py-3 font-mono">${pred.weight} kg</td>
-          <td class="py-3 font-mono">${pred.height} cm</td>
-          <td class="py-3 text-slate-500">${pred.date}</td>
-          <td class="py-3 text-right">
-            ${isAdmin || pred.user === currentUser ? `
-              <button onclick="editPrediction(${idx})" class="p-1.5 text-indigo-600 hover:bg-indigo-50 rounded-lg"><i class="fa-solid fa-pen"></i></button>
-              <button onclick="deletePrediction(${idx})" class="p-1.5 text-red-500 hover:bg-red-50 rounded-lg"><i class="fa-solid fa-trash"></i></button>
-            ` : ''}
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-
-      const total = window.predictions.length;
-      document.getElementById('predCount').innerText = `${total} participation(s)`;
-
-      if (total > 0) {
-        document.getElementById('statGender').innerText = countGirl >= countBoy ? `Fille (${Math.round(countGirl/total*100)}%)` : `Garçon (${Math.round(countBoy/total*100)}%)`;
-        document.getElementById('statAvgWeight').innerText = `${(sumWeight / total).toFixed(2)} kg`;
-        document.getElementById('statAvgHeight').innerText = `${(sumHeight / total).toFixed(1)} cm`;
-      }
-    }
-
-    function addPrediction(e) {
-      e.preventDefault();
-      const editIdx = parseInt(document.getElementById('editPredIndex').value);
-      const user = (isAdmin && document.getElementById('predUserAdmin').value.trim()) ? document.getElementById('predUserAdmin').value.trim() : (currentUser || "Participant");
-
-      const pred = {
-        user: user,
-        name: document.getElementById('predName').value.trim(),
-        hobby: document.getElementById('predHobby').value.trim(),
-        gender: document.getElementById('predGender').value,
-        weight: parseFloat(document.getElementById('predWeight').value),
-        height: parseFloat(document.getElementById('predHeight').value),
-        date: document.getElementById('predDate').value
-      };
-
-      if (editIdx >= 0) {
-        window.predictions[editIdx] = pred;
-      } else {
-        window.predictions.push(pred);
-      }
-
-      saveAllToStorage();
-      renderPredictions();
-      cancelPredEdit();
-    }
-
-    function editPrediction(idx) {
-      const pred = window.predictions[idx];
-      if (!pred) return;
-
-      document.getElementById('editPredIndex').value = idx;
-      document.getElementById('predName').value = pred.name;
-      document.getElementById('predHobby').value = pred.hobby || '';
-      document.getElementById('predGender').value = pred.gender;
-      document.getElementById('predWeight').value = pred.weight;
-      document.getElementById('predHeight').value = pred.height;
-      document.getElementById('predDate').value = pred.date;
-
-      if (isAdmin) document.getElementById('predUserAdmin').value = pred.user;
-
-      document.getElementById('formPredTitle').innerHTML = `<i class="fa-solid fa-pen text-pink-500"></i> Modifier le pronostic`;
-      document.getElementById('btnSubmitPred').innerText = "Mettre à jour le pronostic";
-      document.getElementById('btnCancelPredEdit').classList.remove('hidden');
-    }
-
-    function cancelPredEdit() {
-      document.getElementById('editPredIndex').value = "-1";
-      document.getElementById('predictionForm').reset();
-      document.getElementById('predDate').value = new Date().toISOString().split('T')[0];
-      document.getElementById('formPredTitle').innerHTML = `<i class="fa-solid fa-pen-to-square text-pink-500"></i> Faire un pronostic`;
-      document.getElementById('btnSubmitPred').innerText = "Enregistrer le pronostic";
-      document.getElementById('btnCancelPredEdit').classList.add('hidden');
-    }
-
-    function deletePrediction(idx) {
-      if (confirm("Supprimer ce pronostic ?")) {
-        window.predictions.splice(idx, 1);
-        saveAllToStorage();
-        renderPredictions();
-      }
-    }
-
-    // --- SUIVI MATERNITÉ & SOINS ---
-    function renderCareEntries() {
-      const tbody = document.getElementById('careTableBody');
-      if (!tbody) return;
-      tbody.innerHTML = '';
-
-      (window.careEntries || []).forEach((c, idx) => {
-        const tr = document.createElement('tr');
-        tr.className = 'hover:bg-slate-50/50 transition';
-        tr.innerHTML = `
-          <td class="py-3 font-semibold text-slate-700">${c.date || '-'} à ${c.time}</td>
-          <td class="py-3">${c.tempBaby ? `<strong>${c.tempBaby} °C</strong>` : '--'} ${c.tempIncubator ? `<span class="text-xs text-slate-400">(${c.tempIncubator}°C)</span>` : ''}</td>
-          <td class="py-3"><span class="px-2 py-0.5 rounded-full text-xs font-bold ${c.diaper === 'Propre / Rien' ? 'bg-slate-100 text-slate-600' : 'bg-blue-100 text-blue-600'}">${c.diaper}</span></td>
-          <td class="py-3 font-mono font-bold text-pink-600">${c.feeding > 0 ? `${c.feeding} ml` : '--'}</td>
-          <td class="py-3 text-slate-600">${c.notes || '-'}</td>
-          <td class="py-3 text-xs font-bold text-slate-500">${c.author || 'Parent'}</td>
-          <td class="py-3 text-right no-pdf">
-            <button onclick="deleteCareEntry(${idx})" class="p-1.5 text-red-500 hover:bg-red-50 rounded-lg"><i class="fa-solid fa-trash"></i></button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-
-      updateNextFeedingReminder();
-    }
-
-    function addCareEntry(e) {
-      e.preventDefault();
-      const editIdx = parseInt(document.getElementById('editCareIndex').value);
-
-      const entry = {
-        date: document.getElementById('careDate').value,
-        time: document.getElementById('careTime').value,
-        tempBaby: parseFloat(document.getElementById('careTempBaby').value) || null,
-        tempIncubator: parseFloat(document.getElementById('careTempIncubator').value) || null,
-        diaper: document.getElementById('careDiaper').value,
-        feeding: parseInt(document.getElementById('careFeeding').value) || 0,
-        notes: document.getElementById('careNotes').value.trim(),
-        author: currentUser || "Parent"
-      };
-
-      if (editIdx >= 0) {
-        window.careEntries[editIdx] = entry;
-      } else {
-        window.careEntries.push(entry);
-      }
-
-      saveAllToStorage();
-      renderCareEntries();
-      renderDailyTracker();
-      updateMealsChart();
-      cancelCareEdit();
-    }
-
-    function cancelCareEdit() {
-      document.getElementById('editCareIndex').value = "-1";
-      document.getElementById('careForm').reset();
-      const now = new Date();
-      document.getElementById('careDate').value = now.toISOString().split('T')[0];
-      document.getElementById('careTime').value = now.toTimeString().substring(0, 5);
-      document.getElementById('formCareTitle').innerHTML = `<i class="fa-solid fa-notes-medical text-emerald-500"></i> Nouvelle Transmission Soin`;
-      document.getElementById('btnSubmitCare').innerText = "Enregistrer l'observation";
-      document.getElementById('btnCancelCareEdit').classList.add('hidden');
-    }
-
-    function deleteCareEntry(idx) {
-      if (confirm("Supprimer ce soin ?")) {
-        window.careEntries.splice(idx, 1);
-        saveAllToStorage();
-        renderCareEntries();
-        renderDailyTracker();
-        updateMealsChart();
-      }
-    }
-
-    function exportCareCSV() {
-      if (!window.careEntries || window.careEntries.length === 0) return alert("Aucune donnée à exporter.");
-      let csv = "Date,Heure,Temp_Bebe,Temp_Couveuse,Couche,Repas_ml,Observations,Auteur\n";
-      window.careEntries.forEach(c => {
-        csv += `"${c.date}","${c.time}","${c.tempBaby || ''}","${c.tempIncubator || ''}","${c.diaper}","${c.feeding}","${c.notes || ''}","${c.author}"\n`;
-      });
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = 'fiches_de_soins.csv';
-      link.click();
-    }
-
-    function exportCareExcel() {
-      if (!window.careEntries || window.careEntries.length === 0) return alert("Aucune donnée à exporter.");
-      const ws = XLSX.utils.json_to_sheet(window.careEntries);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Fiche Soins");
-      XLSX.writeFile(wb, "fiches_de_soins.xlsx");
-    }
-
-    function exportCarePDF() {
-      const element = document.getElementById('careJournalContainer');
-      element.classList.add('pdf-compact');
-      html2pdf().from(element).save('fiche_soins_maternite.pdf').then(() => {
-        element.classList.remove('pdf-compact');
-      });
-    }
-
-    // --- CHRONOMÈTRE ---
-    function toggleTimer() {
-      const btn = document.getElementById('btnStartTimer');
-      if (timerInterval) {
-        clearInterval(timerInterval);
-        timerInterval = null;
-        btn.innerHTML = `<i class="fa-solid fa-play"></i> Démarrer`;
-        btn.className = "px-3 py-2 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold rounded-xl shadow transition";
-      } else {
-        timerInterval = setInterval(() => {
-          timerSeconds++;
-          const m = String(Math.floor(timerSeconds / 60)).padStart(2, '0');
-          const s = String(timerSeconds % 60).padStart(2, '0');
-          document.getElementById('timerDisplay').innerText = `${m}:${s}`;
-        }, 1000);
-        btn.innerHTML = `<i class="fa-solid fa-pause"></i> Pause`;
-        btn.className = "px-3 py-2 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold rounded-xl shadow transition";
-      }
-    }
-
-    function resetTimer() {
-      if (timerInterval) {
-        clearInterval(timerInterval);
-        timerInterval = null;
-      }
-      timerSeconds = 0;
-      document.getElementById('timerDisplay').innerText = "00:00";
-      const btn = document.getElementById('btnStartTimer');
-      btn.innerHTML = `<i class="fa-solid fa-play"></i> Démarrer`;
-      btn.className = "px-3 py-2 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold rounded-xl shadow transition";
-    }
-
-    function saveTimerToCare() {
-      if (timerSeconds === 0) return alert("Le chronomètre est à 0.");
-      const type = document.getElementById('timerType').value;
-      const m = Math.floor(timerSeconds / 60);
-      const s = timerSeconds % 60;
-      const durationStr = `${m}m ${s}s`;
-
-      const now = new Date();
-      const entry = {
-        date: now.toISOString().split('T')[0],
-        time: now.toTimeString().substring(0, 5),
-        tempBaby: null,
-        tempIncubator: null,
-        diaper: "Propre / Rien",
-        feeding: 0,
-        notes: `Chronomètre ${type} : Durée ${durationStr}`,
-        author: currentUser || "Parent"
-      };
-
-      window.careEntries.push(entry);
-      saveAllToStorage();
-      renderCareEntries();
-      resetTimer();
-      alert(`Observation ajoutée à la fiche de soins : ${type} (${durationStr})`);
-    }
-
-    // --- GRAPHISTIQUES ---
-    function initCharts() {
-      const ctxTemp = document.getElementById('chartTemp')?.getContext('2d');
-      if (ctxTemp && !chartTempInstance) {
-        chartTempInstance = new Chart(ctxTemp, {
-          type: 'line',
-          data: {
-            labels: [],
-            datasets: [
-              { label: 'T° Bébé (°C)', data: [], borderColor: '#ef4444', backgroundColor: 'rgba(239, 68, 68, 0.1)', fill: true, tension: 0.3 },
-              { label: 'T° Couveuse (°C)', data: [], borderColor: '#f59e0b', borderDash: [4, 4], fill: false, tension: 0.3 }
-            ]
-          },
-          options: { responsive: true, maintainAspectRatio: false }
-        });
-      }
-
-      const ctxWeight = document.getElementById('chartWeight')?.getContext('2d');
-      if (ctxWeight && !chartWeightInstance) {
-        chartWeightInstance = new Chart(ctxWeight, {
-          type: 'line',
-          data: {
-            labels: [],
-            datasets: [{ label: 'Poids (kg)', data: [], borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)', fill: true, tension: 0.2 }]
-          },
-          options: { responsive: true, maintainAspectRatio: false }
-        });
-      }
-
-      const ctxMeals = document.getElementById('chartMeals')?.getContext('2d');
-      if (ctxMeals && !chartMealsInstance) {
-        chartMealsInstance = new Chart(ctxMeals, {
-          type: 'bar',
-          data: {
-            labels: [],
-            datasets: [
-              { label: 'Biberons (nb)', data: [], backgroundColor: '#ec4899', borderRadius: 6, yAxisID: 'y' },
-              { label: 'Couches (nb)', data: [], backgroundColor: '#3b82f6', borderRadius: 6, yAxisID: 'y' }
-            ]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-              y: { beginAtZero: true, ticks: { precision: 0 } }
+            if (tabName === 'agenda') {
+                agendaSec.classList.remove('hidden');
+                suiviSec.classList.add('hidden');
+                tabAgenda.className = "flex-1 py-3 px-4 font-semibold text-center border-b-2 border-indigo-600 text-indigo-600 transition";
+                tabSuivi.className = "flex-1 py-3 px-4 font-semibold text-center text-slate-500 hover:text-slate-700 transition";
+            } else {
+                agendaSec.classList.add('hidden');
+                suiviSec.classList.remove('hidden');
+                tabSuivi.className = "flex-1 py-3 px-4 font-semibold text-center border-b-2 border-indigo-600 text-indigo-600 transition";
+                tabAgenda.className = "flex-1 py-3 px-4 font-semibold text-center text-slate-500 hover:text-slate-700 transition";
             }
-          }
+        }
+
+        // Sauvegarde dans le stockage local
+        function saveAllToStorage() {
+            localStorage.setItem('agendaEntries', JSON.stringify(window.agendaEntries));
+        }
+
+        // Soumission du formulaire d'agenda
+        function addAgendaEntry(e) {
+            e.preventDefault();
+            const editIdx = parseInt(document.getElementById('editAgendaIndex').value);
+
+            const entry = {
+                title: document.getElementById('agendaTitle').value.trim(),
+                category: document.getElementById('agendaCategory').value,
+                startDate: document.getElementById('agendaStartDate').value,
+                startTime: document.getElementById('agendaStartTime').value,
+                endDate: document.getElementById('agendaEndDate').value,
+                endTime: document.getElementById('agendaEndTime').value,
+                assignee: document.getElementById('agendaAssignee').value,
+                notes: document.getElementById('agendaNotes').value.trim(),
+                author: currentUser || "Parent"
+            };
+
+            if (!window.agendaEntries) window.agendaEntries = [];
+
+            if (editIdx >= 0) {
+                window.agendaEntries[editIdx] = entry;
+            } else {
+                window.agendaEntries.push(entry);
+            }
+
+            saveAllToStorage();
+            renderAgendaEntries();
+            cancelAgendaEdit();
+        }
+
+        // Édition d'une entrée
+        function editAgendaEntry(idx) {
+            const entry = window.agendaEntries[idx];
+            if (!entry) return;
+
+            document.getElementById('editAgendaIndex').value = idx;
+            document.getElementById('agendaTitle').value = entry.title || '';
+            document.getElementById('agendaCategory').value = entry.category || 'Medical';
+            document.getElementById('agendaStartDate').value = entry.startDate || '';
+            document.getElementById('agendaStartTime').value = entry.startTime || '09:00';
+            document.getElementById('agendaEndDate').value = entry.endDate || '';
+            document.getElementById('agendaEndTime').value = entry.endTime || '10:00';
+            document.getElementById('agendaAssignee').value = entry.assignee || 'Papa';
+            document.getElementById('agendaNotes').value = entry.notes || '';
+
+            document.getElementById('formAgendaTitle').innerHTML = `<i class="fa-solid fa-pen text-indigo-500"></i> Modifier l'événement`;
+            document.getElementById('btnSubmitAgenda').innerText = "Mettre à jour";
+            document.getElementById('btnCancelAgendaEdit').classList.remove('hidden');
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Réinitialisation du formulaire
+        function cancelAgendaEdit() {
+            document.getElementById('editAgendaIndex').value = "-1";
+            document.getElementById('agendaForm').reset();
+            const todayStr = new Date().toISOString().split('T')[0];
+            document.getElementById('agendaStartDate').value = todayStr;
+            document.getElementById('agendaEndDate').value = todayStr;
+            document.getElementById('agendaStartTime').value = "09:00";
+            document.getElementById('agendaEndTime').value = "10:00";
+
+            document.getElementById('formAgendaTitle').innerHTML = `<i class="fa-solid fa-calendar-plus text-indigo-500"></i> Ajouter un événement`;
+            document.getElementById('btnSubmitAgenda').innerText = "Ajouter à l'agenda";
+            document.getElementById('btnCancelAgendaEdit').classList.add('hidden');
+        }
+
+        // Suppression d'une entrée
+        function deleteAgendaEntry(idx) {
+            if (confirm("Voulez-vous vraiment supprimer cet événement ?")) {
+                window.agendaEntries.splice(idx, 1);
+                saveAllToStorage();
+                renderAgendaEntries();
+            }
+        }
+
+        // Affichage de la liste des événements
+        function renderAgendaEntries() {
+            const listEl = document.getElementById('agendaList');
+            if (!listEl) return;
+
+            if (!window.agendaEntries || window.agendaEntries.length === 0) {
+                listEl.innerHTML = `<p class="text-sm text-slate-400 italic text-center py-4">Aucun événement enregistré.</p>`;
+                return;
+            }
+
+            // Tri par date
+            window.agendaEntries.sort((a, b) => new Date(`${a.startDate}T${a.startTime}`) - new Date(`${b.startDate}T${b.startTime}`));
+
+            listEl.innerHTML = window.agendaEntries.map((item, idx) => `
+                <div class="p-3 bg-slate-50 rounded-lg border border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-slate-800">${item.title}</span>
+                            <span class="text-xs px-2 py-0,5 bg-indigo-100 text-indigo-700 rounded-full font-medium">${item.category}</span>
+                            <span class="text-xs px-2 py-0,5 bg-slate-200 text-slate-600 rounded-full">${item.assignee}</span>
+                        </div>
+                        <div class="text-xs text-slate-500">
+                            <i class="fa-regular fa-clock mr-1"></i> ${item.startDate} (${item.startTime}) - ${item.endDate} (${item.endTime})
+                        </div>
+                        ${item.notes ? `<div class="text-xs text-slate-600 italic bg-white p-1,5 rounded border border-slate-100">${item.notes}</div>` : ''}
+                    </div>
+                    <div class="flex gap-2 self-end md:self-center">
+                        <button onclick="editAgendaEntry(${idx})" class="text-xs text-indigo-600 hover:text-indigo-800 p-1,5 bg-white rounded border border-slate-200 shadow-sm">
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
+                        <button onclick="deleteAgendaEntry(${idx})" class="text-xs text-rose-600 hover:text-rose-800 p-1,5 bg-white rounded border border-slate-200 shadow-sm">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Chargement initial
+        window.addEventListener('DOMContentLoaded', () => {
+            cancelAgendaEdit();
+            renderAgendaEntries();
         });
-      }
-
-      updateTempChart();
-      renderTempList();
-      updateWeightChart();
-      renderWeightList();
-      updateMealsChart();
-    }
-
-    function updateTempChart() {
-      if (!chartTempInstance) return;
-      chartTempInstance.data.labels = window.tempHistory.map(p => p.time);
-      chartTempInstance.data.datasets[0].data = window.tempHistory.map(p => p.tempBaby);
-      chartTempInstance.data.datasets[1].data = window.tempHistory.map(p => p.tempIncubator);
-      chartTempInstance.update();
-    }
-
-    function renderTempList() {
-      const container = document.getElementById('tempPointsList');
-      if (!container) return;
-      container.innerHTML = '';
-      window.tempHistory.forEach((p, idx) => {
-        const div = document.createElement('div');
-        div.className = 'flex justify-between items-center bg-white/70 p-2 rounded-xl border border-slate-100';
-        div.innerHTML = `<span><strong>${p.time}</strong> : Bébé ${p.tempBaby}°C ${p.tempIncubator ? `(Couv. ${p.tempIncubator}°C)` : ''}</span>
-          <button onclick="deleteTempPoint(${idx})" class="text-red-500 hover:text-red-700 text-xs font-bold"><i class="fa-solid fa-trash"></i></button>`;
-        container.appendChild(div);
-      });
-      if (window.tempHistory.length > 0) {
-        const last = window.tempHistory[window.tempHistory.length - 1];
-        const el = document.getElementById('statLastTemp');
-        if (el) el.innerText = `${last.tempBaby} °C`;
-      }
-    }
-
-    function addTempPoint(e) {
-      e.preventDefault();
-      const time = document.getElementById('tempPointTime').value;
-      const baby = parseFloat(document.getElementById('tempPointBaby').value);
-      const inc = parseFloat(document.getElementById('tempPointIncubator').value) || null;
-      window.tempHistory.push({ time, tempBaby: baby, tempIncubator: inc });
-      saveAllToStorage();
-      updateTempChart();
-      renderTempList();
-    }
-
-    function deleteTempPoint(idx) {
-      window.tempHistory.splice(idx, 1);
-      saveAllToStorage();
-      updateTempChart();
-      renderTempList();
-    }
-
-    function updateWeightChart() {
-      if (!chartWeightInstance) return;
-      chartWeightInstance.data.labels = window.weightHistory.map(p => p.date);
-      chartWeightInstance.data.datasets[0].data = window.weightHistory.map(p => p.weight);
-      chartWeightInstance.update();
-    }
-
-    function renderWeightList() {
-      const container = document.getElementById('weightPointsList');
-      if (!container) return;
-      container.innerHTML = '';
-      window.weightHistory.forEach((p, idx) => {
-        const div = document.createElement('div');
-        div.className = 'flex justify-between items-center bg-white/70 p-2 rounded-xl border border-slate-100';
-        div.innerHTML = `<span><strong>${p.date}</strong> : ${p.weight} kg</span>
-          <button onclick="deleteWeightPoint(${idx})" class="text-red-500 hover:text-red-700 text-xs font-bold"><i class="fa-solid fa-trash"></i></button>`;
-        container.appendChild(div);
-      });
-      if (window.weightHistory.length > 0) {
-        const last = window.weightHistory[window.weightHistory.length - 1];
-        const el = document.getElementById('statCurrentWeight');
-        if (el) el.innerText = `${last.weight} kg`;
-      }
-    }
-
-    function addWeightPoint(e) {
-      e.preventDefault();
-      const date = document.getElementById('weightPointDate').value;
-      const weight = parseFloat(document.getElementById('weightPointVal').value);
-      window.weightHistory.push({ date, weight });
-      window.weightHistory.sort((a,b) => new Date(a.date) - new Date(b.date));
-      saveAllToStorage();
-      updateWeightChart();
-      renderWeightList();
-    }
-
-    function deleteWeightPoint(idx) {
-      window.weightHistory.splice(idx, 1);
-      saveAllToStorage();
-      updateWeightChart();
-      renderWeightList();
-    }
-
-    function updateMealsChart() {
-      if (!chartMealsInstance) return;
-
-      const mode = document.getElementById('mealsChartMode')?.value || 'day';
-      let labels = [];
-      let mealsData = [];
-      let diapersData = [];
-
-      const now = new Date();
-
-      if (mode === 'day') {
-        for (let i = 6; i >= 0; i--) {
-          const d = new Date(now);
-          d.setDate(now.getDate() - i);
-          const iso = d.toISOString().split('T')[0];
-          labels.push(d.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric' }));
-
-          let meals = 0, diapers = 0;
-          window.careEntries.forEach(c => {
-            if ((c.date || iso) === iso) {
-              if (c.feeding > 0) meals++;
-              if (c.diaper && c.diaper !== 'Propre / Rien') diapers++;
-            }
-          });
-          mealsData.push(meals);
-          diapersData.push(diapers);
-        }
-      } else if (mode === 'week') {
-        for (let i = 3; i >= 0; i--) {
-          labels.push(`S-${i}`);
-          let meals = 0, diapers = 0;
-          const end = new Date(now);
-          end.setDate(now.getDate() - (i * 7));
-          const start = new Date(end);
-          start.setDate(end.getDate() - 6);
-
-          window.careEntries.forEach(c => {
-            const entryDate = new Date(c.date || todayIsoStr);
-            if (entryDate >= start && entryDate <= end) {
-              if (c.feeding > 0) meals++;
-              if (c.diaper && c.diaper !== 'Propre / Rien') diapers++;
-            }
-          });
-          mealsData.push(meals);
-          diapersData.push(diapers);
-        }
-      } else if (mode === 'month') {
-        for (let i = 5; i >= 0; i--) {
-          const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-          labels.push(d.toLocaleDateString('fr-FR', { month: 'short' }));
-
-          let meals = 0, diapers = 0;
-          window.careEntries.forEach(c => {
-            const entryDate = new Date(c.date || todayIsoStr);
-            if (entryDate.getMonth() === d.getMonth() && entryDate.getFullYear() === d.getFullYear()) {
-              if (c.feeding > 0) meals++;
-              if (c.diaper && c.diaper !== 'Propre / Rien') diapers++;
-            }
-          });
-          mealsData.push(meals);
-          diapersData.push(diapers);
-        }
-      }
-
-      chartMealsInstance.data.labels = labels;
-      chartMealsInstance.data.datasets[0].data = mealsData;
-      chartMealsInstance.data.datasets[1].data = diapersData;
-      chartMealsInstance.update();
-
-      const avgM = mealsData.length ? (mealsData.reduce((a,b)=>a+b,0)/mealsData.length).toFixed(1) : 0;
-      const avgD = diapersData.length ? (diapersData.reduce((a,b)=>a+b,0)/diapersData.length).toFixed(1) : 0;
-
-      const avgMEl = document.getElementById('avgMealsPeriod');
-      const avgDEl = document.getElementById('avgDiapersPeriod');
-      if (avgMEl) avgMEl.innerText = `${avgM} / période`;
-      if (avgDEl) avgDEl.innerText = `${avgD} / période`;
-    }
-
-    function checkMidnightReset() {
-      const today = new Date().toISOString().split('T')[0];
-      if (window.lastActiveDate !== today) {
-        archiveAndResetDay(window.lastActiveDate);
-        window.lastActiveDate = today;
-        localStorage.setItem('bp_lastActiveDate', today);
-      }
-    }
-
-    function archiveAndResetDay(dateToArchive) {
-      const dayEntries = window.careEntries.filter(c => c.date === dateToArchive);
-      let totalMeals = 0;
-      let totalVol = 0;
-      let totalDiapers = 0;
-
-      dayEntries.forEach(c => {
-        if (c.feeding > 0) {
-          totalMeals++;
-          totalVol += c.feeding;
-        }
-        if (c.diaper && c.diaper !== 'Propre / Rien') {
-          totalDiapers++;
-        }
-      });
-
-      window.dailyArchive[dateToArchive] = {
-        mealsCount: totalMeals,
-        mealsVolume: totalVol,
-        diapersCount: totalDiapers,
-        entriesCount: dayEntries.length
-      };
-
-      saveAllToStorage();
-    }
-
-    function updateNextFeedingReminder() {
-      const timerEl = document.getElementById('nextFeedingTimer');
-      if (!timerEl) return;
-
-      const feedingEntries = window.careEntries.filter(c => c.feeding > 0);
-      if (feedingEntries.length === 0) {
-        timerEl.innerText = "Dernier repas enregistré : --:--";
-        return;
-      }
-
-      const lastFeeding = feedingEntries[feedingEntries.length - 1];
-      const intervalHours = parseInt(document.getElementById('feedingInterval').value) || 3;
-
-      if (lastFeeding.date && lastFeeding.time) {
-        const lastDateParts = lastFeeding.date.split('-');
-        const lastTimeParts = lastFeeding.time.split(':');
-        const lastFeedingDate = new Date(
-          parseInt(lastDateParts[0]),
-          parseInt(lastDateParts[1]) - 1,
-          parseInt(lastDateParts[2]),
-          parseInt(lastTimeParts[0]),
-          parseInt(lastTimeParts[1])
-        );
-
-        const nextStart = new Date(lastFeedingDate.getTime() + intervalHours * 3600000);
-        const nextEnd = new Date(nextStart.getTime() + 1.5 * 3600000);
-
-        const formatTime = (d) => d.toTimeString().substring(0, 5);
-        timerEl.innerHTML = `Dernier repas à <strong>${lastFeeding.time}</strong> | Plage du prochain repas : <strong class="text-pink-600">${formatTime(nextStart)} - ${formatTime(nextEnd)}</strong> (durée max 1h30)`;
-      } else {
-        timerEl.innerText = `Dernier repas enregistré à ${lastFeeding.time}`;
-      }
-    }
-
-    function renderDailyTracker() {
-      checkMidnightReset();
-      
-      const now = new Date();
-      const today = now.toISOString().split('T')[0];
-      const formattedDate = now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-      
-      const dateEl = document.getElementById('currentTrackingDate');
-      if (dateEl) dateEl.innerText = `Date du jour : ${formattedDate}`;
-
-      let mealsToday = 0, mealsVolToday = 0, diapersToday = 0;
-      let mealsWeek = 0, mealsVolWeek = 0, diapersWeek = 0;
-      let mealsMonth = 0, mealsVolMonth = 0, diapersMonth = 0;
-
-      const sevenDaysAgo = new Date(now); sevenDaysAgo.setDate(now.getDate() - 7);
-      const thirtyDaysAgo = new Date(now); thirtyDaysAgo.setDate(now.getDate() - 30);
-
-      window.careEntries.forEach(c => {
-        const cDate = new Date(c.date || today);
-        const feeding = parseInt(c.feeding) || 0;
-        const hasDiaper = c.diaper && c.diaper !== 'Propre / Rien';
-
-        if ((c.date || today) === today) {
-          if (feeding > 0) { mealsToday++; mealsVolToday += feeding; }
-          if (hasDiaper) diapersToday++;
-        }
-
-        if (cDate >= sevenDaysAgo) {
-          if (feeding > 0) { mealsWeek++; mealsVolWeek += feeding; }
-          if (hasDiaper) diapersWeek++;
-        }
-
-        if (cDate >= thirtyDaysAgo) {
-          if (feeding > 0) { mealsMonth++; mealsVolMonth += feeding; }
-          if (hasDiaper) diapersMonth++;
-        }
-      });
-
-      const quickMealCount = document.getElementById('quickMealCount');
-      const quickMealVolume = document.getElementById('quickMealVolume');
-      const quickDiaperCount = document.getElementById('quickDiaperCount');
-
-      if (quickMealCount) quickMealCount.innerText = mealsToday;
-      if (quickMealVolume) quickMealVolume.innerText = mealsVolToday;
-      if (quickDiaperCount) quickDiaperCount.innerText = diapersToday;
-
-      const elMealsToday = document.getElementById('statMealsToday');
-      const elMealsVolToday = document.getElementById('statMealsVolToday');
-      const elMealsWeek = document.getElementById('statMealsWeek');
-      const elMealsVolWeek = document.getElementById('statMealsVolWeek');
-      const elMealsMonth = document.getElementById('statMealsMonth');
-      const elMealsVolMonth = document.getElementById('statMealsVolMonth');
-
-      if (elMealsToday) elMealsToday.innerText = mealsToday;
-      if (elMealsVolToday) elMealsVolToday.innerText = `${mealsVolToday} ml`;
-      if (elMealsWeek) elMealsWeek.innerText = mealsWeek;
-      if (elMealsVolWeek) elMealsVolWeek.innerText = `${mealsVolWeek} ml`;
-      if (elMealsMonth) elMealsMonth.innerText = mealsMonth;
-      if (elMealsVolMonth) elMealsVolMonth.innerText = `${mealsVolMonth} ml`;
-
-      const elDiapersToday = document.getElementById('statDiapersToday');
-      const elDiapersWeek = document.getElementById('statDiapersWeek');
-      const elDiapersMonth = document.getElementById('statDiapersMonth');
-
-      if (elDiapersToday) elDiapersToday.innerText = diapersToday;
-      if (elDiapersWeek) elDiapersWeek.innerText = diapersWeek;
-      if (elDiapersMonth) elDiapersMonth.innerText = diapersMonth;
-
-      const todayEntries = window.careEntries.filter(c => (c.date || today) === today);
-      renderQuickHistoryList(todayEntries);
-      renderDailyStatsGrid();
-    }
-
-    function renderQuickHistoryList(entries) {
-      const container = document.getElementById('quickEntriesHistory');
-      if (!container) return;
-      container.innerHTML = '';
-
-      if (!entries || entries.length === 0) {
-        container.innerHTML = `<p class="text-slate-400 italic">Aucune saisie effectuée aujourd'hui.</p>`;
-        return;
-      }
-
-      entries.slice().reverse().forEach(e => {
-        const div = document.createElement('div');
-        div.className = 'flex justify-between items-center bg-white/60 p-2 rounded-xl border border-slate-100';
-        div.innerHTML = `
-          <span><strong>${e.time}</strong> - ${e.feeding > 0 ? `${e.feeding} ml` : ''} ${e.diaper !== 'Propre / Rien' ? `Couche (${e.diaper})` : ''} ${e.notes ? `(${e.notes})` : ''}</span>
-          <span class="text-slate-400 text-[10px]">${e.author || 'Parent'}</span>
-        `;
-        container.appendChild(div);
-      });
-    }
-
-    function renderDailyStatsGrid() {
-      const grid = document.getElementById('dailyStatsGrid');
-      if (!grid) return;
-      grid.innerHTML = '';
-
-      const now = new Date();
-      for (let i = 6; i >= 0; i--) {
-        const d = new Date(now);
-        d.setDate(now.getDate() - i);
-        const iso = d.toISOString().split('T')[0];
-
-        let meals = 0, vol = 0, diapers = 0;
-        window.careEntries.forEach(c => {
-          if ((c.date || iso) === iso) {
-            if (c.feeding > 0) { meals++; vol += c.feeding; }
-            if (c.diaper && c.diaper !== 'Propre / Rien') diapers++;
-          }
-        });
-
-        const dayName = d.toLocaleDateString('fr-FR', { weekday: 'short' });
-        const dayNum = d.getDate();
-
-        const card = document.createElement('div');
-        card.className = `p-3 rounded-2xl border text-center ${i === 0 ? 'bg-pink-50 border-pink-300 font-bold' : 'bg-white/60 border-slate-100'}`;
-        card.innerHTML = `
-          <div class="text-[10px] uppercase text-slate-400 font-bold">${dayName} ${dayNum}</div>
-          <div class="text-xs font-black text-pink-600 mt-1">${meals} bib. (${vol}ml)</div>
-          <div class="text-[11px] font-bold text-blue-600">${diapers} couche(s)</div>
-        `;
-        grid.appendChild(card);
-      }
-    }
-
-    function quickAddMeal() {
-      checkMidnightReset();
-      const volStr = prompt("Volume du biberon (en ml) :", "90");
-      if (volStr === null) return;
-      const vol = parseInt(volStr) || 0;
-
-      const now = new Date();
-      const entry = {
-        date: now.toISOString().split('T')[0],
-        time: now.toTimeString().substring(0, 5),
-        tempBaby: null,
-        tempIncubator: null,
-        diaper: "Propre / Rien",
-        feeding: vol,
-        notes: "Ajout rapide Biberon",
-        author: currentUser || "Parent"
-      };
-
-      window.careEntries.push(entry);
-      saveAllToStorage();
-      renderCareEntries();
-      renderDailyTracker();
-      updateMealsChart();
-    }
-
-    function quickAddDiaper() {
-      checkMidnightReset();
-      const diaperType = prompt("Type de couche :\n1: Urine\n2: Selles\n3: Urine + Selles", "1");
-      if (diaperType === null) return;
-
-      let typeLabel = "Urine";
-      if (diaperType === "2") typeLabel = "Selles";
-      if (diaperType === "3") typeLabel = "Urine + Selles";
-
-      const now = new Date();
-      const entry = {
-        date: now.toISOString().split('T')[0],
-        time: now.toTimeString().substring(0, 5),
-        tempBaby: null,
-        tempIncubator: null,
-        diaper: typeLabel,
-        feeding: 0,
-        notes: "Ajout rapide Couche",
-        author: currentUser || "Parent"
-      };
-
-      window.careEntries.push(entry);
-      saveAllToStorage();
-      renderCareEntries();
-      renderDailyTracker();
-      updateMealsChart();
-    }
-
-    function resetDailyTracker() {
-      if (confirm("Réinitialiser toutes les saisies rapides et soins d'aujourd'hui ?")) {
-        const today = new Date().toISOString().split('T')[0];
-        window.careEntries = window.careEntries.filter(c => c.date !== today);
-        saveAllToStorage();
-        renderCareEntries();
-        renderDailyTracker();
-        updateMealsChart();
-      }
-    }
-
-    function resetStatsPeriod() {
-      if (confirm("Réinitialiser l'historique complet des soins ?")) {
-        window.careEntries = [];
-        saveAllToStorage();
-        renderCareEntries();
-        renderDailyTracker();
-        updateMealsChart();
-      }
-    }
-
-    // --- MODALES OBJECTIFS ET ABONNEMENT ---
-    function openEditStatsModal() {
-      document.getElementById('goalMealsDayInput').value = window.statsGoals.mealsDay || 8;
-      document.getElementById('goalDiapersDayInput').value = window.statsGoals.diapersDay || 6;
-      document.getElementById('editStatsModal').classList.remove('hidden');
-    }
-
-    function closeEditStatsModal() {
-      document.getElementById('editStatsModal').classList.add('hidden');
-    }
-
-    function saveStatsGoals(e) {
-      e.preventDefault();
-      window.statsGoals.mealsDay = parseInt(document.getElementById('goalMealsDayInput').value) || 8;
-      window.statsGoals.diapersDay = parseInt(document.getElementById('goalDiapersDayInput').value) || 6;
-      saveAllToStorage();
-      updateGoalsBadges();
-      closeEditStatsModal();
-    }
-
-    function updateGoalsBadges() {
-      const bM = document.getElementById('badgeMealsGoal');
-      const bD = document.getElementById('badgeDiapersGoal');
-      if (bM) bM.innerText = `Obj: ${window.statsGoals.mealsDay}/j`;
-      if (bD) bD.innerText = `Obj: ${window.statsGoals.diapersDay}/j`;
-    }
-
-    function openSubscribeModal() {
-      document.getElementById('subscribeModal').classList.remove('hidden');
-    }
-
-    function closeSubscribeModal() {
-      document.getElementById('subscribeModal').classList.add('hidden');
-    }
-
-    function selectPlan(plan) {
-      alert(`Merci d'avoir choisi la formule ${plan} ! Redirection vers le paiement...`);
-      closeSubscribeModal();
-    }
-
-    function saveOfficialResults(e) {
-      e.preventDefault();
-      window.officialResult = {
-        name: document.getElementById('officialName').value.trim(),
-        gender: document.getElementById('officialGender').value,
-        weight: parseFloat(document.getElementById('officialWeight').value),
-        height: parseFloat(document.getElementById('officialHeight').value)
-      };
-
-      let minDiff = Infinity;
-      let winner = "Aucun";
-
-      window.predictions.forEach(p => {
-        const diffW = Math.abs(p.weight - window.officialResult.weight);
-        const diffH = Math.abs(p.height - window.officialResult.height);
-        const score = diffW * 10 + diffH;
-        if (score < minDiff) {
-          minDiff = score;
-          winner = p.user;
-        }
-      });
-
-      window.officialResult.winner = winner;
-      saveAllToStorage();
-      displayOfficialBanner();
-    }
-
-    function displayOfficialBanner() {
-      if (!window.officialResult) return;
-      const b = document.getElementById('resultBanner');
-      if (!b) return;
-      b.classList.remove('hidden');
-      document.getElementById('resBabyName').innerText = `Félicitations pour ${window.officialResult.name} !`;
-      document.getElementById('resBabyDetails').innerText = `Sexe: ${window.officialResult.gender} | Poids: ${window.officialResult.weight} kg | Taille: ${window.officialResult.height} cm`;
-      document.getElementById('resWinnerName').innerText = window.officialResult.winner || "---";
-    }
-
-    function traiterFichier(e) {
-      const file = e.target.files[0];
-      if (file) {
-        alert(`Document "${file.name}" importé avec succès (Analyse automatique effectuée).`);
-      }
-    }
-
-    // Initialisation par défaut de la date du jour sur le formulaire agenda
-    window.addEventListener('DOMContentLoaded', () => {
-      const todayStr = new Date().toISOString().split('T')[0];
-      if (document.getElementById('agendaStartDate')) document.getElementById('agendaStartDate').value = todayStr;
-      if (document.getElementById('agendaEndDate')) document.getElementById('agendaEndDate').value = todayStr;
-      if (document.getElementById('agendaStartTime')) document.getElementById('agendaStartTime').value = "09:00";
-      if (document.getElementById('agendaEndTime')) document.getElementById('agendaEndTime').value = "10:00";
-      if (document.getElementById('careDate')) document.getElementById('careDate').value = todayStr;
-      if (document.getElementById('careTime')) document.getElementById('careTime').value = new Date().toTimeString().substring(0, 5);
-      if (document.getElementById('predDate')) document.getElementById('predDate').value = todayStr;
-    });
-  </script>
+    </script>
 </body>
 </html>
