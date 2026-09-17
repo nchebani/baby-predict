@@ -936,12 +936,11 @@
     </div>
   </div>
 
-  <!-- INTÉGRATION FIREBASE (NOUVELLE BASE DE DONNÉES EN TEMPS RÉEL) -->
+  <!-- INTÉGRATION FIREBASE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    // Configuration mise à jour avec la nouvelle base Realtime Database
     const firebaseConfig = {
       apiKey: "AIzaSyB3vygYO0r0Q8Wx7lMiLARyuj99h1urHXA",
       authDomain: "babypredictv2.firebaseapp.com",
@@ -1355,7 +1354,7 @@
         tbody.appendChild(tr);
       });
 
-      const total = window.predictions ? window.predictions.length : 0;
+      const total = window.predictions.length;
       document.getElementById('predCount').innerText = `${total} participation(s)`;
 
       if (total > 0) {
@@ -1429,43 +1428,39 @@
 
     function saveOfficialResults(e) {
       e.preventDefault();
-      const official = {
+      const res = {
         name: document.getElementById('officialName').value.trim(),
         gender: document.getElementById('officialGender').value,
         weight: parseFloat(document.getElementById('officialWeight').value),
         height: parseFloat(document.getElementById('officialHeight').value)
       };
 
-      let winner = "Aucun participant";
-      let minDiff = Infinity;
+      let bestScore = Infinity;
+      let winner = "Aucun";
 
-      (window.predictions || []).forEach(p => {
-        let score = 0;
-        if (p.gender === official.gender) score -= 10;
-        score += Math.abs(p.weight - official.weight) * 5;
-        score += Math.abs(p.height - official.height) * 2;
-        if (score < minDiff) {
-          minDiff = score;
+      window.predictions.forEach(p => {
+        let score = Math.abs(p.weight - res.weight) * 10 + Math.abs(p.height - res.height);
+        if (p.gender === res.gender) score -= 5;
+        if (score < bestScore) {
+          bestScore = score;
           winner = p.user;
         }
       });
 
-      official.winner = winner;
-      window.officialResult = official;
+      res.winner = winner;
+      window.officialResult = res;
       saveAllToStorage();
       displayOfficialBanner();
     }
 
     function displayOfficialBanner() {
-      if (window.officialResult) {
-        const banner = document.getElementById('resultBanner');
-        if (banner) {
-          banner.classList.remove('hidden');
-          document.getElementById('resBabyName').innerText = `${window.officialResult.name} (${window.officialResult.gender})`;
-          document.getElementById('resBabyDetails').innerText = `Poids: ${window.officialResult.weight} kg | Taille: ${window.officialResult.height} cm`;
-          document.getElementById('resWinnerName').innerText = window.officialResult.winner || '--';
-        }
-      }
+      if (!window.officialResult) return;
+      const b = document.getElementById('resultBanner');
+      if (!b) return;
+      b.classList.remove('hidden');
+      document.getElementById('resBabyName').innerText = `Bienvenue à ${window.officialResult.name} !`;
+      document.getElementById('resBabyDetails').innerText = `Sexe: ${window.officialResult.gender} | Poids: ${window.officialResult.weight} kg | Taille: ${window.officialResult.height} cm`;
+      document.getElementById('resWinnerName').innerText = window.officialResult.winner;
     }
 
     function renderCareEntries() {
@@ -1484,6 +1479,7 @@
           <td class="py-3 text-slate-600">${c.notes || '-'}</td>
           <td class="py-3 text-xs font-bold text-slate-500">${c.author || 'Parent'}</td>
           <td class="py-3 text-right no-pdf">
+            <button onclick="editCareEntry(${idx})" class="p-1.5 text-indigo-600 hover:bg-indigo-50 rounded-lg mr-1"><i class="fa-solid fa-pen"></i></button>
             <button onclick="deleteCareEntry(${idx})" class="p-1.5 text-red-500 hover:bg-red-50 rounded-lg"><i class="fa-solid fa-trash"></i></button>
           </td>
         `;
@@ -1519,6 +1515,24 @@
       renderDailyTracker();
       updateMealsChart();
       cancelCareEdit();
+    }
+
+    function editCareEntry(idx) {
+      const c = window.careEntries[idx];
+      if (!c) return;
+
+      document.getElementById('editCareIndex').value = idx;
+      document.getElementById('careDate').value = c.date;
+      document.getElementById('careTime').value = c.time;
+      document.getElementById('careTempBaby').value = c.tempBaby || '';
+      document.getElementById('careTempIncubator').value = c.tempIncubator || '';
+      document.getElementById('careDiaper').value = c.diaper;
+      document.getElementById('careFeeding').value = c.feeding || '';
+      document.getElementById('careNotes').value = c.notes || '';
+
+      document.getElementById('formCareTitle').innerHTML = `<i class="fa-solid fa-pen text-emerald-500"></i> Modifier la Transmission`;
+      document.getElementById('btnSubmitCare').innerText = "Mettre à jour l'observation";
+      document.getElementById('btnCancelCareEdit').classList.remove('hidden');
     }
 
     function cancelCareEdit() {
@@ -1569,6 +1583,68 @@
       html2pdf().from(element).save('fiche_soins_maternite.pdf').then(() => {
         element.classList.remove('pdf-compact');
       });
+    }
+
+    function traiterFichier(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      alert(`Fichier "${file.name}" reçu. Traitement en cours...`);
+    }
+
+    // --- CHRONOMÈTRE ---
+    function toggleTimer() {
+      const btn = document.getElementById('btnStartTimer');
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        btn.innerHTML = `<i class="fa-solid fa-play"></i> Démarrer`;
+        btn.className = "px-3 py-2 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold rounded-xl shadow transition";
+      } else {
+        timerInterval = setInterval(() => {
+          timerSeconds++;
+          const m = String(Math.floor(timerSeconds / 60)).padStart(2, '0');
+          const s = String(timerSeconds % 60).padStart(2, '0');
+          document.getElementById('timerDisplay').innerText = `${m}:${s}`;
+        }, 1000);
+        btn.innerHTML = `<i class="fa-solid fa-pause"></i> Pause`;
+        btn.className = "px-3 py-2 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold rounded-xl shadow transition";
+      }
+    }
+
+    function resetTimer() {
+      if (timerInterval) clearInterval(timerInterval);
+      timerInterval = null;
+      timerSeconds = 0;
+      document.getElementById('timerDisplay').innerText = "00:00";
+      const btn = document.getElementById('btnStartTimer');
+      btn.innerHTML = `<i class="fa-solid fa-play"></i> Démarrer`;
+      btn.className = "px-3 py-2 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold rounded-xl shadow transition";
+    }
+
+    function saveTimerToCare() {
+      if (timerSeconds === 0) return alert("Le chronomètre est à zéro.");
+      const type = document.getElementById('timerType').value;
+      const m = Math.floor(timerSeconds / 60);
+      const s = timerSeconds % 60;
+      const durationStr = `${m}m ${s}s`;
+
+      const now = new Date();
+      const entry = {
+        date: now.toISOString().split('T')[0],
+        time: now.toTimeString().substring(0, 5),
+        tempBaby: null,
+        tempIncubator: null,
+        diaper: "Propre / Rien",
+        feeding: 0,
+        notes: `Chrono ${type} - Durée: ${durationStr}`,
+        author: currentUser || "Parent"
+      };
+
+      window.careEntries.push(entry);
+      saveAllToStorage();
+      renderCareEntries();
+      resetTimer();
+      alert(`Enregistré : ${type} (${durationStr})`);
     }
 
     // --- INITIALISATION DES GRAPHIQUES ---
@@ -1936,6 +2012,63 @@
       renderDailyStatsGrid();
     }
 
+    function renderQuickHistoryList(entries) {
+      const container = document.getElementById('quickEntriesHistory');
+      if (!container) return;
+      container.innerHTML = '';
+
+      if (entries.length === 0) {
+        container.innerHTML = `<p class="text-slate-400 italic">Aucune saisie aujourd'hui.</p>`;
+        return;
+      }
+
+      entries.slice().reverse().forEach(entry => {
+        const div = document.createElement('div');
+        div.className = 'flex items-center justify-between bg-white/60 p-2 rounded-xl border border-slate-100';
+        div.innerHTML = `
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-slate-700">${entry.time}</span>
+            <span class="text-slate-500">${entry.feeding > 0 ? `Biberon: ${entry.feeding}ml` : ''} ${entry.diaper !== 'Propre / Rien' ? `Couche: ${entry.diaper}` : ''} ${entry.notes ? `(${entry.notes})` : ''}</span>
+          </div>
+          <span class="text-[10px] text-slate-400">${entry.author || 'Parent'}</span>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function renderDailyStatsGrid() {
+      const container = document.getElementById('dailyStatsGrid');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const now = new Date();
+      for (let i = 6; i >= 0; i--) {
+        const d = new Date(now);
+        d.setDate(now.getDate() - i);
+        const iso = d.toISOString().split('T')[0];
+        const dayName = d.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric' });
+
+        let meals = 0, diapers = 0;
+        window.careEntries.forEach(c => {
+          if ((c.date || iso) === iso) {
+            if (c.feeding > 0) meals++;
+            if (c.diaper && c.diaper !== 'Propre / Rien') diapers++;
+          }
+        });
+
+        const div = document.createElement('div');
+        div.className = `p-3 rounded-2xl border text-center ${i === 0 ? 'bg-pink-50/80 border-pink-300' : 'bg-white/60 border-slate-200'}`;
+        div.innerHTML = `
+          <p class="text-[11px] font-bold uppercase ${i === 0 ? 'text-pink-600' : 'text-slate-500'}">${i === 0 ? "Aujourd'hui" : dayName}</p>
+          <div class="mt-1 space-y-0.5 text-xs">
+            <p class="font-extrabold text-pink-600"><i class="fa-solid fa-bottle-droplet mr-1"></i>${meals}</p>
+            <p class="font-extrabold text-blue-600"><i class="fa-solid fa-baby mr-1"></i>${diapers}</p>
+          </div>
+        `;
+        container.appendChild(div);
+      }
+    }
+
     function quickAddMeal() {
       checkMidnightReset();
       const volStr = prompt("Volume du biberon (en ml) :", "90");
@@ -1963,12 +2096,8 @@
 
     function quickAddDiaper() {
       checkMidnightReset();
-      const diaperType = prompt("Type de couche :\n1: Urine\n2: Selles\n3: Urine + Selles", "1");
-      if (diaperType === null) return;
-
-      let typeLabel = "Urine";
-      if (diaperType === "2") typeLabel = "Selles";
-      if (diaperType === "3") typeLabel = "Urine + Selles";
+      const diaperType = prompt("Type de couche (Urine / Selles / Urine + Selles) :", "Urine");
+      if (!diaperType) return;
 
       const now = new Date();
       const entry = {
@@ -1976,7 +2105,7 @@
         time: now.toTimeString().substring(0, 5),
         tempBaby: null,
         tempIncubator: null,
-        diaper: typeLabel,
+        diaper: diaperType,
         feeding: 0,
         notes: "Ajout rapide Couche",
         author: currentUser || "Parent"
@@ -1989,68 +2118,8 @@
       updateMealsChart();
     }
 
-    function renderQuickHistoryList(todayEntries) {
-      const container = document.getElementById('quickEntriesHistory');
-      if (!container) return;
-      container.innerHTML = '';
-
-      if (!todayEntries || todayEntries.length === 0) {
-        container.innerHTML = `<p class="text-slate-400 italic text-[11px]">Aucune saisie effectuée aujourd'hui.</p>`;
-        return;
-      }
-
-      todayEntries.slice().reverse().forEach(item => {
-        const div = document.createElement('div');
-        div.className = 'flex justify-between items-center bg-white/60 p-2 rounded-xl border border-slate-100 text-slate-700';
-        let detail = [];
-        if (item.feeding > 0) detail.push(`🍼 <strong>${item.feeding} ml</strong>`);
-        if (item.diaper && item.diaper !== 'Propre / Rien') detail.push(`👶 <strong>${item.diaper}</strong>`);
-        if (item.tempBaby) detail.push(`🌡️ <strong>${item.tempBaby}°C</strong>`);
-
-        div.innerHTML = `
-          <span><strong>${item.time}</strong> - ${detail.join(' | ') || 'Observation'}</span>
-          <span class="text-[10px] text-slate-400">par ${item.author || 'Parent'}</span>
-        `;
-        container.appendChild(div);
-      });
-    }
-
-    function renderDailyStatsGrid() {
-      const container = document.getElementById('dailyStatsGrid');
-      if (!container) return;
-      container.innerHTML = '';
-
-      const now = new Date();
-      for (let i = 6; i >= 0; i--) {
-        const d = new Date(now);
-        d.setDate(now.getDate() - i);
-        const iso = d.toISOString().split('T')[0];
-        const dayName = d.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric' });
-
-        let mCount = 0, mVol = 0, dCount = 0;
-        window.careEntries.forEach(c => {
-          if ((c.date || iso) === iso) {
-            if (c.feeding > 0) { mCount++; mVol += c.feeding; }
-            if (c.diaper && c.diaper !== 'Propre / Rien') dCount++;
-          }
-        });
-
-        const isToday = (i === 0);
-        const card = document.createElement('div');
-        card.className = `p-3 rounded-2xl border text-center transition ${isToday ? 'bg-pink-50 border-pink-300 shadow-sm' : 'bg-white/70 border-slate-100'}`;
-        card.innerHTML = `
-          <p class="text-[11px] font-bold ${isToday ? 'text-pink-600' : 'text-slate-500'} capitalize">${dayName}</p>
-          <div class="mt-2 space-y-1 text-xs">
-            <p class="font-bold text-pink-600">🍼 ${mCount} <span class="text-[10px] font-normal text-slate-400">(${mVol}ml)</span></p>
-            <p class="font-bold text-blue-600">👶 ${dCount}</p>
-          </div>
-        `;
-        container.appendChild(card);
-      }
-    }
-
     function resetDailyTracker() {
-      if (confirm("Réinitialiser toutes les saisies rapides de la journée en cours ?")) {
+      if (confirm("Réinitialiser toutes les saisies rapides et soins enregistrés pour la journée d'aujourd'hui ?")) {
         const today = new Date().toISOString().split('T')[0];
         window.careEntries = window.careEntries.filter(c => (c.date || today) !== today);
         saveAllToStorage();
@@ -2061,7 +2130,7 @@
     }
 
     function resetStatsPeriod() {
-      if (confirm("Voulez-vous réinitialiser l'historique complet des soins ?")) {
+      if (confirm("Voulez-vous vider l'ensemble du journal des soins (repas et couches) ?")) {
         window.careEntries = [];
         window.dailyArchive = {};
         saveAllToStorage();
@@ -2071,7 +2140,7 @@
       }
     }
 
-    // --- MODALES & OBJECTIFS ---
+    // --- MODALES OBJECTIFS & ABONNEMENT ---
     function openEditStatsModal() {
       document.getElementById('goalMealsDayInput').value = window.statsGoals.mealsDay || 8;
       document.getElementById('goalDiapersDayInput').value = window.statsGoals.diapersDay || 6;
@@ -2092,10 +2161,10 @@
     }
 
     function updateGoalsBadges() {
-      const bMeals = document.getElementById('badgeMealsGoal');
-      const bDiapers = document.getElementById('badgeDiapersGoal');
-      if (bMeals) bMeals.innerText = `Obj: ${window.statsGoals.mealsDay}/j`;
-      if (bDiapers) bDiapers.innerText = `Obj: ${window.statsGoals.diapersDay}/j`;
+      const bM = document.getElementById('badgeMealsGoal');
+      const bD = document.getElementById('badgeDiapersGoal');
+      if (bM) bM.innerText = `Obj: ${window.statsGoals.mealsDay}/j`;
+      if (bD) bD.innerText = `Obj: ${window.statsGoals.diapersDay}/j`;
     }
 
     function openSubscribeModal() {
@@ -2106,89 +2175,44 @@
       document.getElementById('subscribeModal').classList.add('hidden');
     }
 
-    function selectPlan(planType) {
-      alert(`Merci d'avoir choisi le plan ${planType} ! Redirection vers le paiement sécurisé...`);
+    function selectPlan(planName) {
+      alert(`Merci d'avoir choisi la formule ${planName} ! Redirection vers la passerelle de paiement sécurisée...`);
       closeSubscribeModal();
     }
 
-    // --- CHRONOMÈTRE & IA FICHIERS ---
-    function toggleTimer() {
-      const btn = document.getElementById('btnStartTimer');
-      if (timerInterval) {
-        clearInterval(timerInterval);
-        timerInterval = null;
-        if (btn) btn.innerHTML = `<i class="fa-solid fa-play"></i> Reprendre`;
-      } else {
-        timerInterval = setInterval(() => {
-          timerSeconds++;
-          const mins = String(Math.floor(timerSeconds / 60)).padStart(2, '0');
-          const secs = String(timerSeconds % 60).padStart(2, '0');
-          document.getElementById('timerDisplay').innerText = `${mins}:${secs}`;
-        }, 1000);
-        if (btn) btn.innerHTML = `<i class="fa-solid fa-pause"></i> Pause`;
-      }
-    }
-
-    function resetTimer() {
-      if (timerInterval) {
-        clearInterval(timerInterval);
-        timerInterval = null;
-      }
-      timerSeconds = 0;
-      document.getElementById('timerDisplay').innerText = "00:00";
-      const btn = document.getElementById('btnStartTimer');
-      if (btn) btn.innerHTML = `<i class="fa-solid fa-play"></i> Démarrer`;
-    }
-
-    function saveTimerToCare() {
-      if (timerSeconds === 0) return alert("Veuillez d'abord démarrer le chronomètre.");
-      const type = document.getElementById('timerType').value;
-      const mins = Math.floor(timerSeconds / 60);
-      const secs = timerSeconds % 60;
-      const durationStr = `${mins}m ${secs}s`;
-
-      const now = new Date();
-      const entry = {
-        date: now.toISOString().split('T')[0],
-        time: now.toTimeString().substring(0, 5),
-        tempBaby: null,
-        tempIncubator: null,
-        diaper: "Propre / Rien",
-        feeding: 0,
-        notes: `Chronomètre [${type}] : Durée ${durationStr}`,
-        author: currentUser || "Parent"
-      };
-
-      window.careEntries.push(entry);
-      saveAllToStorage();
-      renderCareEntries();
-      renderDailyTracker();
-      resetTimer();
-    }
-
-    function traiterFichier(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      alert(`Document "${file.name}" importé avec succès. Analyse IA en cours...`);
-    }
-
-    // INITIALISATION GLOBALE AU CHARGEMENT
+    // --- INITIALISATION GLOBALEMENT AU CHARGEMENT ---
     window.addEventListener('DOMContentLoaded', () => {
+      const now = new Date();
+      const todayStr = now.toISOString().split('T')[0];
+
+      const cDate = document.getElementById('careDate');
+      const cTime = document.getElementById('careTime');
+      const aStart = document.getElementById('agendaStartDate');
+      const aEnd = document.getElementById('agendaEndDate');
+      const aSTime = document.getElementById('agendaStartTime');
+      const aETime = document.getElementById('agendaEndTime');
+      const wDate = document.getElementById('weightPointDate');
+
+      if (cDate) cDate.value = todayStr;
+      if (cTime) cTime.value = now.toTimeString().substring(0, 5);
+      if (aStart) aStart.value = todayStr;
+      if (aEnd) aEnd.value = todayStr;
+      if (aSTime) aSTime.value = "09:00";
+      if (aETime) aETime.value = "10:00";
+      if (wDate) wDate.value = todayStr;
+
       initCharts();
       renderPredictions();
       renderCareEntries();
       renderDailyTracker();
+      updateTempChart();
       renderTempList();
+      updateWeightChart();
       renderWeightList();
+      updateMealsChart();
+      renderAgendaEntries();
       updateGoalsBadges();
       displayOfficialBanner();
-
-      const todayStr = new Date().toISOString().split('T')[0];
-      if (document.getElementById('careDate')) document.getElementById('careDate').value = todayStr;
-      if (document.getElementById('predDate')) document.getElementById('predDate').value = todayStr;
-      if (document.getElementById('agendaStartDate')) document.getElementById('agendaStartDate').value = todayStr;
-      if (document.getElementById('agendaEndDate')) document.getElementById('agendaEndDate').value = todayStr;
-      if (document.getElementById('weightPointDate')) document.getElementById('weightPointDate').value = todayStr;
     });
   </script>
 </body>
