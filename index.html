@@ -1927,153 +1927,58 @@
 
         const formatTime = (d) => d.toTimeString().substring(0, 5);
         timerEl.innerHTML = `Dernier repas à <strong>${lastFeeding.time}</strong> | Plage du prochain repas : <strong class="text-pink-600">${formatTime(nextStart)} - ${formatTime(nextEnd)}</strong> (durée max 1h30)`;
-      } else {
-        timerEl.innerText = `Dernier repas enregistré à ${lastFeeding.time}`;
       }
     }
 
-    // --- CALCUL DES STATISTIQUES ET MISE À JOUR EN TEMPS RÉEL ---
+    // --- FONCTIONS SUIVI QUOTIDIEN ---
     function renderDailyTracker() {
-      checkMidnightReset();
-      
-      const now = new Date();
-      const today = now.toISOString().split('T')[0];
-      const formattedDate = now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-      
+      const today = new Date().toISOString().split('T')[0];
       const dateEl = document.getElementById('currentTrackingDate');
-      if (dateEl) dateEl.innerText = `Date du jour : ${formattedDate}`;
+      if (dateEl) {
+        const d = new Date();
+        dateEl.innerText = `Date du jour : ${d.toLocaleDateString('fr-FR')}`;
+      }
 
-      // Calcul pour Aujourd'hui, 7 Jours, 30 Jours
-      let mealsToday = 0, mealsVolToday = 0, diapersToday = 0;
-      let mealsWeek = 0, mealsVolWeek = 0, diapersWeek = 0;
-      let mealsMonth = 0, mealsVolMonth = 0, diapersMonth = 0;
+      const todayEntries = window.careEntries.filter(c => c.date === today);
+      
+      let mealsCount = 0;
+      let mealsVol = 0;
+      let diapersCount = 0;
 
-      const sevenDaysAgo = new Date(now); sevenDaysAgo.setDate(now.getDate() - 7);
-      const thirtyDaysAgo = new Date(now); thirtyDaysAgo.setDate(now.getDate() - 30);
-
-      window.careEntries.forEach(c => {
-        const cDate = new Date(c.date || today);
-        const feeding = parseInt(c.feeding) || 0;
-        const hasDiaper = c.diaper && c.diaper !== 'Propre / Rien';
-
-        // Aujourd'hui
-        if ((c.date || today) === today) {
-          if (feeding > 0) { mealsToday++; mealsVolToday += feeding; }
-          if (hasDiaper) diapersToday++;
+      todayEntries.forEach(c => {
+        if (c.feeding > 0) {
+          mealsCount++;
+          mealsVol += c.feeding;
         }
-
-        // 7 derniers jours
-        if (cDate >= sevenDaysAgo) {
-          if (feeding > 0) { mealsWeek++; mealsVolWeek += feeding; }
-          if (hasDiaper) diapersWeek++;
-        }
-
-        // 30 derniers jours
-        if (cDate >= thirtyDaysAgo) {
-          if (feeding > 0) { mealsMonth++; mealsVolMonth += feeding; }
-          if (hasDiaper) diapersMonth++;
+        if (c.diaper && c.diaper !== 'Propre / Rien') {
+          diapersCount++;
         }
       });
 
-      // Mise à jour de la zone "Saisie rapide"
-      const quickMealCount = document.getElementById('quickMealCount');
-      const quickMealVolume = document.getElementById('quickMealVolume');
-      const quickDiaperCount = document.getElementById('quickDiaperCount');
+      const qmCount = document.getElementById('quickMealCount');
+      const qmVol = document.getElementById('quickMealVolume');
+      const qdCount = document.getElementById('quickDiaperCount');
 
-      if (quickMealCount) quickMealCount.innerText = mealsToday;
-      if (quickMealVolume) quickMealVolume.innerText = mealsVolToday;
-      if (quickDiaperCount) quickDiaperCount.innerText = diapersToday;
+      if (qmCount) qmCount.innerText = mealsCount;
+      if (qmVol) qmVol.innerText = mealsVol;
+      if (qdCount) qdCount.innerText = diapersCount;
 
-      // Mise à jour des cartes du Bilan Statistiques & Objectifs
-      const elMealsToday = document.getElementById('statMealsToday');
-      const elMealsVolToday = document.getElementById('statMealsVolToday');
-      const elMealsWeek = document.getElementById('statMealsWeek');
-      const elMealsVolWeek = document.getElementById('statMealsVolWeek');
-      const elMealsMonth = document.getElementById('statMealsMonth');
-      const elMealsVolMonth = document.getElementById('statMealsVolMonth');
+      const stMToday = document.getElementById('statMealsToday');
+      const stMVolToday = document.getElementById('statMealsVolToday');
+      const stDToday = document.getElementById('statDiapersToday');
 
-      if (elMealsToday) elMealsToday.innerText = mealsToday;
-      if (elMealsVolToday) elMealsVolToday.innerText = `${mealsVolToday} ml`;
-      if (elMealsWeek) elMealsWeek.innerText = mealsWeek;
-      if (elMealsVolWeek) elMealsVolWeek.innerText = `${mealsVolWeek} ml`;
-      if (elMealsMonth) elMealsMonth.innerText = mealsMonth;
-      if (elMealsVolMonth) elMealsVolMonth.innerText = `${mealsVolMonth} ml`;
+      if (stMToday) stMToday.innerText = mealsCount;
+      if (stMVolToday) stMVolToday.innerText = `${mealsVol} ml`;
+      if (stDToday) stDToday.innerText = diapersCount;
 
-      const elDiapersToday = document.getElementById('statDiapersToday');
-      const elDiapersWeek = document.getElementById('statDiapersWeek');
-      const elDiapersMonth = document.getElementById('statDiapersMonth');
-
-      if (elDiapersToday) elDiapersToday.innerText = diapersToday;
-      if (elDiapersWeek) elDiapersWeek.innerText = diapersWeek;
-      if (elDiapersMonth) elDiapersMonth.innerText = diapersMonth;
-
-      const todayEntries = window.careEntries.filter(c => (c.date || today) === today);
-      renderQuickHistoryList(todayEntries);
+      renderQuickHistory(todayEntries);
       renderDailyStatsGrid();
     }
 
-    function renderQuickHistoryList(entries) {
-      const container = document.getElementById('quickEntriesHistory');
-      if (!container) return;
-      container.innerHTML = '';
-
-      if (entries.length === 0) {
-        container.innerHTML = `<p class="text-slate-400 italic">Aucune saisie aujourd'hui.</p>`;
-        return;
-      }
-
-      entries.slice().reverse().forEach(entry => {
-        const div = document.createElement('div');
-        div.className = 'flex items-center justify-between bg-white/60 p-2 rounded-xl border border-slate-100';
-        div.innerHTML = `
-          <div class="flex items-center gap-2">
-            <span class="font-bold text-slate-700">${entry.time}</span>
-            <span class="text-slate-500">${entry.feeding > 0 ? `Biberon: ${entry.feeding}ml` : ''} ${entry.diaper !== 'Propre / Rien' ? `Couche: ${entry.diaper}` : ''} ${entry.notes ? `(${entry.notes})` : ''}</span>
-          </div>
-          <span class="text-[10px] text-slate-400">${entry.author || 'Parent'}</span>
-        `;
-        container.appendChild(div);
-      });
-    }
-
-    function renderDailyStatsGrid() {
-      const container = document.getElementById('dailyStatsGrid');
-      if (!container) return;
-      container.innerHTML = '';
-
-      const now = new Date();
-      for (let i = 6; i >= 0; i--) {
-        const d = new Date(now);
-        d.setDate(now.getDate() - i);
-        const iso = d.toISOString().split('T')[0];
-        const dayName = d.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric' });
-
-        let meals = 0, diapers = 0;
-        window.careEntries.forEach(c => {
-          if ((c.date || iso) === iso) {
-            if (c.feeding > 0) meals++;
-            if (c.diaper && c.diaper !== 'Propre / Rien') diapers++;
-          }
-        });
-
-        const div = document.createElement('div');
-        div.className = `p-3 rounded-2xl border text-center ${i === 0 ? 'bg-pink-50/80 border-pink-300' : 'bg-white/60 border-slate-200'}`;
-        div.innerHTML = `
-          <p class="text-[11px] font-bold uppercase ${i === 0 ? 'text-pink-600' : 'text-slate-500'}">${i === 0 ? "Aujourd'hui" : dayName}</p>
-          <div class="mt-1 space-y-0.5 text-xs">
-            <p class="font-extrabold text-pink-600"><i class="fa-solid fa-bottle-droplet mr-1"></i>${meals}</p>
-            <p class="font-extrabold text-blue-600"><i class="fa-solid fa-baby mr-1"></i>${diapers}</p>
-          </div>
-        `;
-        container.appendChild(div);
-      }
-    }
-
     function quickAddMeal() {
-      checkMidnightReset();
-      const volStr = prompt("Volume du biberon (en ml) :", "90");
-      if (volStr === null) return;
-      const vol = parseInt(volStr) || 0;
+      const volumeStr = prompt("Volume du biberon (en ml) :", "60");
+      if (volumeStr === null) return;
+      const volume = parseInt(volumeStr) || 60;
 
       const now = new Date();
       const entry = {
@@ -2082,8 +1987,8 @@
         tempBaby: null,
         tempIncubator: null,
         diaper: "Propre / Rien",
-        feeding: vol,
-        notes: "Ajout rapide Biberon",
+        feeding: volume,
+        notes: "Saisie rapide biberon",
         author: currentUser || "Parent"
       };
 
@@ -2095,9 +2000,12 @@
     }
 
     function quickAddDiaper() {
-      checkMidnightReset();
-      const diaperType = prompt("Type de couche (Urine / Selles / Urine + Selles) :", "Urine");
-      if (!diaperType) return;
+      const diaperType = prompt("Type de couche :\n1. Urine\n2. Selles\n3. Urine + Selles", "1");
+      if (diaperType === null) return;
+
+      let typeVal = "Urine";
+      if (diaperType === "2") typeVal = "Selles";
+      if (diaperType === "3") typeVal = "Urine + Selles";
 
       const now = new Date();
       const entry = {
@@ -2105,9 +2013,9 @@
         time: now.toTimeString().substring(0, 5),
         tempBaby: null,
         tempIncubator: null,
-        diaper: diaperType,
+        diaper: typeVal,
         feeding: 0,
-        notes: "Ajout rapide Couche",
+        notes: "Saisie rapide couche",
         author: currentUser || "Parent"
       };
 
@@ -2118,10 +2026,70 @@
       updateMealsChart();
     }
 
+    function renderQuickHistory(todayEntries) {
+      const container = document.getElementById('quickEntriesHistory');
+      if (!container) return;
+      container.innerHTML = '';
+
+      if (todayEntries.length === 0) {
+        container.innerHTML = `<p class="text-slate-400 italic">Aucune saisie aujourd'hui.</p>`;
+        return;
+      }
+
+      [...todayEntries].reverse().forEach(c => {
+        const div = document.createElement('div');
+        div.className = 'flex justify-between items-center bg-white/70 p-2 rounded-xl border border-slate-100';
+        
+        let detail = [];
+        if (c.feeding > 0) detail.push(`<strong>${c.feeding} ml</strong>`);
+        if (c.diaper && c.diaper !== 'Propre / Rien') detail.push(`Couche : ${c.diaper}`);
+        if (c.tempBaby) detail.push(`T° : ${c.tempBaby}°C`);
+
+        div.innerHTML = `
+          <span><strong>${c.time}</strong> - ${detail.join(' | ') || c.notes}</span>
+          <span class="text-[10px] text-slate-400 font-bold">${c.author || ''}</span>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function renderDailyStatsGrid() {
+      const grid = document.getElementById('dailyStatsGrid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      const now = new Date();
+      for (let i = 6; i >= 0; i--) {
+        const d = new Date(now);
+        d.setDate(now.getDate() - i);
+        const iso = d.toISOString().split('T')[0];
+        const dayName = d.toLocaleDateString('fr-FR', { weekday: 'short' });
+
+        let meals = 0;
+        let diapers = 0;
+
+        window.careEntries.forEach(c => {
+          if (c.date === iso) {
+            if (c.feeding > 0) meals++;
+            if (c.diaper && c.diaper !== 'Propre / Rien') diapers++;
+          }
+        });
+
+        const card = document.createElement('div');
+        card.className = `p-2.5 rounded-2xl text-center border ${i === 0 ? 'bg-pink-50 border-pink-300 font-bold' : 'bg-white/60 border-slate-100'}`;
+        card.innerHTML = `
+          <div class="text-[10px] uppercase text-slate-400 font-extrabold">${dayName}</div>
+          <div class="text-xs text-slate-700 mt-1"><i class="fa-solid fa-bottle-droplet text-pink-500"></i> ${meals}</div>
+          <div class="text-xs text-slate-700 mt-0.5"><i class="fa-solid fa-baby text-blue-500"></i> ${diapers}</div>
+        `;
+        grid.appendChild(card);
+      }
+    }
+
     function resetDailyTracker() {
-      if (confirm("Réinitialiser toutes les saisies rapides et soins enregistrés pour la journée d'aujourd'hui ?")) {
+      if (confirm("Réinitialiser toutes les données enregistrées pour aujourd'hui ?")) {
         const today = new Date().toISOString().split('T')[0];
-        window.careEntries = window.careEntries.filter(c => (c.date || today) !== today);
+        window.careEntries = window.careEntries.filter(c => c.date !== today);
         saveAllToStorage();
         renderCareEntries();
         renderDailyTracker();
@@ -2130,7 +2098,7 @@
     }
 
     function resetStatsPeriod() {
-      if (confirm("Voulez-vous vider l'ensemble du journal des soins (repas et couches) ?")) {
+      if (confirm("Initialiser et vider tout l'historique des soins ?")) {
         window.careEntries = [];
         window.dailyArchive = {};
         saveAllToStorage();
@@ -2140,7 +2108,6 @@
       }
     }
 
-    // --- MODALES OBJECTIFS & ABONNEMENT ---
     function openEditStatsModal() {
       document.getElementById('goalMealsDayInput').value = window.statsGoals.mealsDay || 8;
       document.getElementById('goalDiapersDayInput').value = window.statsGoals.diapersDay || 6;
@@ -2161,10 +2128,10 @@
     }
 
     function updateGoalsBadges() {
-      const bM = document.getElementById('badgeMealsGoal');
-      const bD = document.getElementById('badgeDiapersGoal');
-      if (bM) bM.innerText = `Obj: ${window.statsGoals.mealsDay}/j`;
-      if (bD) bD.innerText = `Obj: ${window.statsGoals.diapersDay}/j`;
+      const bMeals = document.getElementById('badgeMealsGoal');
+      const bDiapers = document.getElementById('badgeDiapersGoal');
+      if (bMeals) bMeals.innerText = `Obj: ${window.statsGoals.mealsDay || 8}/j`;
+      if (bDiapers) bDiapers.innerText = `Obj: ${window.statsGoals.diapersDay || 6}/j`;
     }
 
     function openSubscribeModal() {
@@ -2176,43 +2143,35 @@
     }
 
     function selectPlan(planName) {
-      alert(`Merci d'avoir choisi la formule ${planName} ! Redirection vers la passerelle de paiement sécurisée...`);
+      alert(`Merci d'avoir choisi le plan ${planName} ! La redirection vers la passerelle de paiement sécurisée est en cours...`);
       closeSubscribeModal();
     }
 
-    // --- INITIALISATION GLOBALEMENT AU CHARGEMENT ---
+    // --- INITIALISATION AU CHARGEMENT DE LA PAGE ---
     window.addEventListener('DOMContentLoaded', () => {
-      const now = new Date();
-      const todayStr = now.toISOString().split('T')[0];
-
-      const cDate = document.getElementById('careDate');
-      const cTime = document.getElementById('careTime');
-      const aStart = document.getElementById('agendaStartDate');
-      const aEnd = document.getElementById('agendaEndDate');
-      const aSTime = document.getElementById('agendaStartTime');
-      const aETime = document.getElementById('agendaEndTime');
-      const wDate = document.getElementById('weightPointDate');
-
-      if (cDate) cDate.value = todayStr;
-      if (cTime) cTime.value = now.toTimeString().substring(0, 5);
-      if (aStart) aStart.value = todayStr;
-      if (aEnd) aEnd.value = todayStr;
-      if (aSTime) aSTime.value = "09:00";
-      if (aETime) aETime.value = "10:00";
-      if (wDate) wDate.value = todayStr;
-
+      checkMidnightReset();
       initCharts();
-      renderPredictions();
-      renderCareEntries();
-      renderDailyTracker();
       updateTempChart();
       renderTempList();
       updateWeightChart();
       renderWeightList();
-      updateMealsChart();
-      renderAgendaEntries();
+      renderPredictions();
+      renderCareEntries();
+      renderDailyTracker();
       updateGoalsBadges();
       displayOfficialBanner();
+
+      const todayStr = new Date().toISOString().split('T')[0];
+      const nowTimeStr = new Date().toTimeString().substring(0, 5);
+
+      if (document.getElementById('careDate')) document.getElementById('careDate').value = todayStr;
+      if (document.getElementById('careTime')) document.getElementById('careTime').value = nowTimeStr;
+      if (document.getElementById('predDate')) document.getElementById('predDate').value = todayStr;
+      if (document.getElementById('weightPointDate')) document.getElementById('weightPointDate').value = todayStr;
+      if (document.getElementById('agendaStartDate')) document.getElementById('agendaStartDate').value = todayStr;
+      if (document.getElementById('agendaEndDate')) document.getElementById('agendaEndDate').value = todayStr;
+      if (document.getElementById('agendaStartTime')) document.getElementById('agendaStartTime').value = "09:00";
+      if (document.getElementById('agendaEndTime')) document.getElementById('agendaEndTime').value = "10:00";
     });
   </script>
 </body>
